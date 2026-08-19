@@ -1,0 +1,59 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Cold email bounce rate: what's a good number and how to fix it — Inboxproof</title>
+<meta name="description" content="What counts as a good cold email bounce rate, why it matters for deliverability, and the exact steps to bring a high bounce rate back under control.">
+<meta property="og:title" content="Cold email bounce rate: what's a good number and how to fix it">
+<meta property="og:description" content="What counts as a good cold email bounce rate, why it matters for deliverability, and the exact steps to bring a high bounce rate back under control.">
+<meta property="og:type" content="article">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="/styles.css">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' rx='8' fill='%236366f1'/%3E%3Cpath d='M8 16h13M15 10l6 6-6 6' stroke='white' stroke-width='3' fill='none' stroke-linecap='round' stroke-linejoin='round'/%3E/svg%3E">
+<script type="application/ld+json">
+{"@context":"https://schema.org","@type":"Article","headline":"Cold email bounce rate: what's a good number and how to fix it","description":"What counts as a good cold email bounce rate, why it matters for deliverability, and the exact steps to bring a high bounce rate back under control.","author":{"@type":"Organization","name":"Inboxproof"},"publisher":{"@type":"Organization","name":"Inboxproof"}}
+</script>
+</head>
+<body>
+<nav class="nav">
+  <div class="container">
+    <a class="logo" href="/">
+      <span class="mark"><svg viewBox="0 0 24 24" fill="none"><path d="M4 12h11M11 7l5 5-5 5" stroke="#fff" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"/></svg></span>
+      Inboxproof
+    </a>
+    <div class="nav-links"><a href="/blog">All guides</a><a href="/">Run a free audit</a></div>
+  </div>
+</nav>
+
+<div class="container" style="max-width:760px;padding:60px 20px 80px">
+  <div class="kicker">Guide</div>
+  <h1 style="font-size:34px;margin:10px 0 24px">Cold email bounce rate: what's a good number and how to fix it</h1>
+  <div style="opacity:.85;line-height:1.75;font-size:15.5px">
+    <p>A bounce is an email that never reaches the recipient because the receiving server rejected it. For cold outreach, bounce rate is one of the two numbers that decides whether your sending domain survives: the other is your spam complaint rate. Keep both low and you can scale. Let either one climb and every email you send after that gets harder to deliver.</p>
+    <h2 style="font-size:22px;margin:34px 0 12px">What is a good cold email bounce rate?</h2>
+    <p>The benchmark is under 2%. Most major mailbox providers, and the sending platforms that gate on deliverability, treat 2% as the line. Gmail and Microsoft both use bounce rate as a reputation signal, and a sustained rate above 2% is one of the fastest ways to get your IP or domain filtered. For cold outreach specifically, where the list quality is inherently worse than for transactional or opt-in mail, aim for under 1% if you can. A rate between 2% and 5% means your list has real problems. Above 5% you are actively damaging your sender reputation and should stop sending until you fix it.</p>
+    <h2 style="font-size:22px;margin:34px 0 12px">Hard bounces vs soft bounces</h2>
+    <p>Not all bounces are the same, and the fix depends on which kind you are seeing. A <b>hard bounce</b> means the address does not exist: the domain has no mail server, the mailbox was deleted, or the address is malformed. Hard bounces are permanent. You should remove the address from your list immediately and never send to it again, because retrying a hard-bounced address is itself a reputation penalty. A <b>soft bounce</b> is temporary: the mailbox is full, the server is down, or the message was too large. Soft bounces are worth one or two retries, but if the same address soft-bounces repeatedly, treat it as a hard bounce and remove it.</p>
+    <h2 style="font-size:22px;margin:34px 0 12px">The main causes of a high cold email bounce rate</h2>
+    <p><b>Stale or purchased lists.</b> This is the most common cause in cold outreach. A list that was built months ago, or bought from a vendor, is full of addresses that no longer exist. People change jobs, companies rename their domains, and mailboxes get deleted. The fix is to validate every address before you send, and to re-validate regularly if the list is large.</p>
+    <p><b>Typo domains and role accounts.</b> Addresses like <code>gmail.com</code> typos, or role accounts like <code>info@</code> and <code>sales@</code> that get deleted when a team changes, bounce at a higher rate. Role accounts are not a deal-breaker, but they should be validated like everything else.</p>
+    <p><b>A sending domain that is not set up.</b> If your SPF, DKIM, or DMARC records are missing or wrong, some receiving servers will reject the mail outright, which shows up as a bounce. The <a href="/dmarc-checker">DMARC checker</a> runs all three records in one pass and tells you which one is the problem. For the exact records, the <a href="/spf-dkim-dmarc">SPF, DKIM and DMARC guide</a> covers each one.</p>
+    <p><b>A blocklisted sending IP.</b> Even with a clean list and clean records, a listed IP gets rejected. The <a href="/is-my-ip-blacklisted">IP blacklist checker</a> tests the sending IP against nine major lists. If you are listed, the <a href="/spamhaus-delisting">Spamhaus delisting guide</a> covers the request. Delisting only sticks if the underlying cause is fixed first.</p>
+    <h2 style="font-size:22px;margin:34px 0 12px">How to bring a high bounce rate back under control</h2>
+    <p>Work in this order. First, stop sending to the addresses that hard-bounced; keep them off every future campaign. Second, validate the rest of the list against a live mailbox check, and remove anything that fails. Third, check your sending domain's authentication records and your IP reputation, because a domain-level problem will keep producing bounces no matter how clean the list is. Fourth, resume sending at a reduced volume and watch the bounce rate over the next few days; it should drop back under 2% quickly if the list is the only problem. If it does not, the issue is the sending infrastructure, not the list.</p>
+    <h2 style="font-size:22px;margin:34px 0 12px">How to keep it low going forward</h2>
+    <p>Validate before every campaign, not just the first one. Suppress every hard-bounced address permanently. Keep your volume gradual, especially on a new domain, so a small list problem does not become a reputation problem. And monitor the sending domain continuously, because a new include in your SPF, a provider change, or an expired DKIM key can break deliverability silently. The <a href="/cold-email-checker">free deliverability checker</a> runs all of these signals at once and points at the first thing to fix.</p>
+    <p style="margin-top:28px;padding:18px;background:#f4f4ff;border-radius:12px">Want this checked automatically every day? <a href="/#pricing" style="font-weight:600">Inboxproof Pro</a> monitors your domain around the clock and alerts you the moment a record breaks or an IP gets listed. <a href="/#pricing" style="font-weight:600">See pricing →</a></p>
+  </div>
+</div>
+
+<footer>
+  <div class="container">
+    <span>© 2026 Inboxproof, Inc.</span>
+    <span><a href="/blog">All guides</a> · <a href="/">Home</a> · <a href="/privacy">Privacy</a> · <a href="https://github.com/jtc268/inboxproof" target="_blank" rel="noopener">GitHub</a></span>
+  </div>
+</footer>
+</body>
+</html>
