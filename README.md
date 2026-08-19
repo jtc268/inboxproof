@@ -30,7 +30,7 @@ change.
 - [TLS / STARTTLS checker](https://inboxproof-phi.vercel.app/tls-checker)
 - [Reverse DNS (PTR) checker](https://inboxproof-phi.vercel.app/ptr-checker)
 
-Plus 35 short, practical [guides](https://inboxproof-phi.vercel.app/blog) on
+Plus 41 short, practical [guides](https://inboxproof-phi.vercel.app/blog) on
 SPF, DKIM, DMARC, and deliverability.
 
 ## How it works
