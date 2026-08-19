@@ -536,6 +536,23 @@ async function handler(req, res) {
         const score = Math.round(raw / total * 100);
         return sendJson(res, 200, { domain, at: new Date().toISOString(), score, grade: gradeOf(score), checks });
       }
+      if (u.pathname === '/api/spam-check') {
+        const domain = cleanDomain(u.searchParams.get('domain'));
+        if (!DOMAIN_RE.test(domain)) return sendJson(res, 400, { error: 'Enter a valid domain, e.g. yourdomain.com' });
+        if (rateLimited(ip)) return sendJson(res, 429, { error: 'Rate limit: 20 checks/hour from this IP.' });
+        const checks = await Promise.all([checkMx(domain), checkSpf(domain), checkDkim(domain), checkDmarc(domain), checkTls(domain), checkPtr(domain), checkRbl(domain)]);
+        const total = Object.values(WEIGHTS).reduce((a, b) => a + b, 0);
+        const raw = checks.reduce((s, c) => s + WEIGHTS[c.id] * (c.status === 'pass' ? 1 : c.status === 'warn' ? 0.5 : 0), 0);
+        const deliver = Math.round(raw / total * 100);
+        const risk = 100 - deliver;
+        const riskLabel = risk <= 15 ? 'Low' : risk <= 35 ? 'Moderate' : risk <= 60 ? 'High' : 'Severe';
+        const verdict = risk <= 15 ? 'This domain looks like it will land in the inbox. Authentication, TLS and IP reputation are in good shape.'
+          : risk <= 35 ? 'This domain will likely reach the inbox, but weak signals below give spam filters room to flag you.'
+          : risk <= 60 ? 'This domain has real spam-filter risk. Fix the failing items before sending volume.'
+          : 'This domain is at severe spam-filter risk. Mail from it is likely to be rejected or dumped to spam until the failing items are fixed.';
+        const failing = checks.filter(c => c.status !== 'pass').map(c => ({ id: c.id, name: c.name, status: c.status, detail: c.detail, fix: c.fix }));
+        return sendJson(res, 200, { domain, at: new Date().toISOString(), risk, riskLabel, deliver, grade: gradeOf(deliver), verdict, checks, failing });
+      }
       if (u.pathname === '/api/blocklist-check') {
         let ip = String(u.searchParams.get('ip') || '').trim();
         const clientIp = String(req.socket.remoteAddress || '').replace(/^::ffff:/, '');
@@ -683,7 +700,7 @@ async function handler(req, res) {
       const host = req.headers.host || 'localhost:4321';
       const proto = String(req.headers['x-forwarded-proto'] || '').split(',')[0].trim() === 'https' ? 'https' : 'http';
       const base = proto + '://' + host;
-      const urls = ['/', '/#pricing', '/#faq', '/dmarc-checker', '/dmarc-generator', '/spf-generator', '/spf-checker', '/dkim-checker', '/blocklist-checker', '/mx-checker', '/header-analyzer', '/dmarc-report-parser', '/cold-email-checker', '/warm-up-calculator', '/tls-checker', '/ptr-checker', '/compare', '/developers', '/blog', '/blog/dmarc', '/blog/spf-dkim-dmarc', '/blog/spoofing', '/blog/dmarc-policies', '/blog/email-not-landing-gmail', '/blog/dmarc-record', '/blog/email-in-spam', '/blog/is-my-domain-blacklisted', '/blog/is-my-ip-blacklisted', '/blog/deliverability-score', '/blog/dmarc-report-monitoring', '/blog/spf-not-working', '/blog/google-workspace-spf-dkim-dmarc', '/blog/microsoft-365-spf-dkim-dmarc', '/blog/gmail-smtp-error-550-5-7-26', '/blog/dkim-not-signing', '/blog/email-authentication-startups', '/blog/reverse-dns-ptr-email', '/blog/cold-email-warm-up', '/blog/spamhaus-delisting', '/blog/mx-records', '/blog/how-to-read-email-headers', '/blog/cold-email-deliverability', '/blog/transactional-email-deliverability', '/blog/smtp-error-codes', '/blog/dkim-selector', '/blog/email-bounce-codes', '/blog/spf-lookup-limit', '/blog/email-deliverability-for-agencies', '/blog/cold-email-tools', '/blog/get-out-of-spam-folder', '/blog/cold-email-reply-rate', '/blog/gmail-postmaster-tools', '/blog/how-to-check-email-deliverability', '/blog/email-deliverability-software', '/blog/outlook-smtp-error-550-5-7-1', '/blog/email-not-delivering-to-outlook', '/blog/yahoo-email-in-spam', '/blog/yahoo-smtp-error-550-5-7-1', '/blog/email-rejected-by-microsoft', '/blog/email-not-landing-yahoo', '/blog/cold-email-bounce-rate'].map(l => '  <url><loc>' + base + l + '</loc><changefreq>weekly</changefreq></url>').join('\n');
+      const urls = ['/', '/#pricing', '/#faq', '/dmarc-checker', '/spam-checker', '/dmarc-generator', '/spf-generator', '/spf-checker', '/dkim-checker', '/blocklist-checker', '/mx-checker', '/header-analyzer', '/dmarc-report-parser', '/cold-email-checker', '/warm-up-calculator', '/tls-checker', '/ptr-checker', '/compare', '/developers', '/blog', '/blog/dmarc', '/blog/spf-dkim-dmarc', '/blog/spoofing', '/blog/dmarc-policies', '/blog/email-not-landing-gmail', '/blog/dmarc-record', '/blog/email-in-spam', '/blog/is-my-domain-blacklisted', '/blog/is-my-ip-blacklisted', '/blog/deliverability-score', '/blog/dmarc-report-monitoring', '/blog/spf-not-working', '/blog/google-workspace-spf-dkim-dmarc', '/blog/microsoft-365-spf-dkim-dmarc', '/blog/gmail-smtp-error-550-5-7-26', '/blog/dkim-not-signing', '/blog/email-authentication-startups', '/blog/reverse-dns-ptr-email', '/blog/cold-email-warm-up', '/blog/spamhaus-delisting', '/blog/mx-records', '/blog/how-to-read-email-headers', '/blog/cold-email-deliverability', '/blog/transactional-email-deliverability', '/blog/smtp-error-codes', '/blog/dkim-selector', '/blog/email-bounce-codes', '/blog/spf-lookup-limit', '/blog/email-deliverability-for-agencies', '/blog/cold-email-tools', '/blog/get-out-of-spam-folder', '/blog/cold-email-reply-rate', '/blog/gmail-postmaster-tools', '/blog/how-to-check-email-deliverability', '/blog/email-deliverability-software', '/blog/outlook-smtp-error-550-5-7-1', '/blog/email-not-delivering-to-outlook', '/blog/yahoo-email-in-spam', '/blog/yahoo-smtp-error-550-5-7-1', '/blog/email-rejected-by-microsoft', '/blog/email-not-landing-yahoo', '/blog/cold-email-bounce-rate'].map(l => '  <url><loc>' + base + l + '</loc><changefreq>weekly</changefreq></url>').join('\n');
       res.writeHead(200, { 'Content-Type': 'application/xml; charset=utf-8' });
       return res.end('<?xml version="1.0" encoding="UTF-8"?>\n<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">\n' + urls + '\n</urlset>\n');
     }
