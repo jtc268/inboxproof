@@ -1,0 +1,66 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Is your domain being spoofed? Check in 30 seconds — Inboxproof</title>
+<meta name="description" content="The three DNS lookups that tell you whether someone can send 'from' your domain and get it delivered, and what to do if the answer is yes.">
+<meta property="og:title" content="Is your domain being spoofed? How to check in 30 seconds">
+<meta property="og:description" content="The three DNS lookups that tell you whether someone can send 'from' your domain and get it delivered.">
+<meta property="og:type" content="article">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="/styles.css">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' rx='8' fill='%236366f1'/%3E%3Cpath d='M8 16h13M15 10l6 6-6 6' stroke='white' stroke-width='3' fill='none' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E">
+<script type="application/ld+json">
+{"@context":"https://schema.org","@type":"Article","headline":"Is your domain being spoofed? How to check in 30 seconds","description":"The three DNS lookups that tell you whether someone can send 'from' your domain and get it delivered, and what to do if the answer is yes.","author":{"@type":"Organization","name":"Inboxproof"},"publisher":{"@type":"Organization","name":"Inboxproof"}}
+</script>
+</head>
+<body>
+<nav class="nav">
+  <div class="container">
+    <a class="logo" href="/">
+      <span class="mark"><svg viewBox="0 0 24 24" fill="none"><path d="M4 12h11M11 7l5 5-5 5" stroke="#fff" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"/></svg></span>
+      Inboxproof
+    </a>
+    <div class="nav-links"><a href="/blog">All guides</a><a href="/">Run a free audit</a></div>
+  </div>
+</nav>
+
+<div class="container" style="max-width:760px;padding:60px 20px 80px">
+  <div class="kicker">Guide</div>
+  <h1 style="font-size:34px;margin:10px 0 24px">Can someone send "from" your domain?</h1>
+  <div style="opacity:.85;line-height:1.75;font-size:15.5px">
+    <p>Yes, by default they can. The "From:" field in an email is just text the sender types. Nothing stops a stranger from putting <code>you@yourdomain.com</code> in it. What stops that mail from being <i>delivered</i> is a set of DNS records that let the receiver verify the sender is actually you. If those records are missing or weak, spoofed mail from your domain lands in inboxes, and the damage lands on your domain's reputation, not the spoofers'. Here's how to find out where you stand.</p>
+
+    <h2 style="font-size:22px;margin:34px 0 12px">Lookup 1: SPF</h2>
+    <p>Check for a TXT record on your domain that starts with <code>v=spf1</code>. If there's no SPF record, any server on the internet can send mail as your domain and most receivers will still deliver it. If the record ends in <code>~all</code> (soft fail), spoofed mail is delivered but marked. If it ends in <code>-all</code> (hard fail), receivers are told to reject mail from IPs that aren't on your list. No SPF, or a soft-fail SPF, is the single most common spoofing gap.</p>
+
+    <h2 style="font-size:22px;margin:34px 0 12px">Lookup 2: DKIM</h2>
+    <p>Check for a TXT record at <code>selector._domainkey.yourdomain.com</code> (your email provider tells you the selector). If your provider sends mail for you but there's no DKIM public key published, your legitimate mail has no signature, and a forger's mail has nothing to fail against. This one's easy to miss after a provider switch: the key that used to be there is gone, and nothing breaks loudly.</p>
+
+    <h2 style="font-size:22px;margin:34px 0 12px">Lookup 3: DMARC</h2>
+    <p>Check for a TXT record at <code>_dmarc.yourdomain.com</code>. This is the one that tells receivers what to do with mail that fails the first two checks, and it's the one that starts the report stream. No DMARC record means two things: spoofed mail has no policy standing in its way, and you have zero visibility into who is sending as your domain. Most domains that get reported for spoofing turn out to have had no DMARC for years, which is why nobody knew until the damage was done.</p>
+
+    <h2 style="font-size:22px;margin:34px 0 12px">What to do if the answer is yes</h2>
+    <p style="margin:0 0 14px">If any of the three lookups comes back empty or weak, the fix is the same order every time: get SPF in place (and end it in <code>-all</code>), confirm your DKIM key is published, then publish DMARC at <code>p=none</code> and read the aggregate reports for a week or two. The reports show you exactly who is sending as your domain. Once you've confirmed the senders you expect all pass, move to <code>p=quarantine</code> and then <code>p=reject</code>. The details and the exact record syntax are in our <a href="/blog/spf-dkim-dmarc" style="color:#a5b4fc">SPF/DKIM/DMARC guide</a> and <a href="/blog/dmarc" style="color:#a5b4fc">DMARC guide</a>.</p>
+    <p>One thing to avoid: don't jump straight to <code>p=reject</code> on a domain you've never monitored. If any legitimate sender (a marketing tool, a legacy system, a forwarding setup) is misconfigured, a strict policy rejects your own mail, and that's usually how a domain ends up on a blocklist by accident.</p>
+
+    <p style="opacity:.6;font-size:13px;margin-top:28px">Related: <a href="/blog/dmarc">What is DMARC?</a> · <a href="/blog/dmarc-policies">p=none vs quarantine vs reject</a> · <a href="/blog/email-not-landing-gmail">Why email misses Gmail's inbox</a></p>
+
+    <div style="margin-top:40px;text-align:center;background:linear-gradient(180deg,rgba(99,102,241,.12),transparent);border:1px solid rgba(99,102,241,.35);border-radius:14px;padding:26px">
+      <h3 style="font-size:18px;margin-bottom:6px">Run all three lookups at once</h3>
+      <p style="opacity:.75;font-size:14px;margin-bottom:16px">The free audit runs SPF, DKIM, DMARC, MX, TLS, PTR and IP reputation in about 30 seconds, and shows the exact record to add if one is missing.</p>
+      <a class="btn btn-primary" href="/#audit">Run the free audit</a>
+    </div>
+  </div>
+</div>
+
+<footer>
+  <div class="container">
+    <span>© 2026 Inboxproof, Inc.</span>
+    <span><a href="/blog">All guides</a> · <a href="/">Home</a> · <a href="/privacy">Privacy</a></span>
+  </div>
+</footer>
+</body>
+</html>

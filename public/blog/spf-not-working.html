@@ -1,0 +1,98 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>SPF record not working? How to fix common SPF syntax errors | InboxProof</title>
+<meta name="description" content="Why your SPF record might not be working, the most common syntax errors, and how to fix them. A practical guide for small teams.">
+<link rel="canonical" href="https://inboxproof.email/blog/spf-not-working">
+<meta property="og:title" content="SPF record not working? How to fix common SPF syntax errors">
+<meta property="og:description" content="Why your SPF record might not be working and how to fix it.">
+<meta property="og:type" content="article">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="/styles.css">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' rx='8' fill='%236366f1'/%3E%3Cpath d='M8 16h13M15 10l6 6-6 6' stroke='white' stroke-width='3' fill='none' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E">
+<script type="application/ld+json">
+{"@context":"https://schema.org","@type":"Article","headline":"SPF record not working? How to fix common SPF syntax errors","description":"Why your SPF record might not be working and how to fix it.","author":{"@type":"Organization","name":"InboxProof"},"publisher":{"@type":"Organization","name":"InboxProof"}}
+</script>
+</head>
+<body>
+<nav class="nav">
+  <div class="container">
+    <a class="logo" href="/">
+      <span class="mark"><svg viewBox="0 0 24 24" fill="none"><path d="M4 12h11M11 7l5 5-5 5" stroke="#fff" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"/></svg></span>
+      Inboxproof
+    </a>
+    <div class="nav-links"><a href="/">Run a free audit</a></div>
+  </div>
+</nav>
+
+<div class="container" style="max-width:760px;padding:60px 20px 80px">
+  <div class="kicker">Guide</div>
+  <h1 style="font-size:34px;margin:10px 0 12px">SPF record not working? How to fix common SPF syntax errors</h1>
+  <p style="opacity:.8;font-size:16px;margin-bottom:36px">If your SPF record is not working, it is usually a syntax error, a lookup limit issue, or a missing mechanism. Here is how to diagnose and fix it.</p>
+
+  <div class="card" style="margin-bottom:28px;background:#eef2ff;border-color:#c7d2fe">
+    <h3 style="margin-top:0">Check your SPF record in seconds</h3>
+    <p style="opacity:.8;margin-bottom:14px">The <a href="/spf-checker">free InboxProof SPF checker</a> validates your SPF record against the RFC 7208 syntax, checks the 10-DNS-lookup limit, and tells you exactly what is wrong. No signup.</p>
+    <a class="btn btn-primary" href="/spf-checker">Run the free check</a>
+  </div>
+
+  <h2 style="font-size:24px;margin:36px 0 12px">How to verify your SPF record exists</h2>
+  <p>First, make sure your SPF record is actually published. Run this command:</p>
+  <pre style="background:#0f172a;color:#e2e8f0;padding:16px;border-radius:8px;font-size:14px;overflow-x:auto">dig TXT yourdomain.com</pre>
+  <p>If you do not see an SPF record, you need to create one. If you do see one but it is not working, continue below.</p>
+
+  <h2 style="font-size:24px;margin:36px 0 12px">Common SPF syntax errors</h2>
+  <div class="card" style="margin-bottom:16px">
+    <h3 style="margin-top:0">Missing "v=spf1" prefix</h3>
+    <p style="margin-bottom:0">Every SPF record must start with <code>v=spf1</code>. If it is missing, the record is invalid and will be ignored.</p>
+  </div>
+  <div class="card" style="margin-bottom:16px">
+    <h3 style="margin-top:0">Missing "-all" or "~all" modifier</h3>
+    <p style="margin-bottom:0">Your SPF record should end with <code>-all</code> (hard fail) or <code>~all</code> (soft fail). Without it, the record is incomplete and may not be enforced.</p>
+  </div>
+  <div class="card" style="margin-bottom:16px">
+    <h3 style="margin-top:0">Too many DNS lookups</h3>
+    <p style="margin-bottom:0">SPF has a 10-DNS-lookup limit. Each <code>include:</code>, <code>a</code>, <code>mx</code>, or <code>ptr</code> mechanism counts as one or more lookups. If you exceed 10, the record "permerrors" and is treated as a failure.</p>
+  </div>
+  <div class="card" style="margin-bottom:16px">
+    <h3 style="margin-top:0">Multiple SPF records</h3>
+    <p style="margin-bottom:0">A domain can have only one SPF record. If you have two TXT records that both start with <code>v=spf1</code>, the receiving server will "permerror" and treat the record as a failure.</p>
+  </div>
+  <div class="card" style="margin-bottom:16px">
+    <h3 style="margin-top:0">Invalid mechanism syntax</h3>
+    <p style="margin-bottom:0">Mechanisms like <code>ip4:</code>, <code>ip6:</code>, <code>a</code>, <code>mx</code>, and <code>include:</code> have specific syntax. A typo (e.g., <code>ip4:1.2.3.4/24</code> instead of <code>ip4:1.2.3.4/24</code>) will cause a syntax error.</p>
+  </div>
+
+  <h2 style="font-size:24px;margin:36px 0 12px">How to fix it</h2>
+  <ol style="font-size:16px;line-height:1.8">
+    <li><b>Run the free SPF checker</b> - it will tell you exactly what is wrong.</li>
+    <li><b>Fix the syntax</b> - make sure the record starts with <code>v=spf1</code> and ends with <code>-all</code> or <code>~all</code>.</li>
+    <li><b>Reduce DNS lookups</b> - replace <code>include:</code> chains with <code>ip4:</code> or <code>ip6:</code> mechanisms where possible.</li>
+    <li><b>Remove duplicate records</b> - if you have two SPF records, consolidate them into one.</li>
+    <li><b>Verify the fix</b> - run the checker again to confirm the record is valid.</li>
+  </ol>
+
+  <h2 style="font-size:24px;margin:36px 0 12px">What a good SPF record looks like</h2>
+  <pre style="background:#0f172a;color:#e2e8f0;padding:16px;border-radius:8px;font-size:14px;overflow-x:auto">v=spf1 include:_spf.google.com include:sendgrid.net ip4:203.0.113.5 -all</pre>
+  <p>This record says: "Allow Google, SendGrid, and the IP 203.0.113.5 to send email on behalf of this domain. Reject everything else."</p>
+
+  <div class="cta" style="background:#0f172a;color:#fff;border-radius:12px;padding:32px;text-align:center;margin:40px 0">
+    <h2 style="color:#fff;margin-bottom:8px">Check your SPF record now</h2>
+    <p style="opacity:.8;margin-bottom:20px">Run the free SPF checker and see exactly what is wrong.</p>
+    <a class="btn btn-primary btn-lg" href="/spf-checker">Run the free check</a>
+  </div>
+
+  <p style="opacity:.6;font-size:13px;margin-top:28px">Related: <a href="/blog/spf-dkim-dmarc">SPF vs DKIM vs DMARC</a> · <a href="/blog/dmarc-record">How to set up a DMARC record</a> · <a href="/blog/deliverability-score">What is a good deliverability score?</a> · <a href="/blog/dmarc-report-monitoring">How to monitor DMARC reports</a> · <a href="/blog/gmail-smtp-error-550-5-7-26">Gmail SMTP error 550-5.7.26</a></p>
+</div>
+
+<footer>
+  <div class="container">
+    <span>© 2026 Inboxproof, Inc.</span>
+    <span><a href="/">Home</a> · <a href="/privacy">Privacy</a></span>
+  </div>
+</footer>
+</body>
+</html>

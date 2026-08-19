@@ -1,0 +1,75 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>SPF vs DKIM vs DMARC: which one do you need? — Inboxproof</title>
+<meta name="description" content="What each email authentication record proves, what breaks when one is missing, and the order to fix them in, with the exact TXT records to start from.">
+<meta property="og:title" content="SPF vs DKIM vs DMARC: which one do you need?">
+<meta property="og:description" content="What each record proves, what breaks when one is missing, and the order to fix them in.">
+<meta property="og:type" content="article">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="/styles.css">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' rx='8' fill='%236366f1'/%3E%3Cpath d='M8 16h13M15 10l6 6-6 6' stroke='white' stroke-width='3' fill='none' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E">
+<script type="application/ld+json">
+{"@context":"https://schema.org","@type":"Article","headline":"SPF vs DKIM vs DMARC: which one do you actually need?","description":"What each email authentication record proves, what breaks when one is missing, and the order to fix them in.","author":{"@type":"Organization","name":"Inboxproof"},"publisher":{"@type":"Organization","name":"Inboxproof"}}
+</script>
+</head>
+<body>
+<nav class="nav">
+  <div class="container">
+    <a class="logo" href="/">
+      <span class="mark"><svg viewBox="0 0 24 24" fill="none"><path d="M4 12h11M11 7l5 5-5 5" stroke="#fff" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"/></svg></span>
+      Inboxproof
+    </a>
+    <div class="nav-links"><a href="/blog">All guides</a><a href="/">Run a free audit</a></div>
+  </div>
+</nav>
+
+<div class="container" style="max-width:760px;padding:60px 20px 80px">
+  <div class="kicker">Guide</div>
+  <h1 style="font-size:34px;margin:10px 0 24px">SPF vs DKIM vs DMARC: what each one actually proves</h1>
+  <div style="opacity:.85;line-height:1.75;font-size:15.5px">
+    <p>They're all DNS TXT records, they all relate to email, and they're constantly confused with each other. Here's the one-line version: <b>SPF says which servers may send for you. DKIM signs each message so it can't be altered. DMARC says what receivers should do when a message fails the other two.</b> You need all three, and they work in a specific order.</p>
+
+    <h2 style="font-size:22px;margin:34px 0 12px">SPF: the allow-list</h2>
+    <p>SPF is a TXT record on your domain that lists the IP addresses and hostnames allowed to send mail as that domain. When a receiver gets mail claiming to be from you, it checks the sending IP against this list. A typical small-business SPF looks like:</p>
+    <p style="margin:16px 0"><code style="opacity:.8;display:block;background:rgba(255,255,255,.04);border:1px solid rgba(255,255,255,.08);border-radius:10px;padding:14px 16px;font-size:13px;white-space:pre-wrap;word-break:break-all">v=spf1 include:_spf.google.com ~all</code></p>
+    <p>The <code>include</code> pulls in your email provider's own list. The ending matters: <code>-all</code> means "everything not listed is a hard fail", <code>~all</code> means "soft fail, deliver but mark it". Two practical gotchas: SPF is limited to 10 DNS lookups (each <code>include</code> counts), and a domain can have only one SPF record. If your provider's instructions say "add this SPF", you're probably meant to merge it into the record you already have, not create a second one.</p>
+
+    <h2 style="font-size:22px;margin:34px 0 12px">DKIM: the signature</h2>
+    <p>DKIM solves the problem SPF has: the sending IP can be spoofed in the envelope, but a DKIM signature can't be forged without the private key. Your mail server signs each outgoing message with a private key; the matching public key lives in a TXT record at <code>selector._domainkey.yourdomain.com</code>. The receiver fetches that key and verifies the signature. If it matches, the message came from someone holding your private key, and it wasn't altered in transit.</p>
+    <p>Most email providers set this up for you automatically. The common failure is a domain that was moved between providers: the old DKIM record gets deleted, or the new provider's key is published under a different selector, and mail that used to authenticate now doesn't. Google also requires 2048-bit DKIM keys for bulk senders; 1024-bit keys were deprecated in 2024.</p>
+
+    <h2 style="font-size:22px;margin:34px 0 12px">DMARC: the policy</h2>
+    <p>SPF and DKIM each produce a pass or fail, but by themselves they don't tell the receiver what to do. DMARC does: it's the record at <code>_dmarc.yourdomain.com</code> that says "if a message fails SPF or DKIM (and the domains don't align), apply my policy." Start at <code>p=none</code> to collect reports, move to <code>p=quarantine</code> when your legitimate senders all pass, and <code>p=reject</code> when you're confident. The full walkthrough is in our <a href="/blog/dmarc" style="color:#a5b4fc">DMARC guide</a>.</p>
+
+    <h2 style="font-size:22px;margin:34px 0 12px">What happens when one is missing</h2>
+    <p style="margin:0 0 12px"><b>No SPF:</b> receivers can't verify the sending server at all. Many will still deliver, but your mail is easier to spoof and you're below the bar that Google and Yahoo now ask of bulk senders.</p>
+    <p style="margin:0 0 12px"><b>No DKIM:</b> you have an allow-list but no signature. Mail that routes through a relay or gets forwarded loses its SPF pass (the IP changes), and there's nothing left to prove it's yours.</p>
+    <p style="margin:0 0 12px"><b>No DMARC:</b> even with perfect SPF and DKIM, there's no policy telling receivers to act on failures, and no report stream telling you when someone else starts sending as you. This is the most common gap, because it's the record nobody sets up until they hear about it.</p>
+
+    <h2 style="font-size:22px;margin:34px 0 12px">The order to fix them</h2>
+    <p style="margin:0 0 14px">1. <b>SPF first</b> — it's one TXT record and it's the foundation.</p>
+    <p style="margin:0 0 14px">2. <b>DKIM second</b> — confirm your provider's selector and key are published.</p>
+    <p style="margin:0 0 14px">3. <b>DMARC last</b> — publishing a policy before the other two work just gives you a way to reject your own mail.</p>
+
+    <p style="opacity:.6;font-size:13px;margin-top:28px">Related: <a href="/blog/dmarc">What is DMARC?</a> · <a href="/blog/dmarc-policies">p=none vs quarantine vs reject</a> · <a href="/blog/email-not-landing-gmail">Why email misses Gmail's inbox</a> · <a href="/blog/spf-not-working">SPF record not working?</a> · <a href="/blog/google-workspace-spf-dkim-dmarc">SPF, DKIM, DMARC for Google Workspace</a> · <a href="/blog/dkim-not-signing">DKIM not signing emails?</a> · <a href="/blog/email-authentication-startups">Email auth for startups</a></p>
+
+    <div style="margin-top:40px;text-align:center;background:linear-gradient(180deg,rgba(99,102,241,.12),transparent);border:1px solid rgba(99,102,241,.35);border-radius:14px;padding:26px">
+      <h3 style="font-size:18px;margin-bottom:6px">See which of the three your domain is missing</h3>
+      <p style="opacity:.75;font-size:14px;margin-bottom:16px">The free audit checks all three (plus MX, TLS, PTR and IP reputation) and shows the exact record to add.</p>
+      <a class="btn btn-primary" href="/#audit">Run the free audit</a>
+    </div>
+  </div>
+</div>
+
+<footer>
+  <div class="container">
+    <span>© 2026 Inboxproof, Inc.</span>
+    <span><a href="/blog">All guides</a> · <a href="/">Home</a> · <a href="/privacy">Privacy</a></span>
+  </div>
+</footer>
+</body>
+</html>

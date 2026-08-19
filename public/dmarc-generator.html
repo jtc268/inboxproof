@@ -1,0 +1,168 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Free DMARC Record Generator — Create Your DMARC TXT Record</title>
+<meta name="description" content="Generate a correct DMARC record for your domain in seconds. Pick a policy, get the exact TXT record, and copy-paste it into your DNS provider. Free, no signup.">
+<meta property="og:title" content="Free DMARC Record Generator — Inboxproof">
+<meta property="og:description" content="Generate the exact DMARC TXT record for your domain and get step-by-step DNS instructions. Free, no signup.">
+<meta property="og:type" content="website">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="/styles.css">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' rx='8' fill='%236366f1'/%3E%3Cpath d='M8 16h13M15 10l6 6-6 6' stroke='white' stroke-width='3' fill='none' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E">
+<script type="application/ld+json">
+{"@context":"https://schema.org","@type":"WebApplication","name":"Inboxproof Free DMARC Record Generator","applicationCategory":"Utilities","operatingSystem":"Web","description":"Generates the exact DMARC TXT record for a domain from a policy choice and reporting address, with DNS provider instructions.","offers":{"@type":"Offer","price":"0","priceCurrency":"USD"}}
+</script>
+<script type="application/ld+json">
+{"@context":"https://schema.org","@type":"FAQPage","mainEntity":[
+{"@type":"Question","name":"What is a DMARC record?","acceptedAnswer":{"@type":"Answer","text":"A DMARC record is a DNS TXT record published at _dmarc.yourdomain that tells email receivers what to do with mail claiming your domain that failed SPF or DKIM authentication."}},
+{"@type":"Question","name":"What should my DMARC policy be?","acceptedAnswer":{"@type":"Answer","text":"Start with p=none to collect reports without rejecting anything. Move to p=quarantine once you trust your senders, and p=reject only when you are confident no legitimate mail is failing authentication."}},
+{"@type":"Question","name":"Where do I put the DMARC record?","acceptedAnswer":{"@type":"Answer","text":"Add it as a TXT record with the host name _dmarc (or _dmarc.yourdomain, depending on your provider). The value is the record this tool generates."}},
+{"@type":"Question","name":"How long does it take to publish?","acceptedAnswer":"It can take a few minutes to several hours for DNS to propagate. Use the verify button here to check when it is live."}
+]}
+</script>
+</head>
+<body>
+<nav class="nav">
+  <div class="container">
+    <a class="logo" href="/">
+      <span class="mark"><svg viewBox="0 0 24 24" fill="none"><path d="M4 12h11M11 7l5 5-5 5" stroke="#fff" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"/></svg></span>
+      Inboxproof
+    </a>
+    <div class="nav-links"><a href="/">Run a free audit</a> · <a href="/blog">Guides</a></div>
+  </div>
+</nav>
+
+<div class="container" style="max-width:760px;padding:60px 20px 80px;text-align:center">
+  <div class="kicker">Free tool</div>
+  <h1 style="font-size:38px;margin:10px 0 12px">DMARC record generator</h1>
+  <p style="opacity:.8;font-size:16px;margin-bottom:30px">Pick a policy, add your reporting address, and get the exact TXT record to publish. No signup, no email required.</p>
+
+  <div class="card" style="text-align:left;padding:22px">
+    <div style="display:grid;gap:16px">
+      <div>
+        <label style="display:block;font-size:13px;font-weight:600;margin-bottom:6px;opacity:.8">Your domain</label>
+        <input id="domain" type="text" placeholder="yourdomain.com" style="width:100%;padding:12px 14px;border-radius:10px;border:1px solid #d4d4d8;font-size:15px;background:#fff" autocomplete="off" spellcheck="false">
+      </div>
+      <div>
+        <label style="display:block;font-size:13px;font-weight:600;margin-bottom:6px;opacity:.8">Policy</label>
+        <div style="display:flex;gap:10px;flex-wrap:wrap">
+          <label style="flex:1;min-width:150px"><input type="radio" name="policy" value="none" checked style="margin-right:8px"> <span style="font-size:14px"><strong>none</strong> — monitor only (start here)</span></label>
+          <label style="flex:1;min-width:150px"><input type="radio" name="policy" value="quarantine" style="margin-right:8px"> <span style="font-size:14px"><strong>quarantine</strong> — send failures to spam</span></label>
+          <label style="flex:1;min-width:150px"><input type="radio" name="policy" value="reject" style="margin-right:8px"> <span style="font-size:14px"><strong>reject</strong> — block failures</span></label>
+        </div>
+      </div>
+      <div>
+        <label style="display:block;font-size:13px;font-weight:600;margin-bottom:6px;opacity:.8">Report to (email address)</label>
+        <input id="rua" type="email" placeholder="reports@yourdomain.com" style="width:100%;padding:12px 14px;border-radius:10px;border:1px solid #d4d4d8;font-size:15px;background:#fff" autocomplete="off" spellcheck="false">
+      </div>
+    </div>
+    <p id="err" style="color:#dc2626;font-size:14px;min-height:20px;margin:14px 0 0"></p>
+  </div>
+
+  <div id="result" style="display:none;text-align:left;margin-top:20px">
+    <div class="card" style="padding:22px">
+      <div style="display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:10px;margin-bottom:12px">
+        <strong style="font-size:15px">Your DMARC record</strong>
+        <button id="copy" class="btn btn-ghost" style="padding:8px 14px;font-size:14px">Copy to clipboard</button>
+      </div>
+      <div id="record" style="font-family:ui-monospace,monospace;font-size:14px;background:#f4f4f5;border:1px solid #e4e4e7;border-radius:10px;padding:14px;white-space:pre-wrap;word-break:break-all"></div>
+      <div style="margin-top:14px">
+        <div style="font-size:13px;font-weight:600;opacity:.8;margin-bottom:6px">Where it goes</div>
+        <div style="font-size:14px;opacity:.85;line-height:1.6">
+          Add a <strong>TXT</strong> record with host <code style="background:#f4f4f5;padding:2px 6px;border-radius:6px;font-size:13px">_dmarc</code> (some providers want the full <code style="background:#f4f4f5;padding:2px 6px;border-radius:6px;font-size:13px">_dmarc.yourdomain</code>) and the value above.
+        </div>
+      </div>
+      <div style="margin-top:16px;display:flex;gap:10px;flex-wrap:wrap">
+        <button id="verify" class="btn btn-primary">Check if it's live</button>
+      </div>
+      <p id="verify-msg" style="font-size:14px;margin:12px 0 0;min-height:20px"></p>
+    </div>
+
+    <div class="card" style="margin-top:16px;padding:22px">
+      <h3 style="margin-top:0">Provider quick-steps</h3>
+      <div style="font-size:14px;opacity:.85;line-height:1.7">
+        <p style="margin:0 0 10px"><strong>Cloudflare</strong> — DNS → Records → Add record. Type TXT, Name <code>_dmarc</code>, Content the record, TTL Auto.</p>
+        <p style="margin:0 0 10px"><strong>GoDaddy</strong> — DNS → Manage Records → Add New Record. Type TXT, Name <code>_dmarc</code>, Value the record.</p>
+        <p style="margin:0 0 10px"><strong>Namecheap</strong> — Manage DNS → Add New Record. Type TXT, Host <code>_dmarc</code>, Value the record.</p>
+        <p style="margin:0 0 10px"><strong>AWS Route 53</strong> — Hosted zone → Create record. Type TXT, Record name <code>_dmarc</code>, Value the record.</p>
+        <p style="margin:0"><strong>Google Workspace</strong> — DNS → Custom resource records. Type TXT, Name <code>_dmarc</code>, Content the record.</p>
+      </div>
+    </div>
+
+    <div class="card" style="margin-top:16px;padding:22px;background:#eef2ff;border-color:#c7d2fe;text-align:center">
+      <h3 style="margin-top:0">Want to know if you're actually safe?</h3>
+      <p style="opacity:.8;margin-bottom:14px">The record tells receivers what to do. The full audit checks SPF, DKIM, DMARC, MX, TLS and more, and scores your domain 0–100.</p>
+      <a class="btn btn-primary btn-lg" href="/dmarc-checker">Run the free DMARC check</a>
+      <p style="opacity:.6;font-size:13px;margin-bottom:0">Or read first: <a href="/blog/dmarc">What is DMARC?</a> · <a href="/blog/dmarc-policies">p=none vs quarantine vs reject</a></p>
+    </div>
+  </div>
+</div>
+
+<footer>
+  <div class="container">
+    <span>© 2026 Inboxproof, Inc.</span>
+    <span><a href="/">Home</a> · <a href="/blog">Guides</a> · <a href="/privacy">Privacy</a></span>
+  </div>
+</footer>
+
+<script>
+const domainEl = document.getElementById('domain');
+const ruaEl = document.getElementById('rua');
+const err = document.getElementById('err');
+const result = document.getElementById('result');
+const recordEl = document.getElementById('record');
+let lastDomain = '';
+
+function buildRecord() {
+  const domain = domainEl.value.trim().toLowerCase().replace(/^https?:\/\//, '').replace(/\/.*$/, '');
+  const policy = document.querySelector('input[name="policy"]:checked').value;
+  const rua = ruaEl.value.trim();
+  if (!domain) return { error: 'Enter your domain first.' };
+  if (!/^[a-z0-9.-]+\.[a-z]{2,}$/.test(domain)) return { error: 'That does not look like a valid domain.' };
+  if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(rua)) return { error: 'Enter a valid report-to email address.' };
+  const parts = ['v=DMARC1', 'p=' + policy, 'rua=mailto:' + rua, 'pct=100'];
+  return { domain, record: parts.join('; ') };
+}
+
+document.addEventListener('change', e => { if (e.target.name === 'policy') render(); });
+domainEl.addEventListener('input', render);
+ruaEl.addEventListener('input', render);
+
+function render() {
+  const out = buildRecord();
+  if (out.error) { err.textContent = out.error; result.style.display = 'none'; return; }
+  err.textContent = '';
+  lastDomain = out.domain;
+  recordEl.textContent = out.record;
+  result.style.display = 'block';
+  document.getElementById('verify-msg').textContent = '';
+}
+
+document.getElementById('copy').addEventListener('click', async () => {
+  try { await navigator.clipboard.writeText(recordEl.textContent); document.getElementById('copy').textContent = 'Copied ✓'; setTimeout(() => document.getElementById('copy').textContent = 'Copy to clipboard', 1600); }
+  catch { document.getElementById('copy').textContent = 'Select and copy manually'; }
+});
+
+document.getElementById('verify').addEventListener('click', async () => {
+  const msg = document.getElementById('verify-msg');
+  const btn = document.getElementById('verify');
+  msg.textContent = ''; btn.disabled = true; btn.textContent = 'Checking…';
+  try {
+    const r = await fetch('/api/dmarc-check?domain=' + encodeURIComponent(lastDomain));
+    const j = await r.json();
+    if (!r.ok) { msg.textContent = j.error || 'Could not verify.'; return; }
+    const dmarc = (j.checks || []).find(c => /dmarc/i.test(c.name));
+    if (dmarc && dmarc.status === 'pass') {
+      msg.innerHTML = '<span style="color:#16a34a;font-weight:600">Live ✓</span> Your DMARC record is published and readable.';
+    } else {
+      msg.innerHTML = '<span style="color:#d97706;font-weight:600">Not live yet.</span> DNS can take a few minutes to several hours. Try again later, or ' + '<a href="/dmarc-checker" style="opacity:.8">run the full audit</a>.';
+    }
+  } catch { msg.textContent = 'Something went wrong. Try again in a moment.'; }
+  finally { btn.disabled = false; btn.textContent = "Check if it's live"; }
+});
+</script>
+</body>
+</html>

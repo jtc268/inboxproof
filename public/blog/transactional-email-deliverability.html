@@ -1,0 +1,97 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Transactional Email Deliverability: The Complete Guide (2026)</title>
+<meta name="description" content="Transactional emails (password resets, order confirmations, receipts) must land in the inbox, not spam. Here is exactly how to keep them out of spam: SPF, DKIM, DMARC, IP warming, and monitoring.">
+<link rel="canonical" href="https://inboxproof.email/blog/transactional-email-deliverability">
+<meta property="og:title" content="Transactional Email Deliverability: The Complete Guide">
+<meta property="og:description" content="Keep password resets, receipts, and alerts out of spam. The exact SPF/DKIM/DMARC setup and monitoring you need.">
+<meta property="og:type" content="article">
+<style>
+:root{--bg:#0b0f17;--card:#121826;--line:#22304a;--text:#e6edf7;--muted:#9fb0c9;--accent:#38bdf8;--good:#34d399;--warn:#fbbf24;--bad:#f87171}
+*{box-sizing:border-box}body{margin:0;background:var(--bg);color:var(--text);font:16px/1.65 system-ui,Segoe UI,Arial,sans-serif}
+.wrap{max-width:820px;margin:0 auto;padding:48px 20px 80px}
+h1{font-size:34px;line-height:1.2;margin:0 0 8px}h2{font-size:24px;margin:40px 0 12px}h3{font-size:18px;margin:24px 0 8px}
+p{margin:0 0 14px}a{color:var(--accent)}code,pre{font-family:ui-monospace,Consolas,monospace}
+pre{background:#0a0e16;border:1px solid var(--line);border-radius:10px;padding:14px;overflow:auto;font-size:14px}
+.lede{color:var(--muted);font-size:18px;margin-bottom:8px}
+.card{background:var(--card);border:1px solid var(--line);border-radius:14px;padding:18px 20px;margin:20px 0}
+.check{display:flex;gap:10px;align-items:flex-start;margin:10px 0}.dot{width:10px;height:10px;border-radius:50%;margin-top:6px;flex:0 0 auto}
+.g{background:var(--good)}.w{background:var(--warn)}.b{background:var(--bad)}
+.cta{display:inline-block;background:var(--accent);color:#04121f;font-weight:700;padding:12px 20px;border-radius:10px;text-decoration:none;margin:6px 8px 0 0}
+.rel{margin-top:36px;padding-top:20px;border-top:1px solid var(--line);color:var(--muted)}
+table{width:100%;border-collapse:collapse;margin:16px 0;font-size:15px}th,td{border:1px solid var(--line);padding:10px 12px;text-align:left}th{background:#0a0e16}
+</style>
+</head>
+<body>
+<div class="wrap">
+<p class="lede">Transactional email is the email your users depend on: password resets, order confirmations, receipts, account alerts. If it lands in spam, your product breaks. Here is the exact setup that keeps it in the inbox.</p>
+
+<h1>Transactional Email Deliverability: The Complete Guide</h1>
+
+<p>Transactional email is different from marketing email in one critical way: the user <em>expects</em> it and often <em>needs</em> it. A password reset that lands in spam is a support ticket. An order confirmation that lands in spam is a lost sale. That makes transactional deliverability a reliability problem, not a growth problem.</p>
+
+<p>This guide covers the full setup: authentication, sending infrastructure, list hygiene, and ongoing monitoring.</p>
+
+<h2>1. Authenticate with SPF, DKIM, and DMARC</h2>
+<p>Receivers (Gmail, Microsoft, Yahoo) require authenticated mail. Transactional domains are no exception. You need all three:</p>
+<div class="check"><span class="dot g"></span><div><strong>SPF</strong> — publishes which servers may send for your domain. Keep the list short (under 10 DNS lookups) and include your ESP's sending domain.</div></div>
+<div class="check"><span class="dot g"></span><div><strong>DKIM</strong> — signs each message so receivers can verify it wasn't tampered with. Your ESP generates the key; you add the TXT record.</div></div>
+<div class="check"><span class="dot g"></span><div><strong>DMARC</strong> — tells receivers what to do when SPF or DKIM fails. Start at <code>p=none</code>, move to <code>p=quarantine</code>, then <code>p=reject</code> as you gain confidence.</div></div>
+
+<p>A minimal, safe DMARC policy for a new transactional domain:</p>
+<pre>v=DMARC1; p=none; pct=100; rua=mailto:dmarc@yourdomain.com; aspf=r; adkim=r</pre>
+
+<p><a href="/dmarc-checker">Check your current records</a> in one click, or use the <a href="/dmarc-generator">DMARC generator</a> to build a safe policy.</p>
+
+<h2>2. Send from a dedicated, warmed-up IP</h2>
+<p>Transactional email should come from a <strong>dedicated IP</strong>, not a shared one. Shared IPs inherit the reputation of everyone else sending from them. A dedicated IP means your reputation is yours alone.</p>
+<p>When you get a new dedicated IP, <strong>warm it up</strong> over 2-4 weeks: start with a small volume and increase gradually. Jumping from 0 to 100k emails a day on a fresh IP is the fastest way to hit spam filters.</p>
+<table>
+<tr><th>Week</th><th>Daily volume</th><th>Goal</th></tr>
+<tr><td>1</td><td>500-1,000</td><td>Establish baseline, confirm auth passes</td></tr>
+<tr><td>2</td><td>5,000-10,000</td><td>Build sending history</td></tr>
+<tr><td>3</td><td>25,000-50,000</td><td>Scale as reputation holds</td></tr>
+<tr><td>4</td><td>Full volume</td><td>Steady-state sending</td></tr>
+</table>
+
+<h2>3. Keep bounce and complaint rates near zero</h2>
+<p>Receivers watch two numbers closely: <strong>bounce rate</strong> and <strong>complaint rate</strong>. For transactional email, both should be near zero because you are emailing people who just took an action (signed up, made a purchase, requested a reset).</p>
+<div class="check"><span class="dot g"></span><div><strong>Bounce rate &lt; 2%</strong> — ideally under 0.5%. If it climbs, you are sending to invalid addresses. Clean your list.</div></div>
+<div class="check"><span class="dot g"></span><div><strong>Complaint rate &lt; 0.1%</strong> — a complaint is a user marking you as spam. For transactional email, any complaint is a signal something is wrong (wrong address, unexpected email, no way to stop it).</div></div>
+
+<p>Practical steps: verify addresses before sending, suppress known bounces, and make sure every transactional email has a clear "why am I getting this?" line and a way to manage preferences.</p>
+
+<h2>4. Monitor continuously, not just after incidents</h2>
+<p>Deliverability degrades silently. A new filter update, a reputation dip, or a misconfigured DNS record can push your transactional email into spam overnight. You will not notice from the dashboard alone.</p>
+<p>Continuous monitoring catches the problem while it is small: a drop in your deliverability score, a new blocklist listing, or a failing SPF/DKIM/DMARC check. That is exactly what <a href="/pro">Inboxproof Pro</a> does — it re-checks your domain daily and alerts you when your score drops.</p>
+
+<div class="card">
+<p><strong>Run a full audit now.</strong> Check SPF, DKIM, DMARC, MX, TLS, PTR, and blocklists for your transactional sending domain in one click.</p>
+<a class="cta" href="/#audit">Audit my domain</a>
+<a class="cta" href="/pro">Monitor it daily (Pro)</a>
+</div>
+
+<h2>5. Common transactional deliverability mistakes</h2>
+<div class="check"><span class="dot b"></span><div><strong>Sending from the same domain as marketing.</strong> One bad marketing campaign can tank your transactional reputation. Use a separate subdomain (e.g. <code>mail.yourdomain.com</code>) for transactional.</div></div>
+<div class="check"><span class="dot b"></span><div><strong>Missing SPF include for your ESP.</strong> If your ESP's sending domain is not in your SPF, every email fails SPF. This is the #1 transactional deliverability bug.</div></div>
+<div class="check"><span class="dot b"></span><div><strong>No DMARC record at all.</strong> Without DMARC, receivers have no policy for unauthenticated mail. Many now treat missing DMARC as a spam signal.</div></div>
+<div class="check"><span class="dot w"></span><div><strong>Sending from a shared IP with no warming.</strong> Fresh shared IPs with no reputation are a common cause of "transactional email suddenly in spam."</div></div>
+
+<h2>Quick checklist</h2>
+<div class="check"><span class="dot g"></span><div>Dedicated subdomain for transactional sending</div></div>
+<div class="check"><span class="dot g"></span><div>SPF includes your ESP's sending domain</div></div>
+<div class="check"><span class="dot g"></span><div>DKIM signature verified</div></div>
+<div class="check"><span class="dot g"></span><div>DMARC record present (start at p=none)</div></div>
+<div class="check"><span class="dot g"></span><div>Dedicated IP, warmed up over 2-4 weeks</div></div>
+<div class="check"><span class="dot g"></span><div>Bounce rate &lt; 2%, complaint rate &lt; 0.1%</div></div>
+<div class="check"><span class="dot g"></span><div>Continuous monitoring (score + blocklists)</div></div>
+
+<div class="rel">
+<p><strong>Related:</strong> <a href="/blog/email-in-spam">Email in spam: how to get out</a> · <a href="/blog/spf-dkim-dmarc">SPF, DKIM, DMARC explained</a> · <a href="/blog/deliverability-score">What your deliverability score means</a> · <a href="/blog/cold-email-deliverability">Cold email deliverability</a></p>
+</div>
+</div>
+</body>
+</html>

@@ -1,0 +1,146 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Free Reverse DNS (PTR) Checker — Does Your Sending IP Have a PTR Record?</title>
+<meta name="description" content="Check whether your sending IP has a reverse DNS (PTR) record and whether it forward-confirms. We look up the PTR, resolve it back, and tell you if mail from that IP will be trusted. Free, no signup.">
+<meta property="og:title" content="Free Reverse DNS (PTR) Checker — Inboxproof">
+<meta property="og:description" content="Find out if your sending IP has a proper PTR record. Free reverse DNS check, no signup.">
+<meta property="og:type" content="website">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="/styles.css">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' rx='8' fill='%236366f1'/%3E%3Cpath d='M8 16h13M15 10l6 6-6 6' stroke='white' stroke-width='3' fill='none' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E">
+<script type="application/ld+json">
+{"@context":"https://schema.org","@type":"WebApplication","name":"Inboxproof Reverse DNS (PTR) Checker","applicationCategory":"Utilities","operatingSystem":"Web","description":"Checks whether an IP address or domain has a reverse DNS (PTR) record and whether it forward-confirms, which receiving mail servers use to trust the sender.","offers":{"@type":"Offer","price":"0","priceCurrency":"USD"}}
+</script>
+<script type="application/ld+json">
+{"@context":"https://schema.org","@type":"FAQPage","mainEntity":[
+  {"@type":"Question","name":"What is a PTR record?","acceptedAnswer":{"@type":"Answer","text":"A PTR (pointer) record is a reverse DNS record that maps an IP address back to a hostname. When you send mail, receiving servers look up the PTR for your sending IP. If there is none, or it does not match the hostname the server claims, the mail is treated as suspicious."}},
+  {"@type":"Question","name":"What is forward-confirmed PTR?","acceptedAnswer":{"@type":"Answer","text":"Forward-confirmed PTR (FCPTR) means the hostname in the PTR record resolves back to the same IP address. Most major providers (Gmail, Microsoft) require this round-trip match before they trust the sender. A PTR that points to a name that does not resolve back to your IP is a common, fixable deliverability problem."}},
+  {"@type":"Question","name":"Why does reverse DNS matter for deliverability?","acceptedAnswer":{"@type":"Answer","text":"Receiving mail servers use reverse DNS as an early trust signal. A sending IP with no PTR, or a PTR that does not forward-confirm, is down-ranked or rejected before your SPF, DKIM and DMARC are even evaluated. It is one of the first things to verify when mail suddenly stops arriving."}},
+  {"@type":"Question","name":"Can I check a domain instead of an IP?","acceptedAnswer":{"@type":"Answer","text":"Yes. Enter a domain and this checker resolves its A record to the IP, then checks the PTR for that IP and verifies the hostname matches the domain you entered."}},
+  {"@type":"Question","name":"Is this PTR checker free?","acceptedAnswer":{"@type":"Answer","text":"Yes. The check is free and does not require a signup. It performs live DNS lookups, so results reflect the current state of your DNS."}}
+]}
+</script>
+</head>
+<body>
+<nav class="nav">
+  <div class="container">
+    <a class="logo" href="/">
+      <span class="mark"><svg viewBox="0 0 24 24" fill="none"><path d="M4 12h11M11 7l5 5-5 5" stroke="#fff" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"/></svg></span>
+      Inboxproof
+    </a>
+    <div class="nav-links"><a href="/">Run a free audit</a> · <a href="/blog">Guides</a></div>
+  </div>
+</nav>
+
+<div class="container" style="max-width:760px;padding:60px 20px 40px;text-align:center">
+  <div class="kicker">Free tool</div>
+  <h1 style="font-size:38px;margin:10px 0 12px">Reverse DNS (PTR) checker</h1>
+  <p style="opacity:.8;font-size:16px;margin-bottom:30px">Find out whether your sending IP has a PTR record and whether it forward-confirms. Enter an IP address or a domain. Free, no signup.</p>
+
+  <div class="card" style="text-align:left;padding:22px 24px;margin-bottom:16px">
+    <form id="form">
+      <label for="target" style="display:block;font-size:13px;font-weight:600;margin-bottom:6px;opacity:.8">IP address or domain</label>
+      <div style="display:flex;gap:10px;flex-wrap:wrap">
+        <input id="target" type="text" placeholder="203.0.113.10 or yourdomain.com" autocomplete="off" style="flex:1;min-width:200px;padding:12px 14px;border-radius:9px;border:1px solid #d4d4d8;font-size:15px;background:#fff">
+        <button class="btn btn-primary btn-lg" type="submit">Check PTR</button>
+      </div>
+    </form>
+    <p id="err" style="color:#dc2626;font-size:14px;min-height:20px;margin-top:10px"></p>
+  </div>
+
+  <div id="result" style="display:none;text-align:left"></div>
+</div>
+
+<div class="container" style="max-width:760px;padding:0 20px 40px">
+  <div class="card">
+    <h3 style="margin-top:0">What a good result looks like</h3>
+    <ul style="opacity:.85;line-height:1.7;font-size:14px;padding-left:20px;margin:8px 0 0">
+      <li><strong>PTR present</strong> for the sending IP.</li>
+      <li><strong>Forward-confirmed</strong>: the hostname resolves back to the same IP.</li>
+      <li><strong>Hostname matches</strong> the server that actually sends mail.</li>
+      <li><strong>No stale or mismatched</strong> reverse records.</li>
+    </ul>
+  </div>
+</div>
+
+<div class="container" style="max-width:760px;padding:0 20px 80px">
+  <div class="card" style="text-align:center">
+    <h3 style="margin-top:0">Check the whole picture</h3>
+    <p style="opacity:.8">PTR is one piece. Run the full cold email readiness check to see SPF, DKIM, DMARC, IP reputation and routing together.</p>
+    <a class="btn btn-primary btn-lg" href="/cold-email-checker">Check my domain</a>
+    <p style="opacity:.6;font-size:13px;margin-bottom:0">More tools: <a href="/dmarc-checker">DMARC checker</a> · <a href="/spf-checker">SPF checker</a> · <a href="/dkim-checker">DKIM checker</a> · <a href="/blocklist-checker">IP blocklist checker</a> · <a href="/mx-checker">MX record checker</a> · <a href="/tls-checker">TLS checker</a> · <a href="/blog/cold-email-deliverability">Cold email deliverability guide</a></p>
+  </div>
+</div>
+
+<footer>
+  <div class="container">
+    <span>© 2026 Inboxproof, Inc.</span>
+    <span><a href="/">Home</a> · <a href="/blog">Guides</a> · <a href="/privacy">Privacy</a></span>
+  </div>
+</footer>
+
+<script>
+const $ = id => document.getElementById(id);
+const errEl = $('err');
+const resultEl = $('result');
+const VERDICT = {
+  pass: { label: 'PTR OK', color: '#16a34a', bg: '#f0fdf4', msg: 'Reverse DNS is set and forward-confirms.' },
+  warn: { label: 'Needs attention', color: '#d97706', bg: '#fffbeb', msg: 'PTR exists but does not fully forward-confirm. Check the details.' },
+  'no-ptr': { label: 'No PTR record', color: '#dc2626', bg: '#fef2f2', msg: 'This IP has no reverse DNS record. Many receivers will reject or down-rank its mail.' },
+  mismatch: { label: 'PTR mismatch', color: '#dc2626', bg: '#fef2f2', msg: 'The PTR hostname does not match the domain you entered.' },
+  'no-ip': { label: 'No A record', color: '#6b7280', bg: '#f9fafb', msg: 'No A record found for that domain.' }
+};
+
+function esc(s) { return String(s == null ? '' : s).replace(/[&<>"]/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c])); }
+
+function render(r) {
+  const v = VERDICT[r.verdict] || VERDICT.warn;
+  const rows =
+    '<div class="card" style="padding:18px 20px">' +
+      '<div style="font-size:13px;font-weight:600;margin:4px 0 6px">Lookup details</div>' +
+      '<table style="width:100%;border-collapse:collapse;font-size:14px"><tbody>' +
+        '<tr><td style="padding:7px 10px;color:var(--dim);font-size:13px">Target</td><td style="padding:7px 10px">' + esc(r.target) + '</td></tr>' +
+        '<tr><td style="padding:7px 10px;color:var(--dim);font-size:13px;border-top:1px solid #ececf0">IP address</td><td style="padding:7px 10px;border-top:1px solid #ececf0">' + esc(r.ip || '—') + '</td></tr>' +
+        '<tr><td style="padding:7px 10px;color:var(--dim);font-size:13px;border-top:1px solid #ececf0">PTR hostname</td><td style="padding:7px 10px;border-top:1px solid #ececf0">' + esc(r.ptr || 'none') + '</td></tr>' +
+        '<tr><td style="padding:7px 10px;color:var(--dim);font-size:13px;border-top:1px solid #ececf0">Finding</td><td style="padding:7px 10px;border-top:1px solid #ececf0">' + esc(r.detail) + '</td></tr>' +
+      '</tbody></table>' +
+    '</div>';
+  const fix = r.fix ?
+    '<div class="card" style="padding:18px 20px;margin-top:16px">' +
+      '<div style="font-size:13px;font-weight:600;margin:4px 0 6px">How to fix it</div>' +
+      '<p style="opacity:.85;line-height:1.7;font-size:14px;margin:0">' + esc(r.fix) + '</p>' +
+    '</div>' : '';
+  resultEl.innerHTML =
+    '<div style="border-radius:12px;padding:18px 20px;margin-bottom:16px;background:' + v.bg + ';border:1px solid ' + v.color + '33">' +
+      '<div style="font-size:22px;font-weight:800;color:' + v.color + '">' + v.label + '</div>' +
+      '<div style="font-size:14px;opacity:.8;margin-top:4px">' + v.msg + '</div>' +
+    '</div>' + rows + fix;
+  resultEl.style.display = 'block';
+  resultEl.scrollIntoView({ behavior: 'smooth', block: 'start' });
+}
+
+$('form').addEventListener('submit', async e => {
+  e.preventDefault();
+  const target = $('target').value.trim().replace(/^https?:\/\//, '').replace(/\/.*$/, '');
+  if (!target) { errEl.textContent = 'Enter an IP address or a domain.'; return; }
+  errEl.textContent = '';
+  const btn = e.target.querySelector('button');
+  btn.disabled = true; btn.textContent = 'Checking…';
+  try {
+    const r = await fetch('/api/ptr-check', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ target }) });
+    const j = await r.json();
+    if (!r.ok) { errEl.textContent = j.error || 'Check failed.'; return; }
+    render(j.result);
+  } catch {
+    errEl.textContent = 'Something went wrong. Try again in a moment.';
+  } finally {
+    btn.disabled = false; btn.textContent = 'Check PTR';
+  }
+});
+</script>
+</body>
+</html>

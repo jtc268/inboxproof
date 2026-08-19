@@ -1,0 +1,44 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Privacy — Inboxproof</title>
+<meta name="description" content="What Inboxproof stores, why, and how to delete it.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="/styles.css">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' rx='8' fill='%236366f1'/%3E%3Cpath d='M8 16h13M15 10l6 6-6 6' stroke='white' stroke-width='3' fill='none' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E">
+</head>
+<body>
+<nav class="nav">
+  <div class="container">
+    <a class="logo" href="/">
+      <span class="mark"><svg viewBox="0 0 24 24" fill="none"><path d="M4 12h11M11 7l5 5-5 5" stroke="#fff" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"/></svg></span>
+      Inboxproof
+    </a>
+    <div class="nav-links"><a href="/">Run a free audit</a></div>
+  </div>
+</nav>
+
+<div class="container" style="max-width:760px;padding:60px 20px 80px">
+  <div class="kicker">Privacy</div>
+  <h1 style="font-size:34px;margin:10px 0 24px">What we store, and why</h1>
+  <div style="opacity:.85;line-height:1.7;font-size:15px">
+    <p><b>What we collect.</b> When you run an audit we store your domain, the email address you enter, your audit history (score, checks, timestamps), and — if you start Pro — your billing plan. Payment details are handled by Stripe; we never see or store card numbers.</p>
+    <p><b>What we do not do.</b> We do not sell or share your data, we do not send marketing emails, and we do not use your address for anything other than saving your audit history and delivering Pro monitoring alerts. Public report links (<code>/r/…</code>) contain only the audit results for a domain — no email addresses.</p>
+    <p><b>Retention.</b> Your data stays until you ask us to remove it. You can delete everything tied to your email address at any time:</p>
+    <p style="margin:18px 0"><code style="opacity:.8">POST /api/delete  {"email": "you@yourdomain.com"}</code></p>
+    <p>or by emailing the support address shown on the site. Deletion removes your lead record, audit history, and monitoring data. Stripe keeps payment records as required for billing and tax purposes.</p>
+    <p><b>Questions.</b> Email the support address on the site. We answer.</p>
+  </div>
+</div>
+
+<footer>
+  <div class="container">
+    <span>© 2026 Inboxproof, Inc.</span>
+    <span><a href="/">Home</a> · <a href="/#pricing">Pricing</a></span>
+  </div>
+</footer>
+</body>
+</html>

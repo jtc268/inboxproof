@@ -1,0 +1,176 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Free Email Warm-up Calculator — Cold Email Ramp Plan</title>
+<meta name="description" content="Build a day-by-day email warm-up plan. Set your target daily volume and we generate a safe ramp schedule so a new sending domain reaches volume without triggering spam filters. Free, no signup.">
+<meta property="og:title" content="Free Email Warm-up Calculator — Inboxproof">
+<meta property="og:description" content="Generate a safe, day-by-day cold email warm-up ramp. Free, no signup.">
+<meta property="og:type" content="website">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="/styles.css">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' rx='8' fill='%236366f1'/%3E%3Cpath d='M8 16h13M15 10l6 6-6 6' stroke='white' stroke-width='3' fill='none' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E">
+<script type="application/ld+json">
+{"@context":"https://schema.org","@type":"WebApplication","name":"Inboxproof Email Warm-up Calculator","applicationCategory":"Utilities","operatingSystem":"Web","description":"Generates a day-by-day cold email warm-up ramp schedule from your target daily volume, start volume and ramp length.","offers":{"@type":"Offer","price":"0","priceCurrency":"USD"}}
+</script>
+<script type="application/ld+json">
+{"@context":"https://schema.org","@type":"FAQPage","mainEntity":[
+  {"@type":"Question","name":"What is email warm-up?","acceptedAnswer":{"@type":"Answer","text":"Warm-up is the process of slowly increasing how many emails a domain or mailbox sends each day, over two to six weeks, so receivers like Gmail and Microsoft build trust in you before you hit full volume. It tells inboxes you are a real, engaged sender rather than a sudden burst of bulk mail."}},
+  {"@type":"Question","name":"How long should I warm up a new domain?","acceptedAnswer":{"@type":"Answer","text":"A brand-new domain should ramp over 30 to 45 days. A domain with a clean sending history can ramp in 14 to 21 days. The calculator lets you set the ramp length; for a new secondary domain, use the longer end."}},
+  {"@type":"Question","name":"How many emails per day should I start with?","acceptedAnswer":{"@type":"Answer","text":"Start at 20 to 30 cold emails per day per mailbox. The calculator uses your start volume and grows it on a smooth curve until it reaches your target on the final day of the ramp."}},
+  {"@type":"Question","name":"What should I watch while warming up?","acceptedAnswer":{"@type":"Answer","text":"Keep bounce rate under 0.5%, keep spam complaints near zero, and make sure open and reply rates stay healthy. If bounce or complaint rates climb, pause the ramp for a few days and clean your list before continuing."}},
+  {"@type":"Question","name":"Is this warm-up calculator free?","acceptedAnswer":{"@type":"Answer","text":"Yes. The ramp plan is free and does not require a signup. It runs entirely in your browser, so your numbers are never sent anywhere."}}
+]}
+</script>
+</head>
+<body>
+<nav class="nav">
+  <div class="container">
+    <a class="logo" href="/">
+      <span class="mark"><svg viewBox="0 0 24 24" fill="none"><path d="M4 12h11M11 7l5 5-5 5" stroke="#fff" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"/></svg></span>
+      Inboxproof
+    </a>
+    <div class="nav-links"><a href="/">Run a free audit</a> · <a href="/blog">Guides</a></div>
+  </div>
+</nav>
+
+<div class="container" style="max-width:760px;padding:60px 20px 40px;text-align:center">
+  <div class="kicker">Free tool</div>
+  <h1 style="font-size:38px;margin:10px 0 12px">Email warm-up calculator</h1>
+  <p style="opacity:.8;font-size:16px;margin-bottom:30px">Set your target daily volume and we generate a safe, day-by-day ramp so a new sending domain reaches full volume without tripping spam filters. Runs in your browser. No signup.</p>
+
+  <div class="card" style="text-align:left;padding:22px 24px;margin-bottom:16px">
+    <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(160px,1fr));gap:14px">
+      <div>
+        <label for="target" style="display:block;font-size:13px;font-weight:600;margin-bottom:6px;opacity:.8">Target volume (emails / day)</label>
+        <input id="target" type="number" min="10" max="20000" value="100" style="width:100%;padding:11px 12px;border-radius:9px;border:1px solid #d4d4d8;font-size:15px;background:#fff">
+      </div>
+      <div>
+        <label for="start" style="display:block;font-size:13px;font-weight:600;margin-bottom:6px;opacity:.8">Start volume (emails / day)</label>
+        <input id="start" type="number" min="5" max="1000" value="20" style="width:100%;padding:11px 12px;border-radius:9px;border:1px solid #d4d4d8;font-size:15px;background:#fff">
+      </div>
+      <div>
+        <label for="days" style="display:block;font-size:13px;font-weight:600;margin-bottom:6px;opacity:.8">Ramp length (days)</label>
+        <input id="days" type="number" min="7" max="90" value="30" style="width:100%;padding:11px 12px;border-radius:9px;border:1px solid #d4d4d8;font-size:15px;background:#fff">
+      </div>
+    </div>
+    <div style="display:flex;align-items:center;gap:12px;margin-top:16px;flex-wrap:wrap">
+      <button id="calc" class="btn btn-primary btn-lg" type="button">Build my ramp</button>
+      <span id="hint" style="font-size:13px;opacity:.6">New secondary domain? Use 30–45 days. Established domain? 14–21 days is fine.</span>
+    </div>
+    <p id="err" style="color:#dc2626;font-size:14px;min-height:20px;margin-top:10px"></p>
+  </div>
+
+  <div id="result" style="display:none;text-align:left"></div>
+</div>
+
+<div class="container" style="max-width:760px;padding:0 20px 40px">
+  <div class="card">
+    <h3 style="margin-top:0">Warm-up checklist</h3>
+    <ul style="opacity:.85;line-height:1.7;font-size:14px;padding-left:20px;margin:8px 0 0">
+      <li><strong>Send from a secondary domain</strong> (e.g. getyourbrand.com), never your brand domain.</li>
+      <li><strong>Grow slowly.</strong> A smooth ramp over weeks beats a sudden jump. The schedule below does the math.</li>
+      <li><strong>Keep bounce under 0.5%</strong> and complaints near zero. If they climb, pause and clean your list.</li>
+      <li><strong>One recipient per email,</strong> a real reply-to, plain text. No heavy HTML or images early on.</li>
+      <li><strong>Check your domain first.</strong> A clean SPF/DKIM/DMARC and IP reputation is the foundation the ramp builds on.</li>
+    </ul>
+  </div>
+</div>
+
+<div class="container" style="max-width:760px;padding:0 20px 80px">
+  <div class="card" style="text-align:center">
+    <h3 style="margin-top:0">Check the domain before you ramp</h3>
+    <p style="opacity:.8">A warm-up only works if the domain is ready. Run the free cold email readiness check first — it scores SPF, DKIM, DMARC, IP reputation, TLS and routing.</p>
+    <a class="btn btn-primary btn-lg" href="/cold-email-checker">Check my domain</a>
+    <p style="opacity:.6;font-size:13px;margin-bottom:0">More tools: <a href="/dmarc-checker">DMARC checker</a> · <a href="/spf-checker">SPF checker</a> · <a href="/dkim-checker">DKIM checker</a> · <a href="/blocklist-checker">IP blocklist checker</a> · <a href="/tls-checker">TLS/STARTTLS checker</a> · <a href="/blog/cold-email-deliverability">Cold email deliverability guide</a></p>
+  </div>
+</div>
+
+<footer>
+  <div class="container">
+    <span>© 2026 Inboxproof, Inc.</span>
+    <span><a href="/">Home</a> · <a href="/blog">Guides</a> · <a href="/privacy">Privacy</a></span>
+  </div>
+</footer>
+
+<script>
+const $ = id => document.getElementById(id);
+const errEl = $('err');
+const resultEl = $('result');
+const fmt = n => n.toLocaleString('en-US');
+
+function buildSchedule(target, start, days) {
+  // Smooth exponential ramp: start -> target over `days` days.
+  const g = Math.pow(target / start, 1 / (days - 1));
+  const rows = [];
+  let cum = 0;
+  for (let i = 1; i <= days; i++) {
+    const vol = Math.round(start * Math.pow(g, i - 1));
+    cum += vol;
+    rows.push({ day: i, vol, cum });
+  }
+  rows[days - 1].vol = target; // land exactly on target
+  // recompute cumulative so the last day is consistent
+  let c2 = 0;
+  for (let i = 0; i < rows.length; i++) { c2 += rows[i].vol; rows[i].cum = c2; }
+  // weekly summary
+  const weeks = [];
+  for (let w = 0; w < Math.ceil(days / 7); w++) {
+    const slice = rows.slice(w * 7, w * 7 + 7);
+    weeks.push({
+      n: w + 1,
+      from: slice[0].day,
+      to: slice[slice.length - 1].day,
+      total: slice.reduce((s, r) => s + r.vol, 0),
+      endVol: slice[slice.length - 1].vol
+    });
+  }
+  return { rows, weeks, total: cum };
+}
+
+function render() {
+  const target = parseInt($('target').value, 10);
+  const start = parseInt($('start').value, 10);
+  const days = parseInt($('days').value, 10);
+  errEl.textContent = '';
+  if (!target || !start || !days) { errEl.textContent = 'Fill in all three fields.'; return; }
+  if (start >= target) { errEl.textContent = 'Start volume must be lower than your target volume.'; return; }
+  if (days < 7) { errEl.textContent = 'Use at least 7 days so the ramp is gradual.'; return; }
+  if (days > 90) { errEl.textContent = 'Keep the ramp under 90 days.'; return; }
+  const { rows, weeks, total } = buildSchedule(target, start, days);
+  const weekRows = weeks.map(w =>
+    '<tr><td style="padding:8px 10px;border-top:1px solid #ececf0">Week ' + w.n + '</td><td style="padding:8px 10px;border-top:1px solid #ececf0">Day ' + w.from + '–' + w.to + '</td><td style="padding:8px 10px;border-top:1px solid #ececf0;text-align:right">' + fmt(w.endVol) + ' / day</td><td style="padding:8px 10px;border-top:1px solid #ececf0;text-align:right">' + fmt(w.total) + '</td></tr>'
+  ).join('');
+  const dayRows = rows.map(r =>
+    '<tr><td style="padding:5px 10px;border-top:1px solid #f4f4f5">' + r.day + '</td><td style="padding:5px 10px;border-top:1px solid #f4f4f5;text-align:right">' + fmt(r.vol) + '</td><td style="padding:5px 10px;border-top:1px solid #f4f4f5;text-align:right;opacity:.7">' + fmt(r.cum) + '</td></tr>'
+  ).join('');
+  resultEl.innerHTML =
+    '<div class="card" style="padding:20px 22px;margin-bottom:16px">' +
+      '<div style="display:flex;gap:22px;flex-wrap:wrap;margin-bottom:14px">' +
+        '<div><div style="font-size:12px;letter-spacing:.06em;text-transform:uppercase;opacity:.6">Ramp</div><div style="font-size:18px;font-weight:700">' + fmt(start) + ' → ' + fmt(target) + ' / day</div></div>' +
+        '<div><div style="font-size:12px;letter-spacing:.06em;text-transform:uppercase;opacity:.6">Length</div><div style="font-size:18px;font-weight:700">' + days + ' days</div></div>' +
+        '<div><div style="font-size:12px;letter-spacing:.06em;text-transform:uppercase;opacity:.6">Total sends</div><div style="font-size:18px;font-weight:700">' + fmt(total) + '</div></div>' +
+      '</div>' +
+      '<div style="font-size:13px;font-weight:600;margin:6px 0 4px">Weekly summary</div>' +
+      '<table style="width:100%;border-collapse:collapse;font-size:14px"><thead><tr style="text-align:left;color:var(--dim);font-size:12px"><th style="padding:6px 10px">Week</th><th style="padding:6px 10px">Days</th><th style="padding:6px 10px;text-align:right">Ends at</th><th style="padding:6px 10px;text-align:right">Sends that week</th></tr></thead><tbody>' + weekRows + '</tbody></table>' +
+    '</div>' +
+    '<div class="card" style="padding:20px 22px">' +
+      '<div style="font-size:13px;font-weight:600;margin:6px 0 4px">Day-by-day schedule</div>' +
+      '<div style="max-height:320px;overflow:auto;border:1px solid #f4f4f5;border-radius:8px">' +
+      '<table style="width:100%;border-collapse:collapse;font-size:13.5px"><thead><tr style="text-align:left;color:var(--dim);font-size:12px;position:sticky;top:0;background:#fff"><th style="padding:6px 10px">Day</th><th style="padding:6px 10px;text-align:right">Sends / day</th><th style="padding:6px 10px;text-align:right">Cumulative</th></tr></thead><tbody>' + dayRows + '</tbody></table></div>' +
+      '<p style="font-size:13px;opacity:.65;margin:12px 0 0">This is a starting plan. Adjust based on bounce rate, complaints and reply quality — if any of those worsen, hold the current volume for a few days before climbing.</p>' +
+    '</div>';
+  resultEl.style.display = 'block';
+  resultEl.scrollIntoView({ behavior: 'smooth', block: 'start' });
+}
+
+$('calc').addEventListener('click', render);
+// live recompute on input
+['target', 'start', 'days'].forEach(id => $(id).addEventListener('input', () => { if (resultEl.style.display === 'block') render(); }));
+// render once on load with defaults
+render();
+</script>
+</body>
+</html>

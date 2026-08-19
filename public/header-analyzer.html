@@ -1,0 +1,175 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Free Email Header Analyzer — Check SPF, DKIM and DMARC Results on Any Message</title>
+<meta name="description" content="Paste any email's raw headers and see in plain English whether SPF, DKIM and DMARC passed, who actually sent it, and whether the message looks spoofed. Free, runs in your browser, nothing is uploaded.">
+<meta property="og:title" content="Free Email Header Analyzer — Inboxproof">
+<meta property="og:description" content="Paste raw email headers and get a plain-English SPF/DKIM/DMARC verdict. Free, private, runs in your browser.">
+<meta property="og:type" content="website">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="/styles.css">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' rx='8' fill='%236366f1'/%3E%3Cpath d='M8 16h13M15 10l6 6-6 6' stroke='white' stroke-width='3' fill='none' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E">
+<script type="application/ld+json">
+{"@context":"https://schema.org","@type":"WebApplication","name":"Email Header Analyzer","applicationCategory":"DeveloperApplication","operatingSystem":"Any (browser)","description":"Pastes an email's raw headers and reports, in plain English, whether SPF, DKIM and DMARC passed, which domain each check authenticated, and whether the message shows signs of spoofing.","offers":{"@type":"Offer","price":"0","priceCurrency":"USD"},"publisher":{"@type":"Organization","name":"Inboxproof"}}
+</script>
+<script type="application/ld+json">
+{"@context":"https://schema.org","@type":"FAQPage","mainEntity":[
+ {"@type":"Question","name":"How do I get the raw headers of an email?","acceptedAnswer":{"@type":"Answer","text":"In Gmail, open the message, click the three dots, then 'Show original'. The header block at the top is what you paste here. In Outlook, open the message, File > Properties > Internet headers. Most other clients have a 'Show headers' or 'View source' option."}},
+ {"@type":"Question","name":"Is my email data uploaded anywhere?","acceptedAnswer":{"@type":"Answer","text":"No. The analysis runs entirely in your browser. Nothing you paste is sent to any server."}},
+ {"@type":"Question","name":"What does it mean if SPF passes but DMARC fails?","acceptedAnswer":{"@type":"Answer","text":"It usually means the message was sent from an IP your SPF allows, but the sending domain does not match the domain in the From header, so DMARC alignment fails. The sender may be legitimate (a third-party tool sending on your behalf without DKIM), or it may be spoofing you."}}
+]}
+</script>
+</head>
+<body>
+<nav class="nav">
+  <div class="container">
+    <a class="logo" href="/">
+      <span class="mark"><svg viewBox="0 0 24 24" fill="none"><path d="M4 12h11M11 7l5 5-5 5" stroke="#fff" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"/></svg></span>
+      Inboxproof
+    </a>
+    <div class="nav-links"><a href="/">Run a free audit</a> · <a href="/blog">Guides</a></div>
+  </div>
+</nav>
+
+<header class="hero">
+  <div class="container">
+    <div class="eyebrow"><span class="dot"></span> Free tool · runs in your browser</div>
+    <h1>Email Header Analyzer</h1>
+    <p class="sub">Paste the raw headers of any email and get a plain-English verdict: did SPF, DKIM and DMARC pass, which domain did they authenticate, and does this message look spoofed?</p>
+  </div>
+</header>
+
+<div class="container" style="max-width:860px;padding-bottom:80px">
+  <div class="card" style="padding:20px;margin-bottom:24px">
+    <label for="hdr" style="font-weight:600;font-size:14px;display:block;margin-bottom:8px">Raw headers</label>
+    <textarea id="hdr" rows="10" style="width:100%;box-sizing:border-box;background:rgba(255,255,255,.04);border:1px solid rgba(255,255,255,.12);border-radius:10px;color:inherit;font-family:ui-monospace,Menlo,monospace;font-size:12.5px;padding:12px;resize:vertical" placeholder="Received: from mail.example.com (mail.example.com [198.51.100.7])&#10;Authentication-Results: mx.google.com; spf=pass smtp.mailfrom=example.com; dkim=pass header.d=example.com; dmarc=pass"></textarea>
+    <div style="display:flex;gap:10px;margin-top:12px;flex-wrap:wrap;align-items:center">
+      <button class="btn btn-primary" id="go">Analyze headers</button>
+      <span id="hint" style="opacity:.55;font-size:13px">Gmail: open message → ⋮ → Show original → copy everything. Nothing you paste leaves your browser.</span>
+    </div>
+  </div>
+
+  <div id="out" style="display:none">
+    <div class="card" style="padding:22px;margin-bottom:20px;display:flex;gap:16px;align-items:center;flex-wrap:wrap">
+      <span id="dot" style="width:14px;height:14px;border-radius:50%;background:#16a34a;display:inline-block"></span>
+      <div style="flex:1;min-width:240px">
+        <div id="vtitle" style="font-size:20px;font-weight:700"></div>
+        <div id="vsub" style="opacity:.7;font-size:14px;margin-top:2px"></div>
+      </div>
+    </div>
+    <div id="grid"></div>
+  </div>
+</div>
+
+<footer>
+  <div class="container">
+    <span>© 2026 Inboxproof, Inc.</span>
+    <span><a href="/">Home</a> · <a href="/blog">Guides</a> · <a href="/privacy">Privacy</a></span>
+  </div>
+</footer>
+
+<script>
+const $ = s => document.querySelector(s);
+const esc = s => String(s ?? '').replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+const STATUS = {
+  pass:  ['#16a34a','Pass'],
+  fail:  ['#dc2626','Fail'],
+  soft:  ['#d97706','Softfail'],
+  none:  ['#d97706','Not present'],
+  error: ['#d97706','Error'],
+  unknown: ['#6b7280','Not found'],
+};
+function findResult(text, name) {
+  // Authentication-Results style: spf=pass smtp.mailfrom=x / dkim=pass header.d=x / dmarc=pass action=none
+  let m = text.match(new RegExp(name + '=(pass|fail|softfail|permerror|temperror|neutral|none)([^;\\n]*)', 'i'));
+  if (m) {
+    let st = m[1].toLowerCase();
+    let key = st === 'pass' ? 'pass' : st === 'fail' ? 'fail' : st === 'softfail' ? 'soft' : st === 'none' ? 'none' : 'error';
+    let extra = m[2] || '';
+    let dm = extra.match(/(?:header\.d|smtp\.mailfrom|d|arc\.d|asp\.d)=([a-z0-9.-]+)/i);
+    let action = (extra.match(/action=(none|quarantine|reject)/i) || [])[1];
+    return { status: key, domain: dm ? dm[1] : null, action: action || null, raw: (name + '=' + st + extra.slice(0, 80)) };
+  }
+  // Legacy Received-SPF style
+  if (name === 'spf') {
+    m = text.match(/Received-SPF:\s*(Pass|Fail|SoftFail|Neutral|PermError|TempError)/i);
+    if (m) {
+      let st = m[1].toLowerCase();
+      let key = st === 'pass' ? 'pass' : (st === 'fail' || st === 'permerror') ? 'fail' : 'soft';
+      let dm = (text.match(/Received-SPF:[^\n]*\bidentity=([a-z0-9.-]+)/i) || [])[1] || null;
+      return { status: key, domain: dm, raw: 'Received-SPF: ' + m[1] };
+    }
+  }
+  return { status: 'unknown', domain: null, raw: null };
+}
+
+function analyze(text) {
+  const from = (text.match(/^From:\s*(.+)$/im) || [])[1] || '';
+  const fromDomain = (from.match(/@([a-z0-9.-]+)\s*$/i) || [])[1] || null;
+  const spf = findResult(text, 'spf');
+  const dkim = findResult(text, 'dkim');
+  const dmarc = findResult(text, 'dmarc');
+  const dkimSig = /DKIM-Signature:/i.test(text);
+  const hops = (text.match(/^Received: [^\n]+/gim) || []).slice(0, 8);
+  const aligned = (dkim.status === 'pass' && fromDomain && dkim.domain && (dkim.domain === fromDomain || fromDomain.endsWith('.' + dkim.domain)))
+    || (spf.status === 'pass' && fromDomain && spf.domain && (spf.domain === fromDomain || fromDomain.endsWith('.' + spf.domain)));
+  const anyAuth = spf.status === 'pass' || dkim.status === 'pass' || dmarc.status === 'pass';
+  const verdict =
+    dmarc.status === 'pass' ? { c: '#16a34a', t: 'Authenticated: DMARC passed', s: 'The receiving server verified this message against ' + (dmarc.domain || 'the sender\u2019s') + ' DMARC policy. Low spoofing risk.' }
+    : dmarc.status === 'fail' ? { c: '#dc2626', t: 'DMARC failed: treat with suspicion', s: 'The message claims to be from ' + (fromDomain || 'this domain') + ' but failed DMARC. It may be spoofed, or the sender is misconfigured. Do not trust links or requests in it.' }
+    : !anyAuth ? { c: '#d97706', t: 'No authentication results found', s: 'No SPF, DKIM or DMARC results in these headers. The receiving server may not have checked, or the headers are incomplete. Paste the full header block, including Authentication-Results.' }
+    : aligned ? { c: '#16a34a', t: 'Authenticated (SPF or DKIM aligned)', s: 'SPF or DKIM passed and the authenticated domain matches the From header. DMARC was not checked by the receiver, but the message is likely legitimate.' }
+    : { c: '#d97706', t: 'Partial: authentication present but not aligned', s: 'A check passed, but the authenticated domain does not match the From header (' + (fromDomain || 'unknown') + '). This is the classic spoofing pattern \u2014 or a misconfigured third-party sender.' };
+  return { from, fromDomain, spf, dkim, dmarc, dkimSig, hops, aligned, verdict };
+}
+
+function row(label, r, note) {
+  const [c, mark] = STATUS[r.status] || STATUS.unknown;
+  const bits = [
+    '<span style="width:9px;height:9px;border-radius:50%;background:' + c + ';display:inline-block"></span>',
+    '<strong>' + esc(label) + '</strong>',
+    '<span style="color:' + c + ';font-weight:600;font-size:13px">' + esc(mark) + '</span>',
+  ];
+  if (r.domain) bits.push('<code style="font-family:ui-monospace,Menlo,monospace;font-size:12px;background:#f4f4f5;padding:1px 6px;border-radius:4px">' + esc(r.domain) + '</code>');
+  if (r.action) bits.push('<span style="opacity:.7;font-size:13px">action=' + esc(r.action) + '</span>');
+  if (note) bits.push('<span style="opacity:.7;font-size:13px">' + esc(note) + '</span>');
+  return '<div class="card" style="margin-bottom:10px;padding:12px 14px;display:flex;align-items:center;gap:10px;flex-wrap:wrap">' + bits.join('') + '</div>';
+}
+
+$('#go').addEventListener('click', () => {
+  const text = $('#hdr').value;
+  if (text.trim().length < 40) { $('#hint').textContent = 'Paste more of the header block first (at least the Received / Authentication-Results lines).'; return; }
+  const r = analyze(text);
+  $('#out').style.display = 'block';
+  $('#dot').style.background = r.verdict.c;
+  $('#vtitle').textContent = r.verdict.t;
+  $('#vtitle').style.color = r.verdict.c;
+  $('#vsub').textContent = r.verdict.s;
+  let html = '';
+  html += '<div style="opacity:.65;font-size:13px;font-weight:600;margin:4px 0 8px">Authentication results</div>';
+  html += row('SPF', r.spf, r.spf.status === 'unknown' ? 'no SPF result in these headers' : '');
+  html += row('DKIM', r.dkim, !r.dkimSig && r.dkim.status === 'unknown' ? 'no DKIM-Signature header at all' : '');
+  html += row('DMARC', r.dmarc, '');
+  if (r.fromDomain) {
+    html += '<div class="card" style="margin:14px 0 10px;padding:12px 14px;font-size:14px">From header domain: <code style="font-family:ui-monospace,Menlo,monospace;font-size:12px;background:#f4f4f5;padding:1px 6px;border-radius:4px">' + esc(r.fromDomain) + '</code>' +
+      (r.aligned ? ' <span style="color:#16a34a;font-weight:600;font-size:13px">aligned with an authenticated domain</span>' : ' <span style="color:#d97706;font-weight:600;font-size:13px">not aligned with any authenticated domain</span>') + '</div>';
+  }
+  if (r.hops.length) {
+    html += '<div style="opacity:.65;font-size:13px;font-weight:600;margin:14px 0 8px">Route (first ' + r.hops.length + ' hops, oldest first)</div>';
+    html += '<div class="card" style="padding:12px 14px;font-family:ui-monospace,Menlo,monospace;font-size:12px;line-height:1.9;white-space:pre-wrap">' + esc(r.hops.join('\n')) + '</div>';
+  }
+  html += '<div class="card" style="margin-top:20px;padding:20px;text-align:center;border-color:rgba(99,102,241,.4)">';
+  html += '<div style="font-weight:700;font-size:16px;margin-bottom:6px">Send mail from your own domain instead?</div>';
+  html += '<div style="opacity:.75;font-size:14px;margin-bottom:14px">The free audit checks your SPF, DKIM, DMARC and MX records and shows the exact fix for anything missing.</div>';
+  html += '<a class="btn btn-primary" href="/#audit">Run the free audit</a>';
+  html += '</div>';
+  html += '<p style="opacity:.6;font-size:13px;margin-top:20px">Related: <a href="/blog/how-to-read-email-headers">How to read email headers</a> · <a href="/blog/spf-dkim-dmarc">SPF vs DKIM vs DMARC</a> · <a href="/blog/spoofing">Is your domain being spoofed?</a> · <a href="/dmarc-checker">DMARC checker</a> · <a href="/dmarc-report-parser">DMARC report parser</a> · <a href="/mx-checker">MX checker</a></p>';
+  $('#grid').innerHTML = html;
+  $('#out').scrollIntoView({ behavior: 'smooth', block: 'start' });
+});
+</script>
+</body>
+</html>

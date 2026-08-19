@@ -1,0 +1,109 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>How to monitor DMARC reports: a practical guide | InboxProof</title>
+<meta name="description" content="What DMARC aggregate and forensic reports are, how to read them, and how to set up monitoring so you catch authentication failures before they hurt your deliverability.">
+<link rel="canonical" href="https://inboxproof.email/blog/dmarc-report-monitoring">
+<meta property="og:title" content="How to monitor DMARC reports">
+<meta property="og:description" content="What DMARC reports are, how to read them, and how to monitor them.">
+<meta property="og:type" content="article">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="/styles.css">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' rx='8' fill='%236366f1'/%3E%3Cpath d='M8 16h13M15 10l6 6-6 6' stroke='white' stroke-width='3' fill='none' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E">
+<script type="application/ld+json">
+{"@context":"https://schema.org","@type":"Article","headline":"How to monitor DMARC reports","description":"What DMARC reports are, how to read them, and how to monitor them.","author":{"@type":"Organization","name":"InboxProof"},"publisher":{"@type":"Organization","name":"InboxProof"}}
+</script>
+</head>
+<body>
+<nav class="nav">
+  <div class="container">
+    <a class="logo" href="/">
+      <span class="mark"><svg viewBox="0 0 24 24" fill="none"><path d="M4 12h11M11 7l5 5-5 5" stroke="#fff" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"/></svg></span>
+      Inboxproof
+    </a>
+    <div class="nav-links"><a href="/">Run a free audit</a></div>
+  </div>
+</nav>
+
+<div class="container" style="max-width:760px;padding:60px 20px 80px">
+  <div class="kicker">Guide</div>
+  <h1 style="font-size:34px;margin:10px 0 12px">How to monitor DMARC reports</h1>
+  <p style="opacity:.8;font-size:16px;margin-bottom:36px">DMARC reports are the only way to know who is sending email on behalf of your domain and whether it is authenticating correctly. Here is how to read them and set up monitoring.</p>
+
+  <div class="card" style="margin-bottom:28px;background:#eef2ff;border-color:#c7d2fe">
+    <h3 style="margin-top:0">Get your DMARC setup checked in seconds</h3>
+    <p style="opacity:.8;margin-bottom:14px">The <a href="/dmarc-checker">free InboxProof audit</a> runs a 7-point check (MX, SPF, DKIM, DMARC, TLS, PTR, and IP reputation) and returns a 0-100 score with a plain-English fix list. No signup.</p>
+    <a class="btn btn-primary" href="/dmarc-checker">Run the free check</a>
+  </div>
+
+  <h2 style="font-size:24px;margin:36px 0 12px">What DMARC reports are</h2>
+  <p>When you publish a DMARC record with a <code>rua</code> (aggregate) or <code>ruf</code> (forensic) address, mailbox providers send you XML reports about email sent to your domain. These reports tell you:</p>
+  <ul style="font-size:16px;line-height:1.8">
+    <li>Who is sending email on behalf of your domain</li>
+    <li>Whether each message passed SPF, DKIM, or both</li>
+    <li>Whether the domains aligned with your "From" address</li>
+    <li>How many messages were sent and from which IPs</li>
+  </ul>
+
+  <h2 style="font-size:24px;margin:36px 0 12px">Aggregate vs forensic reports</h2>
+  <div class="card" style="margin-bottom:16px">
+    <h3 style="margin-top:0">Aggregate (rua)</h3>
+    <p style="margin-bottom:0">Daily XML files from each provider (Gmail, Microsoft, Yahoo, etc.) summarizing all messages to your domain. This is the primary report you should monitor. It is safe to collect and does not contain personal data.</p>
+  </div>
+  <div class="card" style="margin-bottom:16px">
+    <h3 style="margin-top:0">Forensic (ruf)</h3>
+    <p style="margin-bottom:0">Per-message reports that include the actual email content. These are useful for debugging specific failures but contain sensitive data. Most providers no longer send them by default, and you should only use them if you need to investigate a specific issue.</p>
+  </div>
+
+  <h2 style="font-size:24px;margin:36px 0 12px">How to read a DMARC report</h2>
+  <p>Each aggregate report is an XML file with a <code>record</code> element for each message. The key fields are:</p>
+  <ul style="font-size:16px;line-height:1.8">
+    <li><b>spf.result</b> - pass, fail, or softfail</li>
+    <li><b>dkim.result</b> - pass, fail, or none</li>
+    <li><b>auth_results</b> - the raw SPF and DKIM results</li>
+    <li><b>source.ip</b> - the IP that sent the message</li>
+    <li><b>from</b> - the "From" domain</li>
+    <li><b>count</b> - how many messages this record represents</li>
+  </ul>
+  <p>A message is "aligned" if the SPF or DKIM domain matches the "From" domain. If neither aligns, the message fails DMARC.</p>
+
+  <h2 style="font-size:24px;margin:36px 0 12px">How to set up monitoring</h2>
+  <ol style="font-size:16px;line-height:1.8">
+    <li><b>Publish a DMARC record</b> with <code>rua=reports@yourdomain.com</code> (or a third-party service).</li>
+    <li><b>Collect the reports</b> - Gmail sends daily, Microsoft sends hourly, Yahoo sends daily.</li>
+    <li><b>Parse the reports</b> - extract the key fields (spf.result, dkim.result, source.ip, from, count).</li>
+    <li><b>Aggregate the data</b> - group by sender IP and "From" domain to see who is sending on your behalf.</li>
+    <li><b>Alert on failures</b> - if a new IP starts sending unauthenticated email, you want to know immediately.</li>
+  </ol>
+
+  <h2 style="font-size:24px;margin:36px 0 12px">What to look for</h2>
+  <ul style="font-size:16px;line-height:1.8">
+    <li><b>New senders</b> - an IP you have not seen before sending email on your domain.</li>
+    <li><b>Authentication failures</b> - messages that fail SPF or DKIM.</li>
+    <li><b>Volume spikes</b> - a sudden increase in email volume from a known sender.</li>
+    <li><b>Alignment issues</b> - messages where the "From" domain does not match the SPF/DKIM domain.</li>
+  </ul>
+
+  <h2 style="font-size:24px;margin:36px 0 12px">Automate it</h2>
+  <p>Manually reading DMARC reports is not sustainable. The InboxProof Pro plan collects and parses your DMARC reports automatically, alerts you when a new sender appears or when authentication fails, and shows you a dashboard of your sending infrastructure. This is the difference between catching a spoofing attempt in hours versus weeks.</p>
+
+  <div class="cta" style="background:#0f172a;color:#fff;border-radius:12px;padding:32px;text-align:center;margin:40px 0">
+    <h2 style="color:#fff;margin-bottom:8px">Start monitoring your DMARC reports</h2>
+    <p style="opacity:.8;margin-bottom:20px">Run the free audit to see where you stand, then upgrade to Pro for automated monitoring.</p>
+    <a class="btn btn-primary btn-lg" href="/dmarc-checker">Run a free audit</a>
+  </div>
+
+  <p style="opacity:.6;font-size:13px;margin-top:28px">Related: <a href="/blog/dmarc-policies">p=none vs quarantine vs reject</a> · <a href="/blog/dmarc-record">How to set up a DMARC record</a> · <a href="/blog/spoofing">Email spoofing</a> · <a href="/blog/deliverability-score">What is a good deliverability score?</a> · <a href="/dmarc-report-parser">Parse a report in your browser</a></p>
+</div>
+
+<footer>
+  <div class="container">
+    <span>© 2026 Inboxproof, Inc.</span>
+    <span><a href="/">Home</a> · <a href="/privacy">Privacy</a></span>
+  </div>
+</footer>
+</body>
+</html>

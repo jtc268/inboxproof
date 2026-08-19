@@ -1,0 +1,178 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Inboxproof — Dashboard</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="/styles.css">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' rx='8' fill='%236366f1'/%3E%3Cpath d='M8 16h13M15 10l6 6-6 6' stroke='white' stroke-width='3' fill='none' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E">
+</head>
+<body>
+<nav class="nav">
+  <div class="container">
+    <a class="logo" href="/">
+      <span class="mark"><svg viewBox="0 0 24 24" fill="none"><path d="M4 12h11M11 7l5 5-5 5" stroke="#fff" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"/></svg></span>
+      Inboxproof
+    </a>
+    <div class="nav-links">
+      <a href="/#how">How it works</a>
+      <a href="/#pricing">Pricing</a>
+      <a href="/pro">Dashboard</a>
+    </div>
+    <a class="btn btn-primary btn-sm" href="/#audit">Run a free audit</a>
+  </div>
+</nav>
+
+<div class="container dash">
+  <div class="dash-head">
+    <div>
+      <h1 id="title">Your deliverability history</h1>
+      <div id="sub" style="color:var(--muted);font-size:14.5px;margin-top:4px">Loading…</div>
+    </div>
+    <span class="pill free" id="plan">FREE</span>
+  </div>
+  <div id="status" style="display:none;margin-bottom:26px"></div>
+  <div class="hist" id="hist"></div>
+  <div style="margin-top:34px;text-align:center">
+    <a class="btn btn-ghost" href="/#audit">+ Audit another domain</a>
+  </div>
+</div>
+
+<script>
+const email = new URLSearchParams(location.search).get('email') || '';
+const $ = s => document.querySelector(s);
+function color(s){ return s>=90 ? '#34d399' : s>=70 ? '#a3e635' : s>=50 ? '#fbbf24' : '#f87171'; }
+function renderStatus(lead, history){
+  const box = $('#status');
+  if(!history.length){ box.style.display='none'; return; }
+  const last = history[history.length-1];
+  const isPro = lead.pro;
+  const since = lead.proSince ? new Date(lead.proSince).toLocaleDateString() : '';
+  const delta = history.length>1 ? (last.score - history[history.length-2].score) : 0;
+  const deltaTxt = delta>0 ? '<span style="color:#34d399">▲ +'+delta+' since last check</span>' : delta<0 ? '<span style="color:#f87171">▼ '+delta+' since last check</span>' : '<span style="opacity:.6">unchanged since last check</span>';
+  // trend: last up-to-14 scores as bars
+  const pts = history.slice(-14);
+  const bars = pts.map(h=>{
+    const hpx = 8 + Math.round(h.score/100*44);
+    return '<div title="'+new Date(h.at).toLocaleString()+' · '+h.score+'" style="width:14px;height:'+hpx+'px;border-radius:3px;background:'+color(h.score)+'"></div>';
+  }).join('');
+  box.style.display='block';
+  box.innerHTML =
+    '<div style="display:flex;gap:14px;flex-wrap:wrap;margin-bottom:14px">'+
+      '<div style="flex:1;min-width:200px;background:var(--panel);border:1px solid var(--line);border-radius:12px;padding:16px 20px">'+
+        '<div style="font-size:12px;letter-spacing:.06em;text-transform:uppercase;color:var(--dim);margin-bottom:6px">Monitoring</div>'+
+        '<div style="font-size:16px;font-weight:700">'+(isPro ? ('<span style="color:#34d399">● Active</span> · daily checks · since '+since) : '<span style="color:#fbbf24">○ Not active</span> — Pro adds daily monitoring & alerts')+'</div>'+
+      '</div>'+
+      '<div style="flex:1;min-width:200px;background:var(--panel);border:1px solid var(--line);border-radius:12px;padding:16px 20px">'+
+        '<div style="font-size:12px;letter-spacing:.06em;text-transform:uppercase;color:var(--dim);margin-bottom:6px">Last check · '+new Date(last.at).toLocaleString()+'</div>'+
+        '<div style="font-size:16px;font-weight:700">'+last.domain+' → <span style="color:'+color(last.score)+'">'+last.score+'/100</span> '+deltaTxt+'</div>'+
+      '</div>'+
+      '<div style="flex:1;min-width:200px;background:var(--panel);border:1px solid var(--line);border-radius:12px;padding:16px 20px">'+
+        '<div style="font-size:12px;letter-spacing:.06em;text-transform:uppercase;color:var(--dim);margin-bottom:6px">Billing</div>'+
+        '<div style="font-size:16px;font-weight:700;margin-bottom:10px">'+(isPro ? ('<span style="color:#34d399">'+(lead.plan==='agency'?'Agency':'Pro')+'</span> · cancel anytime') : 'Not active')+'</div>'+
+        (isPro ? '<button id="managebilling" class="btn btn-ghost btn-sm" style="padding:8px 14px">Manage billing</button>' : '')+
+      '</div>'+
+    '</div>'+
+    '<div style="background:var(--panel);border:1px solid var(--line);border-radius:12px;padding:16px 20px">'+
+      '<div style="font-size:12px;letter-spacing:.06em;text-transform:uppercase;color:var(--dim);margin-bottom:10px">Score trend</div>'+
+      '<div style="display:flex;align-items:flex-end;gap:5px;height:52px">'+bars+'</div>'+
+    '</div>';
+  if(isPro && lead.apiKey){
+    box.innerHTML +=
+      '<div style="background:var(--panel);border:1px solid var(--line);border-radius:12px;padding:16px 20px;margin-top:14px">'+
+        '<div style="font-size:12px;letter-spacing:.06em;text-transform:uppercase;color:var(--dim);margin-bottom:10px">API access · 100 audits/day</div>'+
+        '<div style="display:flex;gap:8px;flex-wrap:wrap;align-items:center;margin-bottom:10px">'+
+          '<code id="apikey" style="background:#0a0e16;border:1px solid var(--line);border-radius:8px;padding:8px 12px;font-size:13px;color:#38bdf8">'+lead.apiKey+'</code>'+
+          '<button id="copykey" class="btn btn-ghost btn-sm" style="padding:8px 14px">Copy key</button>'+
+        '</div>'+
+        '<div style="font-size:13px;color:var(--muted);margin-bottom:8px">Run a full audit from your code or a cron job:</div>'+
+        '<pre style="background:#0a0e16;border:1px solid var(--line);border-radius:8px;padding:12px;font-size:12.5px;overflow:auto;margin:0">'+
+          'curl -H "Authorization: Bearer '+lead.apiKey+'" \\\n'+
+          '  "https://inboxproof.email/api/v1/audit?domain=yourdomain.com"</pre>'+
+      '</div>';
+    const c = $('#copykey');
+    if(c) c.onclick = async () => { try { await navigator.clipboard.writeText(lead.apiKey); c.textContent = 'Copied ✓'; setTimeout(()=>c.textContent='Copy key',1500); } catch { c.textContent = 'Select & copy'; } };
+  }
+  const mb = $('#managebilling');
+  if(mb) mb.onclick = async () => {
+    mb.textContent = 'Opening…';
+    try {
+      const r = await fetch('/api/portal', { method:'POST', headers:{'Content-Type':'application/json'}, body: JSON.stringify({ email }) });
+      const j = await r.json();
+      if(!r.ok) throw new Error(j.error || 'Could not open billing portal');
+      window.location.href = j.url;
+    } catch(e){ mb.textContent = 'Manage billing'; mb.style.color = '#f87171'; setTimeout(()=>{ mb.style.color=''; }, 2000); }
+  };
+  if(isPro && lead.plan === 'agency'){
+    const b = lead.brand;
+    box.innerHTML +=
+      '<div style="background:var(--panel);border:1px solid rgba(99,102,241,.45);border-radius:12px;padding:16px 20px;margin-top:14px">'+
+        '<div style="font-size:12px;letter-spacing:.06em;text-transform:uppercase;color:var(--dim);margin-bottom:10px">White-label reports · Agency</div>'+
+        '<div style="font-size:13px;color:var(--muted);margin-bottom:12px">Share client-ready reports under your own brand. Set your brand once; every audit you run after that is branded automatically.</div>'+
+        '<div style="display:flex;gap:8px;flex-wrap:wrap;margin-bottom:10px">'+
+          '<input id="wl-name" placeholder="Your company name" value="'+(b?b.name:'')+'" style="padding:9px 12px;border-radius:9px;border:1px solid var(--line);background:#0a0e16;color:inherit;font-size:13px;min-width:180px">'+
+          '<input id="wl-color" placeholder="#6366f1" value="'+(b?b.color:'#6366f1')+'" style="padding:9px 12px;border-radius:9px;border:1px solid var(--line);background:#0a0e16;color:inherit;font-size:13px;width:100px">'+
+          '<input id="wl-logo" placeholder="Logo URL (optional)" value="'+(b?b.logoUrl:'')+'" style="padding:9px 12px;border-radius:9px;border:1px solid var(--line);background:#0a0e16;color:inherit;font-size:13px;min-width:180px">'+
+          '<button id="wl-save" class="btn btn-primary btn-sm" style="padding:9px 14px">Save brand</button>'+
+        '</div>'+
+        '<div id="wl-msg" style="font-size:12.5px;min-height:16px;opacity:.85"></div>'+
+        '<div style="margin-top:10px;font-size:13px">White-label link for your latest report: <a id="wl-link" href="#" style="color:#6366f1;font-weight:600;word-break:break-all">'+(history.length?'Open latest report':'Run an audit to generate one')+'</a></div>'+
+      '</div>';
+    const save = $('#wl-save');
+    if(save) save.onclick = async () => {
+      const msg = $('#wl-msg');
+      msg.style.color = 'var(--muted)'; msg.textContent = 'Saving…';
+      try {
+        const r = await fetch('/api/brand', { method:'POST', headers:{'Content-Type':'application/json'}, body: JSON.stringify({ email, name: $('#wl-name').value, color: $('#wl-color').value, logoUrl: $('#wl-logo').value }) });
+        const j = await r.json();
+        if(!r.ok) throw new Error(j.error || 'Failed to save brand');
+        msg.style.color = '#34d399'; msg.textContent = 'Brand saved. New audits you run will carry it.';
+        load();
+      } catch(e){ msg.style.color = '#f87171'; msg.textContent = e.message; }
+    };
+    const link = $('#wl-link');
+    if(link && history.length){
+      const last = history[history.length-1];
+      if(last.reportId) link.href = '/r/' + last.reportId;
+    }
+  }
+}
+async function load(){
+  if(!email){
+    $('#title').textContent = 'No account selected';
+    $('#sub').textContent = 'Run a free audit on the homepage — your history will appear here.';
+    return;
+  }
+  try{
+    const r = await fetch('/api/history?email=' + encodeURIComponent(email));
+    const j = await r.json();
+    if(!r.ok) throw new Error(j.error || 'Not found');
+    $('#title').textContent = email;
+    const isPro = j.lead.pro;
+    const planLabel = isPro ? (j.lead.plan === 'agency' ? 'Agency plan active · ' : 'Pro plan active · ') : 'Free plan · ';
+    $('#sub').textContent = planLabel + (j.lead.domain ? 'primary domain: ' + j.lead.domain : 'no domain yet');
+    const p = $('#plan');
+    p.textContent = isPro ? (j.lead.plan === 'agency' ? 'AGENCY' : 'PRO') : 'FREE';
+    p.className = 'pill ' + (isPro ? 'pro' : 'free');
+    renderStatus(j.lead, j.history);
+    const rids = j.lead.reportIds || [];
+    $('#hist').innerHTML = j.history.length ? j.history.slice().reverse().map((h, i) => {
+      const rid = h.reportId || rids[j.history.length - 1 - i] || '';
+      const link = rid ? ` · <a href="/r/${rid}" style="color:#6366f1;font-weight:600">View full report →</a>` : '';
+      return `
+      <div class="hist-row">
+        <div><b>${h.domain}</b><div class="when">${new Date(h.at).toLocaleString()} · ${h.grade} grade${link}</div></div>
+        <div class="s" style="color:${color(h.score)}">${h.score}</div>
+      </div>`;
+    }).join('')
+      : '<div class="hist-row"><div>No audits yet for this email.</div></div>';
+  }catch(e){
+    $('#sub').textContent = e.message;
+  }
+}
+load();
+</script>
+</body>
+</html>

@@ -1,0 +1,101 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>SMTP Error Codes Explained: 250, 450, 550, 554 and More | InboxProof</title>
+<meta name="description" content="What SMTP error codes mean and how to fix them: 250 accepted, 450/451/452 temporary failures, 550 mailbox unavailable, 554 relay denied, and the codes that predict spam placement.">
+<link rel="canonical" href="https://inboxproof.email/blog/smtp-error-codes">
+<meta property="og:title" content="SMTP Error Codes Explained: 250, 450, 550, 554 and More">
+<meta property="og:description" content="A practical guide to SMTP error codes: what each one means and how to fix it.">
+<meta property="og:type" content="article">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="/styles.css">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' rx='8' fill='%236366f1'/%3E%3Cpath d='M8 16h13M15 10l6 6-6 6' stroke='white' stroke-width='3' fill='none' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E">
+<script type="application/ld+json">
+{"@context":"https://schema.org","@type":"Article","headline":"SMTP Error Codes Explained: 250, 450, 550, 554 and More","description":"What SMTP error codes mean and how to fix them: 250 accepted, 450/451/452 temporary failures, 550 mailbox unavailable, 554 relay denied, and the codes that predict spam placement.","author":{"@type":"Organization","name":"InboxProof"},"publisher":{"@type":"Organization","name":"InboxProof"}}
+</script>
+</head>
+<body>
+<nav class="nav">
+  <div class="container">
+    <a class="logo" href="/">
+      <span class="mark"><svg viewBox="0 0 24 24" fill="none"><path d="M4 12h11M11 7l5 5-5 5" stroke="#fff" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"/></svg></span>
+      Inboxproof
+    </a>
+    <div class="nav-links"><a href="/">Run a free audit</a></div>
+  </div>
+</nav>
+
+<div class="container" style="max-width:760px;padding:60px 20px 80px">
+  <div class="kicker">Deliverability</div>
+  <h1 style="font-size:34px;margin:10px 0 12px">SMTP error codes explained: what 250, 450, 550 and 554 actually mean</h1>
+  <p style="opacity:.8;font-size:16px;margin-bottom:36px">Every time your server talks to a receiving mail server, the exchange ends with a three-digit SMTP status code. Most of the time you never see these codes. When you do, they are the fastest way to know whether a problem is yours, the recipient's, or the network's.</p>
+
+  <div class="card" style="margin-bottom:28px;background:#eef2ff;border-color:#c7d2fe">
+    <h3 style="margin-top:0">Check the codes behind your domain in seconds</h3>
+    <p style="opacity:.8;margin-bottom:14px">The <a href="/">free InboxProof audit</a> checks your SPF, DKIM, DMARC, PTR, MX and TLS records and flags the configuration problems that cause 5xx rejections. No signup.</p>
+    <a class="btn btn-primary" href="/">Audit my domain</a>
+  </div>
+
+  <h2 style="font-size:24px;margin:36px 0 12px">How SMTP codes are structured</h2>
+  <p>Each code has three digits. The first digit is the category:</p>
+  <ul style="font-size:16px;line-height:1.8">
+    <li><strong>2xx</strong>: success. The transaction completed.</li>
+    <li><strong>3xx</strong>: intermediate. More input is needed (rarely seen outside interactive sessions).</li>
+    <li><strong>4xx</strong>: temporary failure. The server will retry. The message is not lost.</li>
+    <li><strong>5xx</strong>: permanent failure. The server will not retry. The message is rejected.</li>
+  </ul>
+  <p>The difference between 4 and 5 matters enormously. A 4xx means "try again later." A 5xx means "this will never work, stop trying." If your mail is bouncing, the first thing to check is whether the rejections are 4xx (a transient or throttling issue) or 5xx (a hard configuration or policy rejection).</p>
+
+  <h2 style="font-size:24px;margin:36px 0 12px">The codes you will actually see</h2>
+  <h3>250 2.0.0 OK</h3>
+  <p>The message was accepted for delivery. This is the only code that means your email actually went through. If you see 250, the receiving server took the message. Where it lands (inbox or spam) is a separate question.</p>
+  <h3>450 4.2.0 / 451 4.3.0 / 452 4.3.2</h3>
+  <p>Temporary failures: the mailbox is busy, the server is busy, or the mailbox is over quota. The sending server queues the message and retries. A few 450s are normal. Sustained 4xx responses for hours mean the receiving server is throttling you, usually because of your sending reputation or volume.</p>
+  <h3>550 5.1.1 User unknown / Recipient address rejected</h3>
+  <p>The recipient address does not exist at that domain. This is a hard bounce. If you see many 550 5.1.1 responses, your list has bad addresses and you need to clean it. High hard-bounce rates are one of the fastest ways to get your sending IP throttled or blocked.</p>
+  <h3>550 5.7.1 / 554 5.7.1 Authentication failed / SPF, DKIM or DMARC rejected</h3>
+  <p>The receiving server rejected the message because it failed an authentication check. This is the code you see when your SPF, DKIM or DMARC is misconfigured. If you see 554 5.7.1 from Gmail or Microsoft, run an audit on your domain and fix the failing record. See the <a href="/blog/spf-dkim-dmarc">SPF vs DKIM vs DMARC guide</a>.</p>
+  <h3>554 5.7.0 Relay access denied / 554 5.7.27</h3>
+  <p>The receiving server refused to relay your message. Common causes: your server's PTR record does not match its IP, your IP is on a blocklist, or you are sending from a residential IP that is not allowed to relay. If you see this code, check your PTR record and your blocklist status.</p>
+  <h3>554 5.0.0 / 554 5.1.1 Message rejected / spam policy</h3>
+  <p>The receiving server rejected the message based on its spam policy. This is the code you see when your email is being treated as spam at the SMTP level, before it even reaches the inbox. It usually means your sending reputation is poor, your content triggered a filter, or your domain lacks proper authentication.</p>
+
+  <h2 style="font-size:24px;margin:36px 0 12px">How to diagnose a delivery problem</h2>
+  <p>When a batch of email is failing, work through the codes in this order:</p>
+  <ul style="font-size:16px;line-height:1.8">
+    <li><strong>550 5.1.1</strong>: bad recipient addresses. Clean your list. Do not keep sending to addresses that hard-bounce.</li>
+    <li><strong>554 5.7.x</strong>: authentication failure. Fix SPF, DKIM and DMARC. This is the most common cause of sudden deliverability loss after a DNS change.</li>
+    <li><strong>554 5.7.0 / 5.7.27</strong>: relay or reputation problem. Check your PTR record, your blocklist status, and your sending IP reputation.</li>
+    <li><strong>450 / 451 / 452</strong>: throttling. Back off your volume, fix your reputation, and let the receiving server's throttle lift.</li>
+    <li><strong>250 but no opens</strong>: the email was accepted but landed in spam. This is not an SMTP problem. It is a content or reputation problem. See <a href="/blog/email-in-spam">why email lands in spam</a>.</li>
+  </ul>
+
+  <h2 style="font-size:24px;margin:36px 0 12px">Codes that predict spam placement</h2>
+  <p>Some codes are early warnings that your email is heading for the spam folder, even if the SMTP transaction "succeeds":</p>
+  <ul style="font-size:16px;line-height:1.8">
+    <li><strong>Delayed 250s</strong>: if the receiving server takes unusually long to accept your message, it may be running extra reputation checks.</li>
+    <li><strong>Soft bounces that keep happening</strong>: repeated 4xx responses from the same domain mean the receiving server is deliberately throttling you.</li>
+    <li><strong>554 5.7.0 with a spam-policy message</strong>: the server is telling you directly that your content or reputation triggered a filter.</li>
+  </ul>
+  <p>If you see these patterns, the fix is usually the same: clean your list, fix your authentication, and reduce your volume until your reputation recovers.</p>
+
+  <div class="cta" style="background:#0f172a;color:#fff;border-radius:12px;padding:32px;text-align:center;margin:40px 0">
+    <h2 style="color:#fff;margin-bottom:8px">Find the code behind your bounces</h2>
+    <p style="opacity:.8;margin-bottom:20px">Run a free audit on your sending domain and see which records are causing 5xx rejections.</p>
+    <a class="btn btn-primary btn-lg" href="/">Open the free audit</a>
+  </div>
+
+  <p style="opacity:.6;font-size:13px;margin-top:28px">Related: <a href="/blog/cold-email-deliverability">Cold email deliverability</a> · <a href="/blog/email-in-spam">Why email lands in spam</a> · <a href="/blog/spf-dkim-dmarc">SPF vs DKIM vs DMARC</a> · <a href="/blog/is-my-domain-blacklisted">Is my domain blacklisted?</a></p>
+</div>
+
+<footer>
+  <div class="container">
+    <span>© 2026 Inboxproof, Inc.</span>
+    <span><a href="/">Home</a> · <a href="/privacy">Privacy</a></span>
+  </div>
+</footer>
+</body>
+</html>

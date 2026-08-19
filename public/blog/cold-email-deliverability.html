@@ -1,0 +1,79 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Cold email deliverability: how to send without landing in spam — Inboxproof</title>
+<meta name="description" content="Cold email lives or dies on deliverability. The setup that keeps cold outreach in the primary inbox: a dedicated sending domain, correct SPF/DKIM/DMARC, slow warmup, clean lists, and monitoring.">
+<meta property="og:title" content="Cold email deliverability: how to send without landing in spam">
+<meta property="og:description" content="The exact setup that keeps cold outreach in the primary inbox: dedicated domain, authentication, warmup, list hygiene, and monitoring.">
+<meta property="og:type" content="article">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="/styles.css">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' rx='8' fill='%236366f1'/%3E%3Cpath d='M8 16h13M15 10l6 6-6 6' stroke='white' stroke-width='3' fill='none' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E">
+<script type="application/ld+json">
+{"@context":"https://schema.org","@type":"Article","headline":"Cold email deliverability: how to send without landing in spam","description":"The exact setup that keeps cold outreach in the primary inbox: dedicated domain, authentication, warmup, list hygiene, and monitoring.","author":{"@type":"Organization","name":"Inboxproof"},"publisher":{"@type":"Organization","name":"Inboxproof"}}
+</script>
+</head>
+<body>
+<nav class="nav">
+  <div class="container">
+    <a class="logo" href="/">
+      <span class="mark"><svg viewBox="0 0 24 24" fill="none"><path d="M4 12h11M11 7l5 5-5 5" stroke="#fff" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"/></svg></span>
+      Inboxproof
+    </a>
+    <div class="nav-links"><a href="/blog">All guides</a><a href="/">Run a free audit</a></div>
+  </div>
+</nav>
+
+<div class="container" style="max-width:760px;padding:60px 20px 80px">
+  <div class="kicker">Guide</div>
+  <h1 style="font-size:34px;margin:10px 0 24px">Cold email deliverability: how to keep outreach out of spam</h1>
+  <div style="opacity:.85;line-height:1.75;font-size:15.5px">
+    <p>Cold email is the hardest deliverability problem you can have, because you are sending to people who have never heard of you, at volume, from domains that most receiving providers have no history with. Gmail and Microsoft treat that combination as high-risk by default. The senders who land in the primary inbox are not using better copy or more magic. They have a boring, repeatable setup. Here is that setup, in the order it matters.</p>
+
+    <h2 style="font-size:22px;margin:34px 0 12px">1. Use a dedicated sending domain, never your main one</h2>
+    <p>The single biggest mistake is sending cold outreach from your primary domain (the one on your website, your invoices, and your support mailbox). Cold email generates spam complaints and hard bounces by nature. If that happens on your main domain, you drag down the reputation of the domain your real business email lives on, and your transactional and support mail starts landing in spam too. The standard practice is a separate domain, usually a subdomain like <code>outreach.yourdomain.com</code> or a second-level domain you own, used only for cold sends. It can take the hits without endangering the rest of your email.</p>
+
+    <h2 style="font-size:22px;margin:34px 0 12px">2. Authenticate the sending domain completely</h2>
+    <p>Every cold sending domain needs all three records, and they must align. SPF says which servers may send for the domain; DKIM signs each message so the receiver can verify it came from you; DMARC tells receivers what to do when SPF or DKIM fails. For cold email you want DMARC at <code>p=none</code> while you are learning, so you get reports without rejecting anything, and you want the From domain to match the domain that passes SPF or DKIM. A missing <code>-all</code> on SPF, or a DKIM signature on a different domain than the From header, are the two most common reasons an otherwise-correct setup still gets filtered. The <a href="/cold-email-checker">free cold email deliverability checker</a> confirms all of this in seconds.</p>
+
+    <h2 style="font-size:22px;margin:34px 0 12px">3. Warm up slowly, or do not send at all</h2>
+    <p>This is the factor that separates senders who land in primary from senders who burn their domain in a week. A new sending domain has zero reputation. If you blast 500 cold emails on day one, Gmail and Microsoft will route most of it to spam or hold it, and the resulting complaints will poison the domain for weeks. The correct pattern is a warmup: start at a few dozen emails per day and increase gradually over two to four weeks, mixing in real engagement (replies, opens) so the receiving providers learn to trust you. Most cold email tools build this in. If you are sending manually, the rule is simple: never jump volume faster than the domain's reputation can absorb it. Use our <a href="/warm-up-calculator">free warm-up calculator</a> to generate a day-by-day ramp for your target volume.</p>
+
+    <h2 style="font-size:22px;margin:34px 0 12px">4. Keep bounce and complaint rates near zero</h2>
+    <p>Cold lists are full of dead addresses, role addresses, and domains that no longer accept mail. Every hard bounce and every "report spam" click is a direct vote against your domain. The math is unforgiving: Gmail will start filtering you at a complaint rate around 0.1% and will throttle you hard above 0.2%. Practical levers: verify every address before it goes on the list, remove anyone who has not engaged in a while, keep a hard cap on daily volume per mailbox, and make the unsubscribe link one click. A clean list is worth more than any amount of copywriting.</p>
+
+    <h2 style="font-size:22px;margin:34px 0 12px">5. Write for the spam filter, not just the human</h2>
+    <p>Receiving providers read the message. Triggers that hurt cold email specifically: a subject line that does not match the body, too many images relative to text, tracking links that look like phishing, all-caps words, and a missing or broken <code>List-Unsubscribe</code> header. The one-click unsubscribe header is now a hard requirement for bulk senders at Gmail and Microsoft, and a broken one is a spam signal on its own. Keep the email short, mostly text, one clear link, and a working one-click unsubscribe.</p>
+
+    <h2 style="font-size:22px;margin:34px 0 12px">6. Monitor the sending domain every day</h2>
+    <p>Cold email domains are fragile. A DNS record that expires, an SPF that silently loses its <code>-all</code>, or a blocklist hit from a single bad day can drop your deliverability overnight, and you will not notice from inside your ESP until the reply rate has already collapsed. The fix is to check the sending domain's SPF, DKIM, DMARC, MX, and blocklist status daily and get alerted the moment something changes. That is exactly what <a href="/#pricing">Inboxproof Pro</a> does: it monitors your sending domain around the clock and tells you the instant a record breaks or your IP gets listed, so a deliverability incident is a five-minute fix instead of a week of lost pipeline.</p>
+
+    <h2 style="font-size:22px;margin:34px 0 12px">The checklist, in order</h2>
+    <p style="margin:0 0 14px">1. <b>Dedicated sending domain</b> that is not your primary business domain.</p>
+    <p style="margin:0 0 14px">2. <b>SPF, DKIM, and DMARC all present and aligned</b> on that domain (run the free checker).</p>
+    <p style="margin:0 0 14px">3. <b>Slow warmup</b> over two to four weeks before real volume.</p>
+    <p style="margin:0 0 14px">4. <b>Verified, clean lists</b> with bounce and complaint rates near zero.</p>
+    <p style="margin:0 0 14px">5. <b>Short, text-heavy copy</b> with a working one-click unsubscribe.</p>
+    <p style="margin:0 0 14px">6. <b>Daily monitoring</b> of the sending domain so a broken record is caught in hours, not weeks.</p>
+
+    <p style="opacity:.6;font-size:13px;margin-top:28px">Related: <a href="/blog/transactional-email-deliverability">Transactional email deliverability</a> · <a href="/blog/email-in-spam">Why email lands in spam</a> · <a href="/blog/spf-dkim-dmarc">SPF vs DKIM vs DMARC</a> · <a href="/blog/dmarc-policies">p=none vs quarantine vs reject</a> · <a href="/blog/is-my-domain-blacklisted">Is my domain blacklisted?</a> · <a href="/blog/deliverability-score">What is a good deliverability score?</a></p>
+
+    <div style="margin-top:40px;text-align:center;background:linear-gradient(180deg,rgba(99,102,241,.12),transparent);border:1px solid rgba(99,102,241,.35);border-radius:14px;padding:26px">
+      <h3 style="font-size:18px;margin-bottom:6px">Check your sending domain in 30 seconds</h3>
+      <p style="opacity:.75;font-size:14px;margin-bottom:16px">The free <a href="/cold-email-checker">cold email deliverability checker</a> tests SPF, DKIM, DMARC, IP reputation, TLS and routing for your sending domain and scores its readiness for cold email. No signup.</p>
+      <a class="btn btn-primary" href="/cold-email-checker">Check my sending domain now</a>
+    </div>
+  </div>
+</div>
+
+<footer>
+  <div class="container">
+    <span>© 2026 Inboxproof, Inc.</span>
+    <span><a href="/blog">All guides</a> · <a href="/">Home</a> · <a href="/privacy">Privacy</a></span>
+  </div>
+</footer>
+</body>
+</html>

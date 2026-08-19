@@ -1,0 +1,102 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>How to set up SPF, DKIM, and DMARC for Google Workspace | InboxProof</title>
+<meta name="description" content="Step-by-step guide to configuring SPF, DKIM, and DMARC for Google Workspace so your email authenticates correctly and reaches the inbox.">
+<link rel="canonical" href="https://inboxproof.email/blog/google-workspace-spf-dkim-dmarc">
+<meta property="og:title" content="How to set up SPF, DKIM, and DMARC for Google Workspace">
+<meta property="og:description" content="Step-by-step guide to configuring SPF, DKIM, and DMARC for Google Workspace.">
+<meta property="og:type" content="article">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="/styles.css">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' rx='8' fill='%236366f1'/%3E%3Cpath d='M8 16h13M15 10l6 6-6 6' stroke='white' stroke-width='3' fill='none' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E">
+<script type="application/ld+json">
+{"@context":"https://schema.org","@type":"Article","headline":"How to set up SPF, DKIM, and DMARC for Google Workspace","description":"Step-by-step guide to configuring SPF, DKIM, and DMARC for Google Workspace.","author":{"@type":"Organization","name":"InboxProof"},"publisher":{"@type":"Organization","name":"InboxProof"}}
+</script>
+</head>
+<body>
+<nav class="nav">
+  <div class="container">
+    <a class="logo" href="/">
+      <span class="mark"><svg viewBox="0 0 24 24" fill="none"><path d="M4 12h11M11 7l5 5-5 5" stroke="#fff" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"/></svg></span>
+      Inboxproof
+    </a>
+    <div class="nav-links"><a href="/">Run a free audit</a></div>
+  </div>
+</nav>
+
+<div class="container" style="max-width:760px;padding:60px 20px 80px">
+  <div class="kicker">Guide</div>
+  <h1 style="font-size:34px;margin:10px 0 12px">How to set up SPF, DKIM, and DMARC for Google Workspace</h1>
+  <p style="opacity:.8;font-size:16px;margin-bottom:36px">Google Workspace gives you the tools to authenticate your email, but the setup is scattered across multiple dashboards. Here is a step-by-step guide to get all three protocols configured correctly.</p>
+
+  <div class="card" style="margin-bottom:28px;background:#eef2ff;border-color:#c7d2fe">
+    <h3 style="margin-top:0">Check your Google Workspace setup in seconds</h3>
+    <p style="opacity:.8;margin-bottom:14px">The <a href="/dmarc-checker">free InboxProof audit</a> runs a 7-point check (MX, SPF, DKIM, DMARC, TLS, PTR, and IP reputation) and returns a 0-100 score with a plain-English fix list. No signup.</p>
+    <a class="btn btn-primary" href="/dmarc-checker">Run the free check</a>
+  </div>
+
+  <h2 style="font-size:24px;margin:36px 0 12px">Step 1: Enable DKIM in Google Workspace</h2>
+  <p>DKIM signs your email with a private key, proving it was sent by you. Google Workspace has DKIM enabled by default, but you should verify it.</p>
+  <ol style="font-size:16px;line-height:1.8">
+    <li>Go to the <b>Google Admin console</b> (admin.google.com).</li>
+    <li>Navigate to <b>Apps → Google Workspace → Gmail → Authenticate your email</b>.</li>
+    <li>Under "DKIM signing," make sure it is <b>enabled</b>.</li>
+    <li>Note the <b>DKIM selector</b> (e.g., <code>google</code>).</li>
+  </ol>
+  <p>Google automatically publishes the DKIM public key as a TXT record. You do not need to add it manually.</p>
+
+  <h2 style="font-size:24px;margin:36px 0 12px">Step 2: Configure SPF</h2>
+  <p>SPF tells receiving servers which IPs are allowed to send email on behalf of your domain. For Google Workspace, the SPF record should include Google's sending services.</p>
+  <p>Add this TXT record to your DNS:</p>
+  <pre style="background:#0f172a;color:#e2e8f0;padding:16px;border-radius:8px;font-size:14px;overflow-x:auto">v=spf1 include:_spf.google.com -all</pre>
+  <p>If you use other sending services (e.g., a marketing tool), add their <code>include:</code> entries. Keep the total DNS lookups under 10.</p>
+
+  <h2 style="font-size:24px;margin:36px 0 12px">Step 3: Publish a DMARC record</h2>
+  <p>DMARC ties SPF and DKIM together and tells receivers what to do with unauthenticated email. Start with a monitoring policy:</p>
+  <pre style="background:#0f172a;color:#e2e8f0;padding:16px;border-radius:8px;font-size:14px;overflow-x:auto">v=DMARC1 p=none rua=mailto:dmarc-reports@yourdomain.com</pre>
+  <p>Add this as a TXT record at <code>_dmarc.yourdomain.com</code>. After a few weeks of monitoring, move to <code>p=quarantine</code>, then <code>p=reject</code>.</p>
+
+  <h2 style="font-size:24px;margin:36px 0 12px">Step 4: Verify the setup</h2>
+  <p>Run the free InboxProof audit to confirm all three protocols are configured correctly. The audit checks:</p>
+  <ul style="font-size:16px;line-height:1.8">
+    <li>SPF record exists and is valid</li>
+    <li>DKIM key is published and strong</li>
+    <li>DMARC record exists with a reporting address</li>
+    <li>Alignment between your "From" domain and the SPF/DKIM domains</li>
+  </ul>
+
+  <h2 style="font-size:24px;margin:36px 0 12px">Common pitfalls</h2>
+  <div class="card" style="margin-bottom:16px">
+    <h3 style="margin-top:0">SPF record too long</h3>
+    <p style="margin-bottom:0">If you include many services, you may exceed the 10-DNS-lookup limit. Use <code>ip4:</code> or <code>ip6:</code> mechanisms instead of <code>include:</code> where possible.</p>
+  </div>
+  <div class="card" style="margin-bottom:16px">
+    <h3 style="margin-top:0">DKIM selector mismatch</h3>
+    <p style="margin-bottom:0">Make sure the DKIM selector in your DNS matches the one in Google Workspace. If they do not match, DKIM will fail.</p>
+  </div>
+  <div class="card" style="margin-bottom:16px">
+    <h3 style="margin-top:0">DMARC domain mismatch</h3>
+    <p style="margin-bottom:0">The DMARC record must be at <code>_dmarc.yourdomain.com</code>, not at the root. If it is in the wrong place, it will not be found.</p>
+  </div>
+
+  <div class="cta" style="background:#0f172a;color:#fff;border-radius:12px;padding:32px;text-align:center;margin:40px 0">
+    <h2 style="color:#fff;margin-bottom:8px">Verify your Google Workspace setup</h2>
+    <p style="opacity:.8;margin-bottom:20px">Run the free audit and see if your SPF, DKIM, and DMARC are configured correctly.</p>
+    <a class="btn btn-primary btn-lg" href="/dmarc-checker">Run a free audit</a>
+  </div>
+
+  <p style="opacity:.6;font-size:13px;margin-top:28px">Related: <a href="/blog/spf-dkim-dmarc">SPF vs DKIM vs DMARC</a> · <a href="/blog/spf-not-working">SPF record not working?</a> · <a href="/blog/dmarc-record">How to set up a DMARC record</a> · <a href="/blog/deliverability-score">What is a good deliverability score?</a> · <a href="/blog/microsoft-365-spf-dkim-dmarc">SPF, DKIM, DMARC for Microsoft 365</a></p>
+</div>
+
+<footer>
+  <div class="container">
+    <span>© 2026 Inboxproof, Inc.</span>
+    <span><a href="/">Home</a> · <a href="/privacy">Privacy</a></span>
+  </div>
+</footer>
+</body>
+</html>

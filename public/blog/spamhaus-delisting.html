@@ -1,0 +1,153 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>How to delist from Spamhaus (step by step) | InboxProof</title>
+<meta name="description" content="Your IP is on the Spamhaus SBL or XBL? Here's exactly how to get delisted, step by step. Check your IP first, then follow the delisting process.">
+<link rel="canonical" href="https://inboxproof.email/blog/spamhaus-delisting">
+<meta property="og:title" content="How to delist from Spamhaus (step by step)">
+<meta property="og:description" content="Your IP is on the Spamhaus SBL or XBL? Here's exactly how to get delisted, step by step.">
+<meta property="og:type" content="article">
+<meta property="og:url" content="https://inboxproof.email/blog/spamhaus-delisting">
+<meta property="og:site_name" content="InboxProof">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:title" content="How to delist from Spamhaus (step by step)">
+<meta name="twitter:description" content="Your IP is on the Spamhaus SBL or XBL? Here's exactly how to get delisted, step by step.">
+<style>
+:root{--ink:#141824;--muted:#5b6472;--line:#e6e9f0;--bg:#f7f8fb;--card:#fff;--accent:#2f6df6;--ok:#1e9e6a;--warn:#c97a12;--bad:#d64545}
+*{box-sizing:border-box}
+body{margin:0;font:16px/1.65 -apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Helvetica,Arial,sans-serif;color:var(--ink);background:var(--bg)}
+.wrap{max-width:820px;margin:0 auto;padding:0 20px}
+header{background:#fff;border-bottom:1px solid var(--line);padding:18px 0}
+header .wrap{display:flex;align-items:center;justify-content:space-between}
+.logo{font-weight:700;font-size:18px;color:var(--ink);text-decoration:none}
+.logo span{color:var(--accent)}
+nav a{color:var(--muted);text-decoration:none;margin-left:18px;font-size:14px}
+nav a:hover{color:var(--accent)}
+main{padding:40px 0 60px}
+h1{font-size:32px;line-height:1.2;margin:0 0 8px}
+.meta{color:var(--muted);font-size:14px;margin-bottom:28px}
+h2{font-size:22px;margin:32px 0 12px}
+p{margin:0 0 16px}
+ul,ol{margin:0 0 16px;padding-left:22px}
+li{margin-bottom:8px}
+a{color:var(--accent)}
+code{background:#eef1f7;padding:2px 6px;border-radius:4px;font-size:14px}
+.card{background:var(--card);border:1px solid var(--line);border-radius:10px;padding:20px;margin:20px 0}
+.card h3{margin:0 0 8px;font-size:16px}
+.card p{margin:0;font-size:14px;color:var(--muted)}
+.cta{display:inline-block;background:var(--accent);color:#fff;text-decoration:none;padding:10px 18px;border-radius:8px;font-weight:600;font-size:15px;margin:8px 0}
+.cta:hover{opacity:.9}
+footer{background:#fff;border-top:1px solid var(--line);padding:24px 0;margin-top:40px}
+footer .wrap{display:flex;justify-content:space-between;flex-wrap:wrap;gap:12px;font-size:13px;color:var(--muted)}
+footer a{color:var(--muted);text-decoration:none}
+footer a:hover{color:var(--accent)}
+</style>
+<script type="application/ld+json">
+{"@context":"https://schema.org","@type":"Article","headline":"How to delist from Spamhaus (step by step)","description":"Your IP is on the Spamhaus SBL or XBL? Here's exactly how to get delisted, step by step.","author":{"@type":"Organization","name":"InboxProof"},"publisher":{"@type":"Organization","name":"InboxProof"},"mainEntityOfPage":"https://inboxproof.email/blog/spamhaus-delisting"}
+</script>
+<script type="application/ld+json">
+{"@context":"https://schema.org","@type":"FAQPage","mainEntity":[{"@type":"Question","name":"How long does Spamhaus delisting take?","acceptedAnswer":{"@type":"Answer","text":"Spamhaus typically re-scans your IP every 15 minutes. Once the issue is fixed, delisting usually happens within 15 minutes to a few hours."}},{"@type":"Question","name":"Can I delist from Spamhaus manually?","acceptedAnswer":{"@type":"Answer","text":"Yes. You can request a delisting through the Spamhaus delisting form at https://check.spamhaus.org/. You need to confirm the issue is fixed and provide details about your IP."}},{"@type":"Question","name":"What if my IP is still listed after delisting?","acceptedAnswer":{"@type":"Answer","text":"If your IP is still listed after delisting, the issue may not be fully resolved. Check your mail server configuration, ensure your IP is not sending spam, and wait for the next re-scan."}},{"@type":"Question","name":"How do I check if my IP is on Spamhaus?","acceptedAnswer":{"@type":"Answer","text":"You can check your IP at https://check.spamhaus.org/ or use our free blocklist checker at https://inboxproof.email/blocklist-checker which checks 9 RBLs including Spamhaus."}}]}
+</script>
+</head>
+<body>
+<header>
+<div class="wrap">
+<a class="logo" href="/">Inbox<span>Proof</span></a>
+<nav>
+<a href="/dmarc-checker">DMARC</a>
+<a href="/spf-checker">SPF</a>
+<a href="/dkim-checker">DKIM</a>
+<a href="/blocklist-checker">Blocklist</a>
+<a href="/blog">Blog</a>
+</nav>
+</div>
+</header>
+<main>
+<div class="wrap">
+<h1>How to delist from Spamhaus (step by step)</h1>
+<div class="meta">By InboxProof &middot; 5 min read</div>
+
+<p>If your IP is on the Spamhaus SBL (Spam Block List) or XBL (Exploits Block List), your emails will be rejected by most major mail providers. Here's exactly how to get delisted, step by step.</p>
+
+<div class="card">
+<h3>Step 0: Confirm you're actually listed</h3>
+<p>Before you do anything, confirm your IP is actually on the Spamhaus list. Use our free <a href="/blocklist-checker">blocklist checker</a> to check 9 RBLs including Spamhaus SBL, PSBL, and XBL in one click.</p>
+<p><a class="cta" href="/blocklist-checker">Check your IP now</a></p>
+</div>
+
+<h2>Step 1: Figure out why you're listed</h2>
+<p>Spamhaus lists IPs for specific reasons. The most common are:</p>
+<ul>
+<li><strong>SBL (Spam Block List):</strong> Your IP is sending spam or has been compromised by a spam bot.</li>
+<li><strong>XBL (Exploits Block List):</strong> Your IP is hosting open proxies, open relays, or other exploits that spammers can use.</li>
+<li><strong>PSBL (Policy Spam Block List):</strong> Your IP violates Spamhaus policy, such as sending to users who didn't opt in.</li>
+</ul>
+<p>Visit <a href="https://check.spamhaus.org/">check.spamhaus.org</a> and enter your IP. The result page will tell you exactly which list you're on and why.</p>
+
+<h2>Step 2: Fix the underlying issue</h2>
+<p>This is the most important step. If you don't fix the root cause, you'll get re-listed within hours.</p>
+<ul>
+<li><strong>If you're sending spam:</strong> Stop sending spam. Clean up your email list. Remove invalid addresses.</li>
+<li><strong>If you're compromised:</strong> Secure your server. Update software. Close open ports. Kill the spam bot.</li>
+<li><strong>If you have an open relay:</strong> Configure your mail server to only accept mail from authenticated users.</li>
+<li><strong>If you're on a shared IP:</strong> Contact your hosting provider and ask them to clean up the IP or move you to a new one.</li>
+</ul>
+
+<h2>Step 3: Request delisting</h2>
+<p>Once you've fixed the issue, request delisting through the Spamhaus delisting form:</p>
+<ol>
+<li>Go to <a href="https://check.spamhaus.org/">check.spamhaus.org</a></li>
+<li>Enter your IP address</li>
+<li>Click "Delist" on the result page</li>
+<li>Fill out the form with your IP and a brief description of what you fixed</li>
+<li>Submit the form</li>
+</ol>
+<p>Be honest and specific. "I fixed the issue" is not enough. "I closed the open relay on port 25 and configured my mail server to require authentication" is much better.</p>
+
+<h2>Step 4: Wait for re-scan</h2>
+<p>Spamhaus re-scans listed IPs every 15 minutes. Once your delisting request is processed, your IP should be removed from the list within 15 minutes to a few hours.</p>
+<p>You can verify by checking <a href="https://check.spamhaus.org/">check.spamhaus.org</a> again or using our <a href="/blocklist-checker">blocklist checker</a>.</p>
+
+<h2>Step 5: Monitor to prevent re-listing</h2>
+<p>After you're delisted, keep an eye on your IP. If you get re-listed, it means the issue wasn't fully fixed.</p>
+<p>Set up a regular check using our <a href="/blocklist-checker">blocklist checker</a> or a monitoring service. If you notice you're listed again, go back to Step 2 and fix the root cause.</p>
+
+<div class="card">
+<h3>Still listed after 24 hours?</h3>
+<p>If your IP is still listed after 24 hours, the issue may not be fully resolved. Double-check your mail server configuration, ensure your IP is not sending spam, and wait for the next re-scan. You can also contact Spamhaus support directly with details about what you've fixed.</p>
+</div>
+
+<h2>Preventing future listings</h2>
+<ul>
+<li><strong>Keep your mail server secure:</strong> Update software, close unnecessary ports, require authentication.</li>
+<li><strong>Maintain a clean email list:</strong> Remove invalid addresses, respect opt-outs, monitor bounce rates.</li>
+<li><strong>Set up SPF, DKIM, and DMARC:</strong> Use our <a href="/dmarc-checker">DMARC checker</a>, <a href="/spf-checker">SPF checker</a>, and <a href="/dkim-checker">DKIM checker</a> to verify your configuration.</li>
+<li><strong>Monitor your IP regularly:</strong> Use our <a href="/blocklist-checker">blocklist checker</a> to catch listings early.</li>
+</ul>
+
+<div class="card">
+<h3>Run a full free audit</h3>
+<p>Check your SPF, DKIM, DMARC, and blocklist status in one report. No signup required.</p>
+<p><a class="cta" href="/api/audit">Run free audit</a></p>
+</div>
+
+<h2>Related</h2>
+<ul>
+<li><a href="/blog/is-my-ip-blacklisted">Is my IP blacklisted? How to check and get delisted</a></li>
+<li><a href="/blog/is-my-domain-blacklisted">Is my domain blacklisted?</a></li>
+<li><a href="/blocklist-checker">Free blocklist checker</a></li>
+<li><a href="/dmarc-checker">Free DMARC checker</a></li>
+</ul>
+
+</div>
+</main>
+<footer>
+<div class="wrap">
+<span>&copy; 2026 InboxProof</span>
+<span><a href="/privacy">Privacy</a> &middot; <a href="/blog">Blog</a> &middot; <a href="/compare">Compare</a></span>
+</div>
+</footer>
+</body>
+</html>

@@ -1,0 +1,98 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Email Bounce Codes Explained: Hard vs Soft Bounces | InboxProof</title>
+<meta name="description" content="What email bounce codes mean and how to fix them: hard bounces (550, 5.1.1, 5.7.1), soft bounces (450, 4.2.1, 4.3.0), and the bounce-rate thresholds that get you delisted.">
+<link rel="canonical" href="https://inboxproof.email/blog/email-bounce-codes">
+<meta property="og:title" content="Email Bounce Codes Explained: Hard vs Soft Bounces">
+<meta property="og:description" content="A practical guide to email bounce codes: what each one means, hard vs soft, and how to fix it.">
+<meta property="og:type" content="article">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="/styles.css">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' rx='8' fill='%236366f1'/%3E%3Cpath d='M8 16h13M15 10l6 6-6 6' stroke='white' stroke-width='3' fill='none' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E">
+<script type="application/ld+json">
+{"@context":"https://schema.org","@type":"Article","headline":"Email Bounce Codes Explained: Hard vs Soft Bounces","description":"What email bounce codes mean and how to fix them: hard bounces (550, 5.1.1, 5.7.1), soft bounces (450, 4.2.1, 4.3.0), and the bounce-rate thresholds that get you delisted.","author":{"@type":"Organization","name":"InboxProof"},"publisher":{"@type":"Organization","name":"InboxProof"}}
+</script>
+</head>
+<body>
+<nav class="nav">
+  <div class="container">
+    <a class="logo" href="/">
+      <span class="mark"><svg viewBox="0 0 24 24" fill="none"><path d="M4 12h11M11 7l5 5-5 5" stroke="#fff" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"/></svg></span>
+      Inboxproof
+    </a>
+    <div class="nav-links"><a href="/">Run a free audit</a></div>
+  </div>
+</nav>
+
+<div class="container" style="max-width:760px;padding:60px 20px 80px">
+  <div class="kicker">Deliverability</div>
+  <h1 style="font-size:34px;margin:10px 0 12px">Email bounce codes explained: hard bounces, soft bounces, and what to do about each</h1>
+  <p style="opacity:.8;font-size:16px;margin-bottom:36px">When an email bounces, the receiving server sends back a code that tells you exactly why. Read it correctly and you know whether the problem is a dead address, a full mailbox, or your own sending configuration. Read it wrong and you keep sending to a wall.</p>
+
+  <div class="card" style="margin-bottom:28px;background:#eef2ff;border-color:#c7d2fe">
+    <h3 style="margin-top:0">See what is bouncing on your domain right now</h3>
+    <p style="opacity:.8;margin-bottom:14px">The <a href="/">free InboxProof audit</a> checks your SPF, DKIM, DMARC, PTR and IP reputation and flags the configuration problems that cause 5xx rejections. No signup.</p>
+    <a class="btn btn-primary" href="/">Audit my domain</a>
+  </div>
+
+  <h2 style="font-size:24px;margin:36px 0 12px">What is an email bounce?</h2>
+  <p>A bounce is the receiving mail server's way of saying "I will not accept this message." Every bounce carries a <strong>three-digit SMTP status code</strong> (like the ones in our <a href="/blog/smtp-error-codes">SMTP error code guide</a>) plus a short human-readable reason. The first digit tells you the most important thing:</p>
+  <ul style="font-size:16px;line-height:1.8">
+    <li><strong>4xx</strong> — <strong>soft bounce</strong>. Temporary. The server will retry. The message is not lost.</li>
+    <li><strong>5xx</strong> — <strong>hard bounce</strong>. Permanent. The server will not retry. The address or the request is dead.</li>
+  </ul>
+  <p>That single distinction drives everything else: how you clean your list, how you handle retries, and whether your sender reputation is at risk.</p>
+
+  <h2 style="font-size:24px;margin:36px 0 12px">Hard bounces (5xx): stop sending to these</h2>
+  <p>A hard bounce means the address or the request will never succeed. Keep sending to a hard-bounced address and you teach the receiving provider that your list is dirty, which drags your entire domain toward the spam folder.</p>
+  <table class="table" style="width:100%;border-collapse:collapse;font-size:15px">
+    <tr style="border-bottom:1px solid #2a2a2a"><th style="text-align:left;padding:8px 10px">Code</th><th style="text-align:left;padding:8px 10px">Meaning</th><th style="text-align:left;padding:8px 10px">Fix</th></tr>
+    <tr style="border-bottom:1px solid #222"><td style="padding:8px 10px">550 / 5.1.1</td><td style="padding:8px 10px">User unknown / mailbox does not exist</td><td style="padding:8px 10px">Remove the address from your list permanently.</td></tr>
+    <tr style="border-bottom:1px solid #222"><td style="padding:8px 10px">551 / 5.1.2</td><td style="padding:8px 10px">User is not a local recipient</td><td style="padding:8px 10px">Wrong domain in the address. Verify and remove.</td></tr>
+    <tr style="border-bottom:1px solid #222"><td style="padding:8px 10px">552 / 5.2.2</td><td style="padding:8px 10px">Mailbox over quota (sometimes)</td><td style="padding:8px 10px">Retry later; if it persists, treat as hard.</td></tr>
+    <tr style="border-bottom:1px solid #222"><td style="padding:8px 10px">553 / 5.1.8</td><td style="padding:8px 10px">Address rejected / syntax error</td><td style="padding:8px 10px">Fix the malformed address; remove if unfixable.</td></tr>
+    <tr style="border-bottom:1px solid #222"><td style="padding:8px 10px">554 / 5.7.1</td><td style="padding:8px 10px">Relay denied / policy rejection</td><td style="padding:8px 10px">Usually <strong>your</strong> SPF/DKIM/DMARC or IP reputation. Run an audit.</td></tr>
+    <tr style="border-bottom:1px solid #222"><td style="padding:8px 10px">550 5.7.26</td><td style="padding:8px 10px">Gmail: bulk sender rules not met</td><td style="padding:8px 10px">See our <a href="/blog/gmail-smtp-error-550-5-7-26">550 5.7.26 guide</a>.</td></tr>
+  </table>
+
+  <h2 style="font-size:24px;margin:36px 0 12px">Soft bounces (4xx): retry, then re-evaluate</h2>
+  <p>A soft bounce is temporary. The right response is to retry on a schedule. The wrong response is to give up immediately (you lose a real customer) or to hammer the address (you look like spam).</p>
+  <table class="table" style="width:100%;border-collapse:collapse;font-size:15px">
+    <tr style="border-bottom:1px solid #2a2a2a"><th style="text-align:left;padding:8px 10px">Code</th><th style="text-align:left;padding:8px 10px">Meaning</th><th style="text-align:left;padding:8px 10px">Fix</th></tr>
+    <tr style="border-bottom:1px solid #222"><td style="padding:8px 10px">450 / 4.7.0</td><td style="padding:8px 10px">Temporary failure / try again later</td><td style="padding:8px 10px">Retry with backoff (1h, 6h, 24h).</td></tr>
+    <tr style="border-bottom:1px solid #222"><td style="padding:8px 10px">451 / 4.3.0</td><td style="padding:8px 10px">Mail server busy / DNS timeout</td><td style="padding:8px 10px">Retry later. Check your own DNS health.</td></tr>
+    <tr style="border-bottom:1px solid #222"><td style="padding:8px 10px">452 / 4.2.1 / 4.2.2</td><td style="padding:8px 10px">Mailbox full / over quota</td><td style="padding:8px 10px">Retry daily for a few days, then pause.</td></tr>
+    <tr style="border-bottom:1px solid #222"><td style="padding:8px 10px">421</td><td style="padding:8px 10px">Server rate-limited you</td><td style="padding:8px 10px">Slow your send rate; check <a href="/blog/warm-up-calculator">warm-up volume</a>.</td></tr>
+  </table>
+
+  <h2 style="font-size:24px;margin:36px 0 12px">Bounce-rate thresholds: when to stop</h2>
+  <p>Receiving providers and ESPs watch your <strong>bounce rate</strong> (bounces ÷ sends) closely. The commonly cited guardrails:</p>
+  <ul style="font-size:16px;line-height:1.8">
+    <li><strong>&lt; 2%</strong> — healthy. Keep sending.</li>
+    <li><strong>2–5%</strong> — warning. Clean your list and check your authentication.</li>
+    <li><strong>&gt; 5%</strong> — danger. Pause the campaign, clean aggressively, and fix the root cause before you send again.</li>
+    <li><strong>&gt; 10%</strong> — your sender reputation is at serious risk. Stop, audit, and warm back up.</li>
+  </ul>
+  <p>Most of the time a rising bounce rate is not a "bad list" problem — it is an <strong>authentication or reputation</strong> problem on your sending domain. That is the part you can fix in an afternoon.</p>
+
+  <div style="background:#0f172a;color:#fff;border-radius:12px;padding:32px;text-align:center;margin:40px 0">
+    <h2 style="color:#fff;margin-bottom:8px">Find the cause behind your bounces</h2>
+    <p style="opacity:.8;margin-bottom:20px">Run a free audit on your sending domain and see which records are causing 5xx rejections.</p>
+    <a class="btn btn-primary btn-lg" href="/">Open the free audit</a>
+  </div>
+
+  <p style="opacity:.6;font-size:13px;margin-top:28px">Related: <a href="/blog/smtp-error-codes">SMTP error codes</a> · <a href="/blog/cold-email-deliverability">Cold email deliverability</a> · <a href="/blog/email-in-spam">Why email lands in spam</a> · <a href="/blog/gmail-smtp-error-550-5-7-26">Gmail 550 5.7.26</a></p>
+</div>
+
+<footer>
+  <div class="container">
+    <span>© 2026 Inboxproof, Inc.</span>
+    <span><a href="/">Home</a> · <a href="/privacy">Privacy</a></span>
+  </div>
+</footer>
+</body>
+</html>

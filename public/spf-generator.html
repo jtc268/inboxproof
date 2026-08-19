@@ -1,0 +1,219 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Free SPF Record Generator — Build Your SPF TXT Record</title>
+<meta name="description" content="Generate a correct SPF record for your domain in seconds. Pick your email providers, get the exact TXT record, and copy-paste it into your DNS. Free, no signup.">
+<meta property="og:title" content="Free SPF Record Generator — Inboxproof">
+<meta property="og:description" content="Generate the exact SPF TXT record for your domain from your email providers and get step-by-step DNS instructions. Free, no signup.">
+<meta property="og:type" content="website">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="/styles.css">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' rx='8' fill='%236366f1'/%3E%3Cpath d='M8 16h13M15 10l6 6-6 6' stroke='white' stroke-width='3' fill='none' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E">
+<script type="application/ld+json">
+{"@context":"https://schema.org","@type":"WebApplication","name":"Inboxproof Free SPF Record Generator","applicationCategory":"Utilities","operatingSystem":"Web","description":"Generates the exact SPF TXT record for a domain from the selected email providers and a hard/soft fail qualifier, with DNS provider instructions.","offers":{"@type":"Offer","price":"0","priceCurrency":"USD"}}
+</script>
+<script type="application/ld+json">
+{"@context":"https://schema.org","@type":"FAQPage","mainEntity":[
+ {"@type":"Question","name":"What is an SPF record?","acceptedAnswer":{"@type":"Answer","text":"An SPF record is a DNS TXT record published at your domain root that lists the servers allowed to send email as your domain. Receivers check it to reject mail from unauthorized servers."}},
+ {"@type":"Question","name":"What should my SPF record end with?","acceptedAnswer":{"@type":"Answer","text":"End with -all (hard fail) so receivers reject anything not on your list. ~all (soft fail) is more forgiving but weaker. -all is the recommended default once your list is correct."}},
+ {"@type":"Question","name":"How many providers can I include?","acceptedAnswer":{"@type":"Answer","text":"Keep the total DNS lookups to 10 or fewer. Each include counts as one lookup. If you use many providers, consolidate them behind a dedicated _spf subdomain."}},
+ {"@type":"Question","name":"Where do I put the SPF record?","acceptedAnswer":{"@type":"Answer","text":"Add it as a TXT record at the domain root (host name left blank or @). The value is the record this tool generates."}}
+]}
+</script>
+</head>
+<body>
+<nav class="nav">
+  <div class="container">
+    <a class="logo" href="/">
+      <span class="mark"><svg viewBox="0 0 24 24" fill="none"><path d="M4 12h11M11 7l5 5-5 5" stroke="#fff" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"/></svg></span>
+      Inboxproof
+    </a>
+    <div class="nav-links"><a href="/">Run a free audit</a> · <a href="/blog">Guides</a></div>
+  </div>
+</nav>
+
+<div class="container" style="max-width:760px;padding:60px 20px 80px;text-align:center">
+  <div class="kicker">Free tool</div>
+  <h1 style="font-size:38px;margin:10px 0 12px">SPF record generator</h1>
+  <p style="opacity:.8;font-size:16px;margin-bottom:30px">Pick the providers you send from, choose a fail mode, and get the exact TXT record to publish. No signup, no email required.</p>
+
+  <div class="card" style="text-align:left;padding:22px">
+    <div style="display:grid;gap:16px">
+      <div>
+        <label style="display:block;font-size:13px;font-weight:600;margin-bottom:6px;opacity:.8">Your domain</label>
+        <input id="domain" type="text" placeholder="yourdomain.com" style="width:100%;padding:12px 14px;border-radius:10px;border:1px solid #d4d4d8;font-size:15px;background:#fff" autocomplete="off" spellcheck="false">
+      </div>
+      <div>
+        <label style="display:block;font-size:13px;font-weight:600;margin-bottom:6px;opacity:.8">Send email from these providers</label>
+        <div id="esps" style="display:grid;grid-template-columns:repeat(auto-fill,minmax(210px,1fr));gap:8px"></div>
+      </div>
+      <div id="sesWrap" style="display:none">
+        <label style="display:block;font-size:13px;font-weight:600;margin-bottom:6px;opacity:.8">Amazon SES region</label>
+        <select id="sesRegion" style="width:100%;padding:12px 14px;border-radius:10px;border:1px solid #d4d4d8;font-size:15px;background:#fff">
+          <option value="us-east-1">us-east-1 (N. Virginia)</option>
+          <option value="us-west-2">us-west-2 (Oregon)</option>
+          <option value="eu-west-1">eu-west-1 (Ireland)</option>
+          <option value="eu-central-1">eu-central-1 (Frankfurt)</option>
+          <option value="ap-southeast-1">ap-southeast-1 (Singapore)</option>
+          <option value="ap-northeast-1">ap-northeast-1 (Tokyo)</option>
+        </select>
+      </div>
+      <div>
+        <label style="display:block;font-size:13px;font-weight:600;margin-bottom:6px;opacity:.8">Also allow these IP addresses (optional)</label>
+        <input id="ips" type="text" placeholder="203.0.113.5, 198.51.100.0/24" style="width:100%;padding:12px 14px;border-radius:10px;border:1px solid #d4d4d8;font-size:15px;background:#fff" autocomplete="off" spellcheck="false">
+      </div>
+      <div>
+        <label style="display:block;font-size:13px;font-weight:600;margin-bottom:6px;opacity:.8">Fail mode</label>
+        <div style="display:flex;gap:10px;flex-wrap:wrap">
+          <label style="flex:1;min-width:150px"><input type="radio" name="qual" value="-all" checked style="margin-right:8px"> <span style="font-size:14px"><strong>-all</strong> — reject others (recommended)</span></label>
+          <label style="flex:1;min-width:150px"><input type="radio" name="qual" value="~all" style="margin-right:8px"> <span style="font-size:14px"><strong>~all</strong> — soft fail (forgiving)</span></label>
+        </div>
+      </div>
+    </div>
+    <p id="err" style="color:#dc2626;font-size:14px;min-height:20px;margin:14px 0 0"></p>
+  </div>
+
+  <div id="result" style="display:none;text-align:left;margin-top:20px">
+    <div class="card" style="padding:22px">
+      <div style="display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:10px;margin-bottom:12px">
+        <strong style="font-size:15px">Your SPF record</strong>
+        <button id="copy" class="btn btn-ghost" style="padding:8px 14px;font-size:14px">Copy to clipboard</button>
+      </div>
+      <div id="record" style="font-family:ui-monospace,monospace;font-size:14px;background:#f4f4f5;border:1px solid #e4e4e7;border-radius:10px;padding:14px;white-space:pre-wrap;word-break:break-all"></div>
+      <p id="warn" style="color:#d97706;font-size:13.5px;margin:12px 0 0"></p>
+      <div style="margin-top:14px">
+        <div style="font-size:13px;font-weight:600;opacity:.8;margin-bottom:6px">Where it goes</div>
+        <div style="font-size:14px;opacity:.85;line-height:1.6">
+          Add a <strong>TXT</strong> record at the <strong>domain root</strong> (host name blank or <code style="background:#f4f4f5;padding:2px 6px;border-radius:6px;font-size:13px">@</code>) with the value above. Only one SPF record is allowed per domain.
+        </div>
+      </div>
+      <div style="margin-top:16px;display:flex;gap:10px;flex-wrap:wrap">
+        <button id="verify" class="btn btn-primary">Check if it's live</button>
+      </div>
+      <p id="verify-msg" style="font-size:14px;margin:12px 0 0;min-height:20px"></p>
+    </div>
+
+    <div class="card" style="margin-top:16px;padding:22px">
+      <h3 style="margin-top:0">Provider quick-steps</h3>
+      <div style="font-size:14px;opacity:.85;line-height:1.7">
+        <p style="margin:0 0 10px"><strong>Cloudflare</strong> — DNS → Records → Add record. Type TXT, Name <code>@</code>, Content the record, TTL Auto.</p>
+        <p style="margin:0 0 10px"><strong>GoDaddy</strong> — DNS → Manage Records → Add New Record. Type TXT, Name <code>@</code>, Value the record.</p>
+        <p style="margin:0 0 10px"><strong>Namecheap</strong> — Manage DNS → Add New Record. Type TXT, Host <code>@</code>, Value the record.</p>
+        <p style="margin:0 0 10px"><strong>AWS Route 53</strong> — Hosted zone → Create record. Type TXT, Record name <code>@</code>, Value the record.</p>
+        <p style="margin:0"><strong>Google Workspace</strong> — DNS → Custom resource records. Type TXT, Name <code>@</code>, Content the record.</p>
+      </div>
+    </div>
+
+    <div class="card" style="margin-top:16px;padding:22px;background:#eef2ff;border-color:#c7d2fe;text-align:center">
+      <h3 style="margin-top:0">Want to know if you're actually safe?</h3>
+      <p style="opacity:.8;margin-bottom:14px">SPF is one of three records. The full audit checks SPF, DKIM, DMARC, MX, TLS and more, and scores your domain 0–100.</p>
+      <a class="btn btn-primary btn-lg" href="/spf-checker">Run the free SPF check</a>
+      <p style="opacity:.6;font-size:13px;margin-bottom:0">Or read first: <a href="/blog/spf-dkim-dmarc">SPF vs DKIM vs DMARC</a> · <a href="/blog/spf-not-working">Why SPF isn't working</a></p>
+    </div>
+  </div>
+</div>
+
+<footer>
+  <div class="container">
+    <span>© 2026 Inboxproof, Inc.</span>
+    <span><a href="/">Home</a> · <a href="/blog">Guides</a> · <a href="/privacy">Privacy</a></span>
+  </div>
+</footer>
+
+<script>
+const ESPS = [
+  { id: 'google', label: 'Google Workspace', inc: '_spf.google.com' },
+  { id: 'm365', label: 'Microsoft 365 / Outlook', inc: 'spf.protection.outlook.com' },
+  { id: 'ses', label: 'Amazon SES', inc: null },
+  { id: 'sendgrid', label: 'SendGrid', inc: 'sendgrid.net' },
+  { id: 'mailgun', label: 'Mailgun', inc: 'mailgun.org' },
+  { id: 'constantcontact', label: 'Constant Contact', inc: 'send.constantcontact.com' },
+  { id: 'hubspot', label: 'HubSpot', inc: 'hubspot.email' },
+  { id: 'salesforce', label: 'Salesforce Marketing Cloud', inc: 'mc-send.com' },
+  { id: 'braze', label: 'Braze', inc: 'braze.com' },
+  { id: 'postmark', label: 'Postmark', inc: 's.postmarkapp.com' },
+];
+const domainEl = document.getElementById('domain');
+const ipsEl = document.getElementById('ips');
+const err = document.getElementById('err');
+const result = document.getElementById('result');
+const recordEl = document.getElementById('record');
+const warnEl = document.getElementById('warn');
+const espsEl = document.getElementById('esps');
+let lastDomain = '';
+
+ESPS.forEach(e => {
+  const lab = document.createElement('label');
+  lab.style.cssText = 'display:flex;align-items:center;gap:8px;font-size:14px;padding:8px 10px;border:1px solid #e4e4e7;border-radius:8px;cursor:pointer;background:#fff';
+  lab.innerHTML = '<input type="checkbox" data-esp="' + e.id + '" style="margin:0"> ' + e.label;
+  espsEl.appendChild(lab);
+});
+
+function buildRecord() {
+  const domain = domainEl.value.trim().toLowerCase().replace(/^https?:\/\//, '').replace(/\/.*$/, '');
+  if (!domain) return { error: 'Enter your domain first.' };
+  if (!/^[a-z0-9.-]+\.[a-z]{2,}$/.test(domain)) return { error: 'That does not look like a valid domain.' };
+  const qual = document.querySelector('input[name="qual"]:checked').value;
+  const chosen = [...document.querySelectorAll('input[data-esp]:checked')].map(c => ESPS.find(e => e.id === c.dataset.esp));
+  const ips = ipsEl.value.split(',').map(s => s.trim()).filter(Boolean);
+  const badIp = ips.find(ip => !/^\d{1,3}(\.\d{1,3}){3}(\\/\d{1,2})?$/.test(ip));
+  if (badIp) return { error: '"' + badIp + '" is not a valid IPv4 address or CIDR range.' };
+  const parts = ['v=spf1'];
+  let lookups = 0;
+  chosen.forEach(e => {
+    if (e.id === 'ses') {
+      parts.push('include:ses.' + document.getElementById('sesRegion').value + '.amazonaws.com');
+      lookups++;
+    } else if (e.inc) { parts.push('include:' + e.inc); lookups++; }
+  });
+  ips.forEach(ip => parts.push('ip4:' + ip));
+  parts.push(qual);
+  return { domain, record: parts.join(' '), lookups, none: chosen.length === 0 && ips.length === 0 };
+}
+
+function render() {
+  const out = buildRecord();
+  document.getElementById('sesWrap').style.display = (document.querySelector('input[data-esp="ses"]') && document.querySelector('input[data-esp="ses"]').checked) ? 'block' : 'none';
+  if (out.error) { err.textContent = out.error; result.style.display = 'none'; return; }
+  err.textContent = '';
+  lastDomain = out.domain;
+  recordEl.textContent = out.record;
+  warnEl.textContent = out.lookups > 10 ? '⚠ ' + out.lookups + ' DNS lookups — over the 10-lookup limit. Consolidate providers behind a _spf subdomain.' : (out.none ? 'No providers selected — this record authorizes nothing. Add at least one provider or IP.' : '');
+  result.style.display = 'block';
+  document.getElementById('verify-msg').textContent = '';
+}
+
+document.addEventListener('change', e => { if (e.target.name === 'qual' || e.target.dataset.esp) render(); });
+domainEl.addEventListener('input', render);
+ipsEl.addEventListener('input', render);
+
+document.getElementById('copy').addEventListener('click', async () => {
+  try { await navigator.clipboard.writeText(recordEl.textContent); document.getElementById('copy').textContent = 'Copied ✓'; setTimeout(() => document.getElementById('copy').textContent = 'Copy to clipboard', 1600); }
+  catch { document.getElementById('copy').textContent = 'Select and copy manually'; }
+});
+
+document.getElementById('verify').addEventListener('click', async () => {
+  const msg = document.getElementById('verify-msg');
+  const btn = document.getElementById('verify');
+  msg.textContent = ''; btn.disabled = true; btn.textContent = 'Checking…';
+  try {
+    const r = await fetch('/api/dmarc-check?domain=' + encodeURIComponent(lastDomain));
+    const j = await r.json();
+    if (!r.ok) { msg.textContent = j.error || 'Could not verify.'; return; }
+    const spf = (j.checks || []).find(c => /spf/i.test(c.name));
+    if (spf && spf.status === 'pass') {
+      msg.innerHTML = '<span style="color:#16a34a;font-weight:600">Live ✓</span> Your SPF record is published and readable.';
+    } else if (spf && spf.status === 'warn') {
+      msg.innerHTML = '<span style="color:#d97706;font-weight:600">Live, with a warning.</span> ' + (spf.detail || '') + ' <a href="/spf-checker" style="opacity:.8">See details →</a>';
+    } else {
+      msg.innerHTML = '<span style="color:#d97706;font-weight:600">Not live yet.</span> DNS can take a few minutes to several hours. Try again later, or ' + '<a href="/spf-checker" style="opacity:.8">run the full check</a>.';
+    }
+  } catch { msg.textContent = 'Something went wrong. Try again in a moment.'; }
+  finally { btn.disabled = false; btn.textContent = "Check if it's live"; }
+});
+</script>
+</body>
+</html>

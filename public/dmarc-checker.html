@@ -1,0 +1,156 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Free DMARC Checker — Test Your Domain's Email Authentication</title>
+<meta name="description" content="Check your domain's SPF, DKIM, DMARC and MX records in seconds. Free, no signup. See exactly which authentication records are missing and how to fix them.">
+<meta property="og:title" content="Free DMARC Checker — Inboxproof">
+<meta property="og:description" content="Check your domain's SPF, DKIM, DMARC and MX records in seconds. Free, no signup.">
+<meta property="og:type" content="website">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="/styles.css">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' rx='8' fill='%236366f1'/%3E%3Cpath d='M8 16h13M15 10l6 6-6 6' stroke='white' stroke-width='3' fill='none' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E">
+<script type="application/ld+json">
+{"@context":"https://schema.org","@type":"WebApplication","name":"Inboxproof Free DMARC Checker","applicationCategory":"Utilities","operatingSystem":"Web","description":"Checks a domain's SPF, DKIM, DMARC and MX records and reports which email authentication records are missing or misconfigured.","offers":{"@type":"Offer","price":"0","priceCurrency":"USD"}}
+</script>
+<script type="application/ld+json">
+{"@context":"https://schema.org","@type":"FAQPage","mainEntity":[
+{"@type":"Question","name":"What does a DMARC checker check?","acceptedAnswer":{"@type":"Answer","text":"It looks up your domain's SPF, DKIM, DMARC and MX DNS records in real time, scores them, and shows the exact record to add or fix if one is missing or misconfigured."}},
+{"@type":"Question","name":"Is this DMARC checker free?","acceptedAnswer":{"@type":"Answer","text":"Yes. The quick check is free and does not require a signup. You can optionally enter an email to save a full report."}},
+{"@type":"Question","name":"What does the DMARC score mean?","acceptedAnswer":{"@type":"Answer","text":"The score (0-100) reflects how many of the core deliverability checks pass. 90+ is inbox-ready, 70-89 is good, 50-69 is at risk, and below 50 is failing core checks."}},
+{"@type":"Question","name":"How often should I check my DMARC record?","acceptedAnswer":{"@type":"Answer","text":"After any DNS or email-provider change, and at least monthly. Inboxproof Pro monitors your domain continuously and alerts you the moment a record breaks."}},
+{"@type":"Question","name":"What is DMARC and why does it matter?","acceptedAnswer":{"@type":"Answer","text":"DMARC is a DNS record that tells email receivers what to do with mail claiming to come from your domain that failed authentication. Gmail and Microsoft treat a missing DMARC record as a filter signal for bulk mail in 2026."}}
+]}
+</script>
+</head>
+<body>
+<nav class="nav">
+  <div class="container">
+    <a class="logo" href="/">
+      <span class="mark"><svg viewBox="0 0 24 24" fill="none"><path d="M4 12h11M11 7l5 5-5 5" stroke="#fff" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"/></svg></span>
+      Inboxproof
+    </a>
+    <div class="nav-links"><a href="/">Run a free audit</a> · <a href="/blog">Guides</a></div>
+  </div>
+</nav>
+
+<div class="container" style="max-width:760px;padding:60px 20px 80px;text-align:center">
+  <div class="kicker">Free tool</div>
+  <h1 style="font-size:38px;margin:10px 0 12px">DMARC checker</h1>
+  <p style="opacity:.8;font-size:16px;margin-bottom:30px">Enter your domain. We look up its SPF, DKIM, DMARC and MX records and tell you exactly what's missing or misconfigured. No signup, no email required.</p>
+
+  <form id="check-form" style="display:flex;gap:10px;max-width:520px;margin:0 auto 10px;flex-wrap:wrap;justify-content:center">
+    <input id="domain" type="text" placeholder="yourdomain.com" style="flex:1;min-width:220px;padding:14px 16px;border-radius:10px;border:1px solid #d4d4d8;font-size:16px;background:#fff" autocomplete="off" spellcheck="false">
+    <button class="btn btn-primary btn-lg" type="submit">Check my domain</button>
+  </form>
+  <p id="err" style="color:#dc2626;font-size:14px;min-height:20px;margin-top:8px"></p>
+
+  <div id="result" style="display:none;text-align:left">
+    <div class="card" id="score-card" style="margin-bottom:16px">
+      <div style="display:flex;align-items:center;gap:16px;flex-wrap:wrap">
+        <div id="score-num" style="font-size:44px;font-weight:800;line-height:1">–</div>
+        <div>
+          <div id="score-grade" style="font-size:18px;font-weight:700">–</div>
+          <div id="score-note" style="opacity:.7;font-size:14px">–</div>
+        </div>
+      </div>
+    </div>
+    <div id="checks"></div>
+    <div id="lead" style="display:none;margin-top:20px">
+      <div class="card" style="background:#eef2ff;border-color:#c7d2fe">
+        <h3 style="margin-top:0">Save the full report</h3>
+        <p style="opacity:.8;margin-bottom:14px">Add your email and we'll run the complete audit (adds TLS, reverse DNS and blocklist checks), save a shareable report link, and keep your score history. Free, no card.</p>
+        <form id="lead-form" style="display:flex;gap:10px;flex-wrap:wrap">
+          <input id="lead-email" type="email" placeholder="you@yourdomain.com" style="flex:1;min-width:220px;padding:12px 14px;border-radius:10px;border:1px solid #c7d2fe;font-size:15px" autocomplete="off" required>
+          <button class="btn btn-primary" type="submit">Run full audit &amp; save</button>
+        </form>
+        <p id="lead-err" style="color:#dc2626;font-size:13px;min-height:18px;margin-top:8px"></p>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="container" style="max-width:760px;padding:0 20px 80px">
+  <div class="card" style="text-align:center">
+    <h3 style="margin-top:0">This check is a snapshot</h3>
+    <p style="opacity:.8">DNS records change. The full audit adds TLS, reverse DNS and blocklist checks, and Pro re-checks your domain daily so a broken record never goes unnoticed.</p>
+    <a class="btn btn-primary btn-lg" href="/#audit">Run the full free audit</a>
+    <p style="opacity:.6;font-size:13px;margin-bottom:0">Need the record itself? <a href="/dmarc-generator">Free DMARC record generator</a>. Only checking SPF? <a href="/spf-checker">Free SPF checker</a>. Only checking DKIM? <a href="/dkim-checker">Free DKIM checker</a>. Prefer to read first? <a href="/blog/dmarc-record">How to create a DMARC record</a> · <a href="/blog/dmarc">What is DMARC?</a> · <a href="/blog/spf-dkim-dmarc">SPF vs DKIM vs DMARC</a> · <a href="/mx-checker">MX checker</a> · <a href="/blocklist-checker">IP blocklist checker</a> · <a href="/header-analyzer">Email header analyzer</a> · <a href="/dmarc-report-parser">DMARC report parser</a> · <a href="/cold-email-checker">Cold email deliverability checker</a></p>
+  </div>
+</div>
+
+<footer>
+  <div class="container">
+    <span>© 2026 Inboxproof, Inc.</span>
+    <span><a href="/">Home</a> · <a href="/blog">Guides</a> · <a href="/privacy">Privacy</a></span>
+  </div>
+</footer>
+
+<script>
+const form = document.getElementById('check-form');
+const err = document.getElementById('err');
+const result = document.getElementById('result');
+const checksEl = document.getElementById('checks');
+const leadEl = document.getElementById('lead');
+let lastDomain = '';
+document.getElementById('lead-form').addEventListener('submit', async e => {
+  e.preventDefault();
+  const email = document.getElementById('lead-email').value.trim();
+  const le = document.getElementById('lead-err');
+  le.textContent = '';
+  const btn = e.target.querySelector('button');
+  btn.disabled = true; btn.textContent = 'Running…';
+  try {
+    const r = await fetch('/api/audit', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ domain: lastDomain, email }) });
+    const j = await r.json();
+    if (!r.ok) { le.textContent = j.error || 'Could not save the report.'; return; }
+    window.location.href = '/r/' + j.reportId;
+  } catch {
+    le.textContent = 'Something went wrong. Try again.';
+  } finally {
+    btn.disabled = false; btn.textContent = 'Run full audit & save';
+  }
+});
+const STATUS = {
+  pass: { color: '#16a34a', label: 'OK' },
+  warn: { color: '#d97706', label: 'Needs attention' },
+  fail: { color: '#dc2626', label: 'Missing or broken' },
+};
+form.addEventListener('submit', async e => {
+  e.preventDefault();
+  err.textContent = '';
+  const domain = document.getElementById('domain').value.trim().toLowerCase().replace(/^https?:\/\//, '').replace(/\/.*$/, '');
+  if (!domain) { err.textContent = 'Enter a domain first.'; return; }
+  const btn = form.querySelector('button');
+  btn.disabled = true; btn.textContent = 'Checking…';
+  try {
+    const r = await fetch('/api/dmarc-check?domain=' + encodeURIComponent(domain));
+    const j = await r.json();
+    if (!r.ok) { err.textContent = j.error || 'Check failed.'; return; }
+    lastDomain = j.domain;
+    leadEl.style.display = 'block';
+    document.getElementById('score-num').textContent = j.score;
+    document.getElementById('score-grade').textContent = 'Grade ' + j.grade + ' — ' + j.domain;
+    document.getElementById('score-note').textContent =
+      j.score >= 90 ? 'Your email authentication is in good shape.' :
+      j.score >= 70 ? 'Solid, but a few records could be stronger.' :
+      j.score >= 50 ? 'Important gaps — your domain is easier to spoof than it should be.' :
+      'Major gaps — unauthorized senders can likely use your domain.';
+    checksEl.innerHTML = j.checks.map(c => {
+      const s = STATUS[c.status] || STATUS.fail;
+      const fix = c.fix ? '<div style="margin-top:10px;padding:10px 12px;background:#f4f4f5;border-radius:8px;font-size:13px;white-space:pre-wrap;opacity:.85"><strong>How to fix:</strong> ' + c.fix.replace(/</g, '&lt;') + '</div>' : '';
+      return '<div class="card" style="margin-bottom:12px"><div style="display:flex;align-items:center;gap:10px;flex-wrap:wrap"><span style="width:10px;height:10px;border-radius:50%;background:' + s.color + ';display:inline-block"></span><strong>' + c.name + '</strong><span style="color:' + s.color + ';font-weight:600;font-size:14px">' + s.label + '</span></div><p style="opacity:.8;margin:8px 0 0;font-size:14px">' + c.detail.replace(/</g, '&lt;') + '</p>' + fix + '</div>';
+    }).join('');
+    result.style.display = 'block';
+    result.scrollIntoView({ behavior: 'smooth', block: 'start' });
+  } catch (ex) {
+    err.textContent = 'Something went wrong. Try again in a moment.';
+  } finally {
+    btn.disabled = false; btn.textContent = 'Check my domain';
+  }
+});
+</script>
+</body>
+</html>

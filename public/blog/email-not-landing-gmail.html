@@ -1,0 +1,73 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Why your email is not landing in Gmail's inbox in 2026 — Inboxproof</title>
+<meta name="description" content="The concrete requirements Gmail enforces for bulk senders in 2026: SPF, DKIM, DMARC, spam rates, one-click unsubscribe, and volume limits. How to check each one.">
+<meta property="og:title" content="Why your email is not landing in Gmail's inbox in 2026">
+<meta property="og:description" content="The concrete requirements Gmail enforces for bulk senders, and how to check each one.">
+<meta property="og:type" content="article">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="/styles.css">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' rx='8' fill='%236366f1'/%3E%3Cpath d='M8 16h13M15 10l6 6-6 6' stroke='white' stroke-width='3' fill='none' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E">
+<script type="application/ld+json">
+{"@context":"https://schema.org","@type":"Article","headline":"Why your email is not landing in Gmail's inbox in 2026","description":"The concrete requirements Gmail enforces for bulk senders and how to check each one.","author":{"@type":"Organization","name":"Inboxproof"},"publisher":{"@type":"Organization","name":"Inboxproof"}}
+</script>
+</head>
+<body>
+<nav class="nav">
+  <div class="container">
+    <a class="logo" href="/">
+      <span class="mark"><svg viewBox="0 0 24 24" fill="none"><path d="M4 12h11M11 7l5 5-5 5" stroke="#fff" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"/></svg></span>
+      Inboxproof
+    </a>
+    <div class="nav-links"><a href="/blog">All guides</a><a href="/">Run a free audit</a></div>
+  </div>
+</nav>
+
+<div class="container" style="max-width:760px;padding:60px 20px 80px">
+  <div class="kicker">Guide</div>
+  <h1 style="font-size:34px;margin:10px 0 24px">Email not landing in Gmail? Check these in order</h1>
+  <div style="opacity:.85;line-height:1.75;font-size:15.5px">
+    <p>If your mail is going to Gmail's spam folder or not arriving at all, the cause is almost always one of a short list of concrete requirements, not a vague "reputation" problem. Gmail publishes what it expects from bulk senders, and each requirement is testable. Work through them in this order, because each one gates the next.</p>
+
+    <h2 style="font-size:22px;margin:34px 0 12px">1. Authentication: SPF, DKIM, DMARC</h2>
+    <p>Gmail requires SPF or DKIM on every message, and a published DMARC record on the sending domain, as a condition of bulk sending. "Published" means a TXT record at <code>_dmarc.yourdomain.com</code>, and the minimum accepted policy is <code>p=none</code>. If any of the three is missing, Gmail has a documented reason to keep you out of the inbox. This is the layer most businesses fail: they set up SPF in 2019, never added DKIM, and never heard of DMARC. The <a href="/dmarc-checker">free DMARC checker</a> tells you in seconds which of the three is missing.</p>
+
+    <h2 style="font-size:22px;margin:34px 0 12px">2. Alignment</h2>
+    <p>Authentication is not enough if the domains do not line up. The domain in the From header has to align with the domain that passed SPF or DKIM. Mail sent from <code>yourdomain.com</code> through an ESP that signs with <code>esp-provider.com</code> will pass DKIM on the provider's domain, but DMARC alignment fails on yours, and Gmail sees a failure. The fix is either to send From the ESP's own domain or to configure the ESP to sign with your domain. This is the second most common cause of "I have all three records but still land in spam."</p>
+
+    <h2 style="font-size:22px;margin:34px 0 12px">3. Spam rate</h2>
+    <p>Gmail asks bulk senders to keep user-reported spam below 0.3% (0.1% for very large senders). If recipients keep marking your mail as spam, no amount of DNS records will hold the inbox. Practical levers: clean your list (remove addresses that have not opened in 6+ months), stop buying lists, and make sure your content matches what the recipient expects. A sudden spike in spam reports is usually a list-quality problem, not a DNS problem.</p>
+
+    <h2 style="font-size:22px;margin:34px 0 12px">4. One-click unsubscribe</h2>
+    <p>Commercial mail needs a working List-Unsubscribe header (the one-click kind, not just a mailto link) and must honor unsubscribes within 48 hours. Gmail treats broken or missing unsubscribe as a spam signal. If you send commercial mail, check that the header is present in your actual outgoing messages, not just in your ESP's settings.</p>
+
+    <h2 style="font-size:22px;margin:34px 0 12px">5. Volume and warmup</h2>
+    <p>New sending IPs and domains that suddenly send large volumes get sandboxed: Gmail delivers a sample of your mail to evaluate it, and the rest goes to spam or is held. If you recently changed ESPs or started a campaign from a cold IP, the fix is gradual ramp-up over days, not a full blast on day one. This is temporary by design, and it is the reason "it was fine until Tuesday" happens.</p>
+
+    <h2 style="font-size:22px;margin:34px 0 12px">How to diagnose which one you have</h2>
+    <p style="margin:0 0 14px">1. <b>Authentication missing?</b> Run the free checker. Missing SPF, DKIM or DMARC is the most common cause and the fastest to fix.</p>
+    <p style="margin:0 0 14px">2. <b>All three present but still spam?</b> It is alignment or list quality. Check the From domain against your DKIM signature, and look at your bounce and complaint rates in your ESP.</p>
+    <p style="margin:0 0 14px">3. <b>Recent change, sudden drop?</b> Volume/warmup or a broken record that recently expired. Check both: a DNS record that was deleted or a TXT that lost its <code>-all</code>.</p>
+
+    <p style="opacity:.6;font-size:13px;margin-top:28px">Related: <a href="/blog/email-in-spam">Why is my email in spam?</a> · <a href="/blog/dmarc">What is DMARC?</a> · <a href="/blog/dmarc-policies">p=none vs quarantine vs reject</a></p>
+
+    <div style="margin-top:40px;text-align:center;background:linear-gradient(180deg,rgba(99,102,241,.12),transparent);border:1px solid rgba(99,102,241,.35);border-radius:14px;padding:26px">
+      <h3 style="font-size:18px;margin-bottom:6px">Start with the 30-second check</h3>
+      <p style="opacity:.75;font-size:14px;margin-bottom:16px">The free <a href="/dmarc-checker">DMARC checker</a> looks up SPF, DKIM, DMARC and MX for your domain and shows the exact record to add if one is missing. No signup.</p>
+      <a class="btn btn-primary" href="/dmarc-checker">Check my domain now</a>
+    </div>
+  </div>
+</div>
+
+<footer>
+  <div class="container">
+    <span>© 2026 Inboxproof, Inc.</span>
+    <span><a href="/blog">All guides</a> · <a href="/">Home</a> · <a href="/privacy">Privacy</a></span>
+  </div>
+</footer>
+</body>
+</html>

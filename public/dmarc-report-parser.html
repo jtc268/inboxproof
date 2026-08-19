@@ -1,0 +1,201 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Free DMARC Report Parser — Understand Your Aggregate XML in Plain English</title>
+<meta name="description" content="Paste your DMARC aggregate (rua) XML report and get a plain-English summary: which IPs and domains are sending as you, how many are aligned, and which look unauthorized. Free, runs in your browser, nothing is uploaded.">
+<meta property="og:title" content="Free DMARC Report Parser — Inboxproof">
+<meta property="og:description" content="Turn your DMARC aggregate XML into a plain-English who's-sending-as-you report. Free, private, runs in your browser.">
+<meta property="og:type" content="website">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="/styles.css">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' rx='8' fill='%236366f1'/%3E%3Cpath d='M8 16h13M15 10l6 6-6 6' stroke='white' stroke-width='3' fill='none' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E">
+<script type="application/ld+json">
+{"@context":"https://schema.org","@type":"WebApplication","name":"DMARC Report Parser","applicationCategory":"DeveloperApplication","operatingSystem":"Any (browser)","description":"Pastes a DMARC aggregate (rua) XML report and summarizes, in plain English, which IPs and domains sent mail claiming your domain, how many are aligned, and which look unauthorized.","offers":{"@type":"Offer","price":"0","priceCurrency":"USD"},"publisher":{"@type":"Organization","name":"Inboxproof"}}
+</script>
+<script type="application/ld+json">
+{"@context":"https://schema.org","@type":"FAQPage","mainEntity":[
+ {"@type":"Question","name":"Where do I get a DMARC aggregate report?","acceptedAnswer":{"@type":"Answer","text":"If your DMARC record has a rua= address, providers like Gmail and Microsoft send you a weekly XML file there. Open the email, download the attachment (or copy the XML body), and paste it here. You can also use a report aggregator that forwards them to you."}},
+ {"@type":"Question","name":"Is my DMARC report uploaded anywhere?","acceptedAnswer":{"@type":"Answer","text":"No. The report is parsed entirely in your browser. Nothing you paste is sent to any server."}},
+ {"@type":"Question","name":"What does it mean if an IP is 'unauthorized'?","acceptedAnswer":{"@type":"Answer","text":"It means mail claiming your domain came from an IP that did not pass SPF (or passed SPF for a different domain) and was not covered by an aligned DKIM signature. It may be a legitimate tool you forgot to add to SPF, or a spoofer. Investigate the source before tightening your policy."}}
+]}
+</script>
+</head>
+<body>
+<nav class="nav">
+  <div class="container">
+    <a class="logo" href="/"><span class="mark"><svg viewBox="0 0 24 24" fill="none"><path d="M4 12h11M11 7l5 5-5 5" stroke="#fff" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"/></svg></span> Inboxproof</a>
+    <div class="nav-links"><a href="/">Run a free audit</a> · <a href="/blog">Guides</a></div>
+  </div>
+</nav>
+
+<header class="hero">
+  <div class="container">
+    <div class="eyebrow"><span class="dot"></span> Free tool · runs in your browser</div>
+    <h1>DMARC Report Parser</h1>
+    <p class="sub">Paste the weekly DMARC aggregate XML you get from Gmail or Microsoft and get a plain-English answer: who is actually sending mail as your domain, how much of it is properly authenticated, and what looks unauthorized.</p>
+  </div>
+</header>
+
+<div class="container" style="max-width:860px;padding-bottom:80px">
+  <div class="card" style="padding:20px;margin-bottom:24px">
+    <label for="xml" style="font-weight:600;font-size:14px;display:block;margin-bottom:8px">DMARC aggregate report (XML)</label>
+    <textarea id="xml" rows="10" style="width:100%;box-sizing:border-box;background:rgba(255,255,255,.04);border:1px solid rgba(255,255,255,.12);border-radius:10px;color:inherit;font-family:ui-monospace,Menlo,monospace;font-size:12.5px;padding:12px;resize:vertical" placeholder='&lt;?xml version="1.0" encoding="UTF-8" ?&gt;&#10;&lt;dma:report version="RFC822"&gt;&#10;  &lt;report_metadata&gt;...&lt;/report_metadata&gt;&#10;  &lt;record&gt;...&lt;/record&gt;&#10;&lt;/dma:report&gt;'></textarea>
+    <div style="display:flex;gap:10px;margin-top:12px;flex-wrap:wrap;align-items:center">
+      <button class="btn btn-primary" id="go">Parse report</button>
+      <span id="hint" style="opacity:.55;font-size:13px">Gmail: open the DMARC email → download the .xml attachment → paste it. Nothing you paste leaves your browser.</span>
+    </div>
+  </div>
+
+  <div id="out" style="display:none">
+    <div class="card" style="padding:22px;margin-bottom:20px;display:flex;gap:16px;align-items:center;flex-wrap:wrap">
+      <span id="dot" style="width:14px;height:14px;border-radius:50%;background:#16a34a;display:inline-block"></span>
+      <div style="flex:1;min-width:240px">
+        <div id="vtitle" style="font-size:20px;font-weight:700"></div>
+        <div id="vsub" style="opacity:.7;font-size:14px;margin-top:2px"></div>
+      </div>
+    </div>
+    <div id="grid"></div>
+  </div>
+</div>
+
+<footer>
+  <div class="container">
+    <span>© 2026 Inboxproof, Inc.</span>
+    <span><a href="/">Home</a> · <a href="/blog">Guides</a> · <a href="/privacy">Privacy</a></span>
+  </div>
+</footer>
+
+<script>
+const $ = s => document.querySelector(s);
+const esc = s => String(s ?? '').replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+
+function allLocal(el, tag) {
+  const out = [];
+  const stack = [el];
+  while (stack.length) {
+    const n = stack.shift();
+    for (const c of Array.from(n.childNodes)) {
+      if (c.nodeType === 1) {
+        const local = c.nodeName.split(':').pop();
+        if (local === tag) out.push(c);
+        stack.push(c);
+      }
+    }
+  }
+  return out;
+}
+
+// Concatenate only the text nodes that are DIRECT children of el.
+// (el.textContent would also include text from nested elements, e.g. the
+// <country> inside <source_ip>.)
+function directText(el) {
+  let s = '';
+  for (const c of Array.from(el.childNodes)) if (c.nodeType === 3) s += c.nodeValue;
+  return s.trim();
+}
+
+function parse(text) {
+  const doc = new DOMParser().parseFromString(text, 'text/xml');
+  if (doc.getElementsByTagName('parsererror').length) throw new Error('That does not look like valid XML. Paste the full report, including the opening and closing tags.');
+  const version = (allLocal(doc,'version')[0]||{}).textContent || '';
+  const domain = (allLocal(doc,'domain')[0]||{}).textContent || '';
+  const subDomains = allLocal(doc,'subdomain').map(n=>n.textContent.trim());
+  const rangeEl = allLocal(doc,'date_range')[0];
+  const from = rangeEl ? rangeEl.getElementsByTagName('begin')[0]?.textContent : '';
+  const to = rangeEl ? rangeEl.getElementsByTagName('end')[0]?.textContent : '';
+  const policy = (allLocal(doc,'policy')[0]||{}).textContent || '';
+  const spfRelay = (allLocal(doc,'spf_relay')[0]||{}).textContent || '';
+  const dkimRelay = (allLocal(doc,'dkim_relay')[0]||{}).textContent || '';
+
+  const records = allLocal(doc,'record').map(rec => {
+    const rcpt = allLocal(rec,'rcpt')[0];
+    const count = rcpt ? (allLocal(rcpt,'count')[0]||{}).textContent : '0';
+    const ident = allLocal(rec,'identifiers')[0];
+    const fromId = ident ? (allLocal(ident,'from')[0]||{}).textContent : '';
+    const auth = allLocal(rec,'authentications')[0];
+    const spf = auth ? (allLocal(auth,'spf')[0]||{}).textContent : '';
+    const dkim = auth ? (allLocal(auth,'dkim')[0]||{}).textContent : '';
+    const src = allLocal(rec,'source_ip')[0];
+    const ip = src ? directText(src) : '';
+    const country = src ? (allLocal(src,'country')[0]||{}).textContent : '';
+    return { count: Number(count)||0, from: fromId, spf, dkim, ip, country };
+  });
+
+  const total = records.reduce((s,r)=>s+r.count,0);
+  const byIp = {};
+  for (const r of records) {
+    if (!r.ip) continue;
+    byIp[r.ip] = byIp[r.ip] || { ip: r.ip, country: r.country, count: 0, spf: new Set(), dkim: new Set(), froms: new Set() };
+    byIp[r.ip].count += r.count;
+    if (r.spf) byIp[r.ip].spf.add(r.spf);
+    if (r.dkim) byIp[r.ip].dkim.add(r.dkim);
+    if (r.from) byIp[r.ip].froms.add(r.from.toLowerCase());
+  }
+  const ips = Object.values(byIp).map(o => ({ ...o, spf: [...o.spf], dkim: [...o.dkim], froms: [...o.froms] })).sort((a,b)=>b.count-a.count);
+  // alignment: spf=pass or dkim=pass counts as authenticated
+  let aligned = 0, unauth = 0;
+  for (const r of records) {
+    if (r.spf === 'pass' || r.dkim === 'pass') aligned += r.count; else unauth += r.count;
+  }
+  return { version, domain, subDomains, from, to, policy, spfRelay, dkimRelay, total, records, ips, aligned, unauth };
+}
+
+function fmtDate(ms) { try { return new Date(Number(ms)).toISOString().slice(0,10); } catch { return ''; } }
+
+$('#go').addEventListener('click', () => {
+  const text = $('#xml').value;
+  if (text.trim().length < 40) { $('#hint').textContent = 'Paste the full XML report first (it usually runs to several hundred lines).'; return; }
+  let r;
+  try { r = parse(text); } catch (e) { $('#hint').textContent = e.message; return; }
+  $('#out').style.display = 'block';
+  const unauthPct = r.total ? Math.round(100 * r.unauth / r.total) : 0;
+  const verdict =
+    r.unauth === 0 ? { c:'#16a34a', t:'All senders authenticated', s:'Every message in this report passed SPF or DKIM. Your domain is being used only by authorized senders during ' + fmtDate(r.from) + ' to ' + fmtDate(r.to) + '.' }
+    : unauthPct < 20 ? { c:'#d97706', t:'Mostly clean, with ' + unauthPct + '% unauthenticated', s:'The bulk of mail claiming ' + (r.domain||'your domain') + ' is properly authenticated, but ' + r.unauth.toLocaleString() + ' messages failed. Investigate the failing IPs below before tightening your policy.' }
+    : { c:'#dc2626', t:unauthPct + '% of mail is unauthenticated', s:'A large share of mail claiming ' + (r.domain||'your domain') + ' failed SPF and DKIM. Either add the legitimate senders to your SPF/DKIM, or you are being spoofed. Review the IPs below first.' };
+  $('#dot').style.background = verdict.c;
+  $('#vtitle').textContent = verdict.t;
+  $('#vtitle').style.color = verdict.c;
+  $('#vsub').textContent = verdict.s;
+
+  let html = '';
+  html += '<div class="card" style="margin-bottom:14px;padding:14px 16px;display:flex;gap:24px;flex-wrap:wrap;font-size:14px">';
+  html += '<div><span style="opacity:.6;display:block;font-size:12px">Domain</span><b>' + esc(r.domain || 'unknown') + '</b></div>';
+  html += '<div><span style="opacity:.6;display:block;font-size:12px">Messages</span><b>' + r.total.toLocaleString() + '</b></div>';
+  html += '<div><span style="opacity:.6;display:block;font-size:12px">Unique IPs</span><b>' + r.ips.length + '</b></div>';
+  html += '<div><span style="opacity:.6;display:block;font-size:12px">Authenticated</span><b style="color:#16a34a">' + r.aligned.toLocaleString() + '</b></div>';
+  html += '<div><span style="opacity:.6;display:block;font-size:12px">Unauthenticated</span><b style="color:' + (r.unauth ? '#dc2626' : '#16a34a') + '">' + r.unauth.toLocaleString() + '</b></div>';
+  html += '<div><span style="opacity:.6;display:block;font-size:12px">Window</span><b>' + esc(fmtDate(r.from) + ' → ' + fmtDate(r.to)) + '</b></div>';
+  html += '</div>';
+
+  html += '<div style="opacity:.65;font-size:13px;font-weight:600;margin:16px 0 8px">Sending IPs (by volume)</div>';
+  html += '<div class="card" style="padding:6px 4px">';
+  for (const o of r.ips.slice(0, 25)) {
+    const ok = o.spf.includes('pass') || o.dkim.includes('pass');
+    const badge = ok ? '<span style="color:#16a34a;font-weight:600;font-size:12px">authenticated</span>' : '<span style="color:#dc2626;font-weight:600;font-size:12px">unauthenticated</span>';
+    html += '<div style="display:flex;gap:10px;align-items:center;flex-wrap:wrap;padding:9px 12px;border-bottom:1px solid rgba(255,255,255,.06)">';
+    html += '<code style="font-family:ui-monospace,Menlo,monospace;font-size:13px;background:#f4f4f5;padding:2px 8px;border-radius:5px">' + esc(o.ip) + '</code>';
+    html += '<span style="opacity:.6;font-size:12px">' + esc(o.country || '') + '</span>';
+    html += '<span style="font-size:13px">' + o.count.toLocaleString() + ' msgs</span>';
+    html += '<span style="font-size:12px;opacity:.75">SPF ' + esc(o.spf.join(',') || '–') + ' · DKIM ' + esc(o.dkim.join(',') || '–') + '</span>';
+    html += badge + '</div>';
+  }
+  html += '</div>';
+
+  if (r.subDomains.length) html += '<div class="card" style="margin-top:14px;padding:12px 14px;font-size:14px">Subdomains covered: ' + esc(r.subDomains.join(', ')) + '</div>';
+
+  html += '<div class="card" style="margin-top:20px;padding:20px;text-align:center;border-color:rgba(99,102,241,.4)">';
+  html += '<div style="font-weight:700;font-size:16px;margin-bottom:6px">Want to know if your SPF and DKIM actually cover these senders?</div>';
+  html += '<div style="opacity:.75;font-size:14px;margin-bottom:14px">The free audit checks your MX, SPF, DKIM, DMARC and IP reputation and shows the exact record to add for any sender you are missing.</div>';
+  html += '<a class="btn btn-primary" href="/#audit">Run the free audit</a>';
+  html += '</div>';
+  html += '<p style="opacity:.6;font-size:13px;margin-top:20px">Related: <a href="/blog/dmarc-report-monitoring">DMARC report monitoring</a> · <a href="/blog/dmarc-policies">DMARC policies explained</a> · <a href="/dmarc-checker">DMARC checker</a> · <a href="/header-analyzer">Email header analyzer</a></p>';
+  $('#grid').innerHTML = html;
+  $('#out').scrollIntoView({ behavior: 'smooth', block: 'start' });
+});
+</script>
+</body>
+</html>

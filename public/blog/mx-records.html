@@ -1,0 +1,74 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>MX Records Explained: How Mail Finds Your Domain — Inboxproof</title>
+<meta name="description" content="What MX records are, how priorities work, and the five MX mistakes that cause mail to bounce. Check your domain's MX records, IPs and PTR in seconds, free.">
+<meta property="og:title" content="MX Records Explained: How Mail Finds Your Domain">
+<meta property="og:description" content="What MX records are, how priorities work, and the five MX mistakes that cause mail to bounce.">
+<meta property="og:type" content="article">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="/styles.css">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' rx='8' fill='%236366f1'/%3E%3Cpath d='M8 16h13M15 10l6 6-6 6' stroke='white' stroke-width='3' fill='none' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E">
+<script type="application/ld+json">
+{"@context":"https://schema.org","@type":"Article","headline":"MX records explained: how mail finds your domain","description":"What MX records are, how priorities work, and the five MX mistakes that cause mail to bounce.","author":{"@type":"Organization","name":"Inboxproof"},"publisher":{"@type":"Organization","name":"Inboxproof"}}
+</script>
+</head>
+<body>
+<nav class="nav">
+  <div class="container">
+    <a class="logo" href="/">
+      <span class="mark"><svg viewBox="0 0 24 24" fill="none"><path d="M4 12h11M11 7l5 5-5 5" stroke="#fff" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"/></svg></span>
+      Inboxproof
+    </a>
+    <div class="nav-links"><a href="/blog">All guides</a><a href="/">Run a free audit</a></div>
+  </div>
+</nav>
+
+<div class="container" style="max-width:760px;padding:60px 20px 80px">
+  <div class="kicker">Guide</div>
+  <h1 style="font-size:34px;margin:10px 0 24px">MX records, explained: how mail finds your domain</h1>
+  <div style="opacity:.85;line-height:1.75;font-size:15.5px">
+    <p>When someone sends an email to <code>you@yourdomain.com</code>, the sender's mail server does not know your mail server's IP address. It looks it up. The DNS record that answers "which servers accept mail for this domain?" is the <b>MX record</b>. If your MX records are missing, misconfigured, or point at servers that do not answer, mail to your domain bounces or silently goes missing. This is the first thing to check whenever mail stops arriving.</p>
+
+    <h2 style="font-size:22px;margin:34px 0 12px">What an MX record looks like</h2>
+    <p>An MX record has two parts: a <b>priority</b> (a number, where lower means "try me first") and an <b>exchange</b> (the hostname of the mail server). A typical setup for a domain on Google Workspace:</p>
+    <p style="margin:16px 0"><code style="opacity:.8;display:block;background:rgba(255,255,255,.04);border:1px solid rgba(255,255,255,.08);border-radius:10px;padding:14px 16px;font-size:13px;white-space:pre-wrap;word-break:break-all">yourdomain.com.  MX  10  aspmx.l.google.com.
+yourdomain.com.  MX  20  aspmx2.l.google.com.
+yourdomain.com.  MX  30  aspmx3.l.google.com.</code></p>
+    <p>The sending server tries priority 10 first. If that host does not answer, it moves to 20, then 30. That is why most providers publish several MX records: redundancy. If all of your MX servers are down at the same moment, sending servers have nowhere to deliver, and mail is held, retried, and eventually bounced.</p>
+
+    <h2 style="font-size:22px;margin:34px 0 12px">The five MX mistakes that break mail</h2>
+    <p style="margin:0 0 14px">1. <b>No MX records at all.</b> The most common cause of "I can't receive email on my new domain." Without an MX record, senders fall back to the domain's A record, and most providers will not accept mail there. If your domain has no MX records, no one can email you.</p>
+    <p style="margin:0 0 14px">2. <b>MX points at a hostname that does not resolve.</b> The MX record names a server, but that server has no A or AAAA record. The sending server cannot find an IP address, so delivery fails. This usually happens when a mail provider's records are copied with a typo, or when a provider's infrastructure changed.</p>
+    <p style="margin:0 0 14px">3. <b>The MX host has no PTR (reverse DNS).</b> Receiving servers commonly check that the IP you connect to maps back to a sensible hostname. Missing or mismatched PTR is a classic spam-filter red flag, and some corporate gateways reject outright.</p>
+    <p style="margin:0 0 14px">4. <b>Pointing MX at a shared or consumer host.</b> MX records should point at your mail provider's servers, not at your VPS or your office IP. If you run your own mail server on a residential IP, you are also fighting blocklists and port 25 filtering, which is a different problem entirely.</p>
+    <p style="margin:0 0 14px">5. <b>A "null MX" when you actually want mail.</b> A record of <code>MX 0 .</code> is a valid DNS record that explicitly says "this domain does not accept mail." It is used by domains that exist only for web or subdomains. If you see it and you do expect to receive email, that is your bug.</p>
+
+    <h2 style="font-size:22px;margin:34px 0 12px">How to check your own MX records</h2>
+    <p>From a terminal, <code>dig MX yourdomain.com</code> or <code>nslookup -type=MX yourdomain.com</code> will list them. But the MX record alone only tells you half the story: the exchange hostnames must also resolve to IPs, and those IPs should have PTR records. A record that "exists" but points at nothing is worse than no record, because it looks configured.</p>
+    <p>The <a href="/mx-checker">free MX checker</a> does the whole chain in one go: it lists your MX records with priorities, resolves each mail server to its IP, and checks reverse DNS, so you can see exactly which link in the chain is broken.</p>
+
+    <h2 style="font-size:22px;margin:34px 0 12px">MX vs SPF vs DKIM vs DMARC</h2>
+    <p>People mix these up, so here is the one-paragraph version. <b>MX</b> says where mail should be delivered. <b>SPF</b> says which servers are allowed to <i>send</i> as your domain. <b>DKIM</b> signs each message so receivers can verify it really came from you. <b>DMARC</b> tells receivers what to do when SPF or DKIM fails. All four are independent: a domain can have perfect MX and still fail authentication, and it can have perfect authentication and still not receive mail because its MX is broken. When mail is misbehaving, check MX first (can I even receive?), then SPF/DKIM/DMARC (can I even send?).</p>
+
+    <p style="opacity:.6;font-size:13px;margin-top:28px">Related: <a href="/blog/spf-dkim-dmarc">SPF vs DKIM vs DMARC</a> · <a href="/blog/email-in-spam">Why my email lands in spam</a> · <a href="/mx-checker">Free MX checker</a> · <a href="/spf-checker">Free SPF checker</a></p>
+
+    <div style="margin-top:40px;text-align:center;background:linear-gradient(180deg,rgba(99,102,241,.12),transparent);border:1px solid rgba(99,102,241,.35);border-radius:14px;padding:26px">
+      <h3 style="font-size:18px;margin-bottom:6px">Check your own domain</h3>
+      <p style="opacity:.75;font-size:14px;margin-bottom:16px">The free audit checks MX, SPF, DKIM, DMARC and more in about 30 seconds, and shows the exact record to add if one is missing.</p>
+      <a class="btn btn-primary" href="/#audit">Run the free audit</a>
+    </div>
+  </div>
+</div>
+
+<footer>
+  <div class="container">
+    <span>© 2026 Inboxproof, Inc.</span>
+    <span><a href="/blog">All guides</a> · <a href="/">Home</a> · <a href="/privacy">Privacy</a></span>
+  </div>
+</footer>
+</body>
+</html>

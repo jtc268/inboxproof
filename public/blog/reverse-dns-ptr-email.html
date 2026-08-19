@@ -1,0 +1,102 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Reverse DNS (PTR) for Mail Servers: Why Your Sending IP Needs One | InboxProof</title>
+<meta name="description" content="What a reverse DNS (PTR) record is, why receiving mail servers require it, what forward-confirmed PTR means, and how to check and fix your sending IP's PTR record.">
+<link rel="canonical" href="https://inboxproof.email/blog/reverse-dns-ptr-email">
+<meta property="og:title" content="Reverse DNS (PTR) for Mail Servers">
+<meta property="og:description" content="Why your sending IP needs a PTR record, and how to check and fix it.">
+<meta property="og:type" content="article">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="/styles.css">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' rx='8' fill='%236366f1'/%3E%3Cpath d='M8 16h13M15 10l6 6-6 6' stroke='white' stroke-width='3' fill='none' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E">
+<script type="application/ld+json">
+{"@context":"https://schema.org","@type":"Article","headline":"Reverse DNS (PTR) for Mail Servers: Why Your Sending IP Needs One","description":"What a reverse DNS (PTR) record is, why receiving mail servers require it, and how to check and fix your sending IP's PTR record.","author":{"@type":"Organization","name":"InboxProof"},"publisher":{"@type":"Organization","name":"InboxProof"}}
+</script>
+</head>
+<body>
+<nav class="nav">
+  <div class="container">
+    <a class="logo" href="/">
+      <span class="mark"><svg viewBox="0 0 24 24" fill="none"><path d="M4 12h11M11 7l5 5-5 5" stroke="#fff" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"/></svg></span>
+      Inboxproof
+    </a>
+    <div class="nav-links"><a href="/">Run a free audit</a></div>
+  </div>
+</nav>
+
+<div class="container" style="max-width:760px;padding:60px 20px 80px">
+  <div class="kicker">Deliverability fundamentals</div>
+  <h1 style="font-size:34px;margin:10px 0 12px">Reverse DNS (PTR) for mail servers</h1>
+  <p style="opacity:.8;font-size:16px;margin-bottom:36px">Before a receiving mail server looks at your SPF, DKIM or DMARC, it checks one thing: does your sending IP have a reverse DNS record? Here is what that means and how to get it right.</p>
+
+  <div class="card" style="margin-bottom:28px;background:#eef2ff;border-color:#c7d2fe">
+    <h3 style="margin-top:0">Check your PTR record in seconds</h3>
+    <p style="opacity:.8;margin-bottom:14px">The <a href="/ptr-checker">free InboxProof reverse DNS checker</a> looks up your IP's PTR record, resolves it back, and tells you if it forward-confirms. No signup.</p>
+    <a class="btn btn-primary" href="/ptr-checker">Run the free check</a>
+  </div>
+
+  <h2 style="font-size:24px;margin:36px 0 12px">What is a PTR record?</h2>
+  <p>Every IP address can have a <strong>reverse DNS</strong> record, called a <strong>PTR</strong> (pointer) record. It maps an IP address back to a hostname. Forward DNS answers "what IP does this name point to"; reverse DNS answers "what name does this IP belong to".</p>
+  <p>When your mail server sends an email, the receiving server looks up the PTR for your sending IP. If the lookup fails, or the hostname does not look like a real mail host, the receiver treats the connection as suspicious.</p>
+
+  <h2 style="font-size:24px;margin:36px 0 12px">Why receiving servers require it</h2>
+  <p>Reverse DNS is one of the earliest trust signals a mail server checks. Gmail, Microsoft 365 and most other large providers expect a valid PTR for the IP that connects to them on port 25. A missing PTR is a common, silent reason mail gets down-ranked or rejected before your authentication records are even evaluated.</p>
+  <p>It is also the first line of defense against spoofing: if an IP has no PTR, it is harder for a receiver to verify that the sender is who they claim to be.</p>
+
+  <h2 style="font-size:24px;margin:36px 0 12px">What is forward-confirmed PTR?</h2>
+  <p>A PTR record alone is not enough. Most providers require <strong>forward-confirmed PTR</strong> (FCPTR): the hostname in the PTR record must resolve back to the same IP address.</p>
+  <p>In other words, the round trip must hold:</p>
+  <ul style="font-size:16px;line-height:1.8">
+    <li>IP <code>203.0.113.10</code> has a PTR pointing to <code>mail.yourdomain.com</code></li>
+    <li><code>mail.yourdomain.com</code> has an A record pointing back to <code>203.0.113.10</code></li>
+  </ul>
+  <p>If either leg is broken, the PTR does not forward-confirm and the receiver may reject the connection.</p>
+
+  <h2 style="font-size:24px;margin:36px 0 12px">How to check your PTR record</h2>
+  <p>Run this command to look up the PTR for a sending IP:</p>
+  <pre style="background:#0f172a;color:#e2e8f0;padding:16px;border-radius:8px;font-size:14px;overflow-x:auto">dig +short -x 203.0.113.10</pre>
+  <p>Replace <code>203.0.113.10</code> with your actual sending IP. If the command returns nothing, your IP has no PTR record.</p>
+  <p>Then confirm the hostname resolves back to the IP:</p>
+  <pre style="background:#0f172a;color:#e2e8f0;padding:16px;border-radius:8px;font-size:14px;overflow-x:auto">dig +short A mail.yourdomain.com</pre>
+  <p>If the returned IP matches the original, your PTR forward-confirms.</p>
+  <p>The free InboxProof reverse DNS checker does both lookups for you and reports the result.</p>
+
+  <h2 style="font-size:24px;margin:36px 0 12px">How to fix a missing or broken PTR</h2>
+  <ul style="font-size:16px;line-height:1.8">
+    <li><strong>Managed mail (Gmail, Microsoft 365, etc.)</strong>: PTR is set automatically by the provider. You usually do not need to do anything.</li>
+    <li><strong>Your own mail server</strong>: ask your hosting provider or ISP to set the PTR for your IP. Most providers manage the reverse zone and will create it on request.</li>
+    <li><strong>Cloud IP (AWS, GCP, Azure)</strong>: use the provider's console to create a reverse DNS record for the IP (e.g. EC2 "Edit address" → DNS hostname).</li>
+    <li><strong>Hostname mismatch</strong>: make sure the PTR hostname matches the hostname your mail server announces in its SMTP banner.</li>
+  </ul>
+
+  <h2 style="font-size:24px;margin:36px 0 12px">PTR vs SPF, DKIM and DMARC</h2>
+  <p>These are different layers, and all of them matter:</p>
+  <ul style="font-size:16px;line-height:1.8">
+    <li><strong>PTR / reverse DNS</strong>: proves the IP belongs to a real host. Checked first, before authentication.</li>
+    <li><strong>SPF</strong>: lists which IPs are allowed to send for your domain.</li>
+    <li><strong>DKIM</strong>: cryptographically signs the message so it cannot be altered in transit.</li>
+    <li><strong>DMARC</strong>: tells receivers what to do when SPF or DKIM fail.</li>
+  </ul>
+  <p>A missing PTR can sink mail even when SPF, DKIM and DMARC are all correct. Check it early.</p>
+
+  <div class="cta" style="background:#0f172a;color:#fff;border-radius:12px;padding:32px;text-align:center;margin:40px 0">
+    <h2 style="color:#fff;margin-bottom:8px">Check your sending IP's PTR</h2>
+    <p style="opacity:.8;margin-bottom:20px">Run the free reverse DNS checker and see if your PTR record forward-confirms.</p>
+    <a class="btn btn-primary btn-lg" href="/ptr-checker">Run the free check</a>
+  </div>
+
+  <p style="opacity:.6;font-size:13px;margin-top:28px">Related: <a href="/blog/spf-dkim-dmarc">SPF vs DKIM vs DMARC</a> · <a href="/blog/spf-not-working">SPF record not working?</a> · <a href="/blog/mx-records">MX records explained</a> · <a href="/blog/email-in-spam">Why email lands in spam</a></p>
+</div>
+
+<footer>
+  <div class="container">
+    <span>© 2026 Inboxproof, Inc.</span>
+    <span><a href="/">Home</a> · <a href="/privacy">Privacy</a></span>
+  </div>
+</footer>
+</body>
+</html>

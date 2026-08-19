@@ -1,0 +1,107 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Inboxproof API — email deliverability checks in one call</title>
+<meta name="description" content="Run a full 7-check email deliverability audit (MX, SPF, DKIM, DMARC, TLS, PTR, blocklists) from your code. One REST endpoint, Bearer auth, 100 audits/day on Pro.">
+<link rel="canonical" href="https://inboxproof.email/developers">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="/styles.css">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' rx='8' fill='%236366f1'/%3E%3Cpath d='M8 16h13M15 10l6 6-6 6' stroke='white' stroke-width='3' fill='none' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E">
+</head>
+<body>
+<nav class="nav">
+  <div class="container">
+    <a class="logo" href="/">
+      <span class="mark"><svg viewBox="0 0 24 24" fill="none"><path d="M4 12h11M11 7l5 5-5 5" stroke="#fff" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"/></svg></span>
+      Inboxproof
+    </a>
+    <div class="nav-links">
+      <a href="/#how">How it works</a>
+      <a href="/#pricing">Pricing</a>
+      <a href="/pro">Dashboard</a>
+    </div>
+    <a class="btn btn-primary btn-sm" href="/#audit">Run a free audit</a>
+  </div>
+</nav>
+
+<div class="container" style="padding-top:40px">
+  <div style="max-width:820px">
+    <div class="kicker">Developers</div>
+    <h1 style="font-size:40px;line-height:1.1;margin-bottom:14px">The deliverability API</h1>
+    <p style="font-size:18px;color:var(--muted);margin-bottom:8px">One REST call returns a full 7-check email deliverability audit for any domain: MX, SPF, DKIM, DMARC, TLS, reverse-DNS, and blocklists — scored the same way the free audit and Pro monitoring are.</p>
+    <p style="font-size:14.5px;color:var(--dim);margin-bottom:26px">No SDK to install. Bearer auth, JSON in, JSON out. 100 audits/day on Pro, 500/day on Agency.</p>
+
+    <div style="background:var(--panel);border:1px solid var(--line);border-radius:12px;padding:18px 20px;margin-bottom:26px">
+      <div style="font-size:12px;letter-spacing:.06em;text-transform:uppercase;color:var(--dim);margin-bottom:10px">Try it</div>
+      <pre style="background:#0a0e16;border:1px solid var(--line);border-radius:8px;padding:14px;font-size:13px;overflow:auto;margin:0">curl -H "Authorization: Bearer &lt;your-api-key&gt;" \
+  "https://inboxproof.email/api/v1/audit?domain=yourdomain.com"</pre>
+      <div style="font-size:13px;color:var(--muted);margin-top:10px">Your API key is on your <a href="/pro" style="color:#6366f1;font-weight:600">dashboard</a> once you're on Pro.</div>
+    </div>
+
+    <div class="sec-head" style="margin-bottom:18px">
+      <h2 style="font-size:24px">Endpoint</h2>
+    </div>
+    <div style="background:var(--panel);border:1px solid var(--line);border-radius:12px;padding:18px 20px;margin-bottom:26px">
+      <div style="display:flex;align-items:center;gap:10px;margin-bottom:12px">
+        <span style="background:#34d399;color:#04231a;font-weight:800;font-size:12px;padding:3px 10px;border-radius:6px">GET</span>
+        <code style="font-size:15px;color:#e2e8f0">/api/v1/audit?domain={domain}</code>
+      </div>
+      <table style="width:100%;border-collapse:collapse;font-size:14px">
+        <tr><td style="padding:6px 0;color:var(--dim);width:130px">Auth</td><td><code>Authorization: Bearer &lt;key&gt;</code> (or <code>?key=&lt;key&gt;</code>)</td></tr>
+        <tr><td style="padding:6px 0;color:var(--dim)">domain</td><td>Required. The domain to audit, e.g. <code>yourdomain.com</code></td></tr>
+        <tr><td style="padding:6px 0;color:var(--dim)">Rate limit</td><td>100 audits/day on Pro · 500/day on Agency</td></tr>
+      </table>
+    </div>
+
+    <div class="sec-head" style="margin-bottom:18px">
+      <h2 style="font-size:24px">Response</h2>
+    </div>
+    <div style="background:#0a0e16;border:1px solid var(--line);border-radius:12px;padding:18px 20px;margin-bottom:26px">
+      <pre style="border:none;background:none;padding:0;margin:0;font-size:13px;overflow:auto;color:#a5f3fc">
+{
+  "ok": true,
+  "domain": "yourdomain.com",
+  "at": "2026-02-14T09:30:00.000Z",
+  "score": 82,
+  "grade": "B",
+  "checks": [
+    { "id": "mx",    "name": "MX & mail routing", "status": "pass" },
+    { "id": "spf",   "name": "SPF",               "status": "pass" },
+    { "id": "dkim",  "name": "DKIM",              "status": "warn" },
+    { "id": "dmarc", "name": "DMARC",             "status": "pass" },
+    { "id": "tls",   "name": "TLS",               "status": "pass" },
+    { "id": "ptr",   "name": "Reverse DNS (PTR)", "status": "warn" },
+    { "id": "rbl",   "name": "Blocklists",        "status": "pass" }
+  ]
+}</pre>
+      <div style="font-size:13px;color:var(--muted);margin-top:12px">Each <code>status</code> is <code>pass</code>, <code>warn</code>, or <code>fail</code>. The <code>score</code> is the weighted sum (DMARC and MX carry the most), 0–100. The same engine powers the free audit and Pro daily monitoring.</div>
+    </div>
+
+    <div class="sec-head" style="margin-bottom:18px">
+      <h2 style="font-size:24px">Errors</h2>
+    </div>
+    <div style="background:var(--panel);border:1px solid var(--line);border-radius:12px;padding:18px 20px;margin-bottom:30px">
+      <table style="width:100%;border-collapse:collapse;font-size:14px">
+        <tr><td style="padding:6px 0;color:#f87171;font-weight:700;width:90px">401</td><td>Missing, invalid, or non-Pro API key.</td></tr>
+        <tr><td style="padding:6px 0;color:#fbbf24;font-weight:700">400</td><td>Missing or malformed <code>domain</code>.</td></tr>
+        <tr><td style="padding:6px 0;color:#fbbf24;font-weight:700">429</td><td>Rate limit exceeded for the day.</td></tr>
+      </table>
+    </div>
+
+    <div style="background:linear-gradient(135deg,#6366f1,#8b5cf6);border-radius:14px;padding:28px;text-align:center;color:#fff;margin-bottom:20px">
+      <h2 style="font-size:24px;margin-bottom:8px">Put it to work</h2>
+      <p style="font-size:15px;opacity:.9;margin-bottom:16px">Wire a daily deliverability check into your deploy pipeline, monitor client domains from your agency dashboard, or gate cold-email sends on a passing score.</p>
+      <a class="btn" style="background:#fff;color:#4338ca" href="/#pricing">Get Pro — $29/mo</a>
+      <div style="font-size:13px;opacity:.85;margin-top:10px">Launch offer: code <b>INBOX50</b> for 50% off your first month.</div>
+    </div>
+  </div>
+</div>
+
+<script>
+// Add /developers to the sitemap-agnostic nav is not needed; static page.
+</script>
+</body>
+</html>

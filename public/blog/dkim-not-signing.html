@@ -1,0 +1,92 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>DKIM not signing emails? How to fix it | InboxProof</title>
+<meta name="description" content="Why your DKIM signature might not be working, the most common causes (missing record, wrong selector, weak key, misalignment), and how to fix them.">
+<link rel="canonical" href="https://inboxproof.email/blog/dkim-not-signing">
+<meta property="og:title" content="DKIM not signing emails? How to fix it">
+<meta property="og:description" content="Why your DKIM signature might not be working, and how to fix it.">
+<meta property="og:type" content="article">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="/styles.css">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' rx='8' fill='%236366f1'/%3E%3Cpath d='M8 16h13M15 10l6 6-6 6' stroke='white' stroke-width='3' fill='none' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E">
+<script type="application/ld+json">
+{"@context":"https://schema.org","@type":"Article","headline":"DKIM not signing emails? How to fix it","description":"Why your DKIM signature might not be working, and how to fix it.","author":{"@type":"Organization","name":"InboxProof"},"publisher":{"@type":"Organization","name":"InboxProof"}}
+</script>
+</head>
+<body>
+<nav class="nav">
+  <div class="container">
+    <a class="logo" href="/">
+      <span class="mark"><svg viewBox="0 0 24 24" fill="none"><path d="M4 12h11M11 7l5 5-5 5" stroke="#fff" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"/></svg></span>
+      Inboxproof
+    </a>
+    <div class="nav-links"><a href="/">Run a free audit</a></div>
+  </div>
+</nav>
+
+<div class="container" style="max-width:760px;padding:60px 20px 80px">
+  <div class="kicker">Troubleshooting</div>
+  <h1 style="font-size:34px;margin:10px 0 12px">DKIM not signing emails? How to fix it</h1>
+  <p style="opacity:.8;font-size:16px;margin-bottom:36px">If your email is failing DKIM checks, it usually means one of several things is wrong. Here is how to diagnose and fix it.</p>
+
+  <div class="card" style="margin-bottom:28px;background:#eef2ff;border-color:#c7d2fe">
+    <h3 style="margin-top:0">Check your DKIM setup in seconds</h3>
+    <p style="opacity:.8;margin-bottom:14px">The <a href="/dkim-checker">free InboxProof DKIM checker</a> verifies your DKIM record, checks the key strength, and tells you exactly what to fix. No signup.</p>
+    <a class="btn btn-primary" href="/dkim-checker">Run the free check</a>
+  </div>
+
+  <h2 style="font-size:24px;margin:36px 0 12px">What does "DKIM not signing" mean?</h2>
+  <p>When a receiving server says your email "failed DKIM," it means one of these:</p>
+  <ul style="font-size:16px;line-height:1.8">
+    <li>Your DKIM record is missing from DNS</li>
+    <li>Your DKIM selector does not match the one your email provider uses</li>
+    <li>Your DKIM key is too weak (less than 1024 bits)</li>
+    <li>Your DKIM domain does not align with your "From" domain</li>
+  </ul>
+
+  <h2 style="font-size:24px;margin:36px 0 12px">Step 1: Check your DKIM record</h2>
+  <p>Run this command to check your DKIM record:</p>
+  <pre style="background:#0f172a;color:#e2e8f0;padding:16px;border-radius:8px;font-size:14px;overflow-x:auto">dig +short TXT google._domainkey.yourdomain.com</pre>
+  <p>Replace <code>google</code> with your actual DKIM selector. If the command returns nothing, your DKIM record is missing.</p>
+
+  <h2 style="font-size:24px;margin:36px 0 12px">Step 2: Verify the selector</h2>
+  <p>Make sure the DKIM selector in your DNS matches the one your email provider uses. For example, if you use Google Workspace, the selector is usually <code>google</code>. If you use Microsoft 365, it is usually <code>selector1</code> or <code>selector2</code>.</p>
+  <p>If they do not match, DKIM will fail.</p>
+
+  <h2 style="font-size:24px;margin:36px 0 12px">Step 3: Check the key strength</h2>
+  <p>Modern DKIM keys should be at least 1024 bits. If your key is 512 bits, many receiving servers will reject it.</p>
+  <p>Run the free InboxProof DKIM checker to verify your key strength.</p>
+
+  <h2 style="font-size:24px;margin:36px 0 12px">Step 4: Check domain alignment</h2>
+  <p>For DKIM to pass, the domain in your DKIM signature must align with the domain in your "From" header. If they do not match, DKIM will fail.</p>
+  <p>For example, if your "From" domain is <code>yourdomain.com</code>, your DKIM signature must also be for <code>yourdomain.com</code> (or a subdomain of it).</p>
+
+  <h2 style="font-size:24px;margin:36px 0 12px">Step 5: Verify the fix</h2>
+  <p>After making the changes, run the free InboxProof DKIM checker to confirm your DKIM record is configured correctly. The checker verifies:</p>
+  <ul style="font-size:16px;line-height:1.8">
+    <li>DKIM record exists and is valid</li>
+    <li>Key strength is at least 1024 bits</li>
+    <li>Domain alignment with your "From" domain</li>
+  </ul>
+
+  <div class="cta" style="background:#0f172a;color:#fff;border-radius:12px;padding:32px;text-align:center;margin:40px 0">
+    <h2 style="color:#fff;margin-bottom:8px">Fix your DKIM issue</h2>
+    <p style="opacity:.8;margin-bottom:20px">Run the free DKIM checker and see if your DKIM record is configured correctly.</p>
+    <a class="btn btn-primary btn-lg" href="/dkim-checker">Run the free check</a>
+  </div>
+
+  <p style="opacity:.6;font-size:13px;margin-top:28px">Related: <a href="/blog/spf-dkim-dmarc">SPF vs DKIM vs DMARC</a> · <a href="/blog/spf-not-working">SPF record not working?</a> · <a href="/blog/dmarc-record">How to set up a DMARC record</a> · <a href="/blog/gmail-smtp-error-550-5-7-26">Gmail SMTP error 550-5.7.26</a></p>
+</div>
+
+<footer>
+  <div class="container">
+    <span>© 2026 Inboxproof, Inc.</span>
+    <span><a href="/">Home</a> · <a href="/privacy">Privacy</a></span>
+  </div>
+</footer>
+</body>
+</html>

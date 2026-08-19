@@ -1,0 +1,100 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>What is a good email deliverability score? A practical guide | InboxProof</title>
+<meta name="description" content="What a deliverability score means, what 90+ / 70-89 / 50-69 / below 50 actually tells you, and how to move your score up. A practical guide for small teams.">
+<link rel="canonical" href="https://inboxproof.email/blog/deliverability-score">
+<meta property="og:title" content="What is a good email deliverability score?">
+<meta property="og:description" content="What a deliverability score means and how to move it up.">
+<meta property="og:type" content="article">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="/styles.css">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' rx='8' fill='%236366f1'/%3E%3Cpath d='M8 16h13M15 10l6 6-6 6' stroke='white' stroke-width='3' fill='none' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E">
+<script type="application/ld+json">
+{"@context":"https://schema.org","@type":"Article","headline":"What is a good email deliverability score?","description":"What a deliverability score means and how to move it up.","author":{"@type":"Organization","name":"InboxProof"},"publisher":{"@type":"Organization","name":"InboxProof"}}
+</script>
+</head>
+<body>
+<nav class="nav">
+  <div class="container">
+    <a class="logo" href="/">
+      <span class="mark"><svg viewBox="0 0 24 24" fill="none"><path d="M4 12h11M11 7l5 5-5 5" stroke="#fff" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"/></svg></span>
+      Inboxproof
+    </a>
+    <div class="nav-links"><a href="/">Run a free audit</a></div>
+  </div>
+</nav>
+
+<div class="container" style="max-width:760px;padding:60px 20px 80px">
+  <div class="kicker">Guide</div>
+  <h1 style="font-size:34px;margin:10px 0 12px">What is a good email deliverability score?</h1>
+  <p style="opacity:.8;font-size:16px;margin-bottom:36px">A deliverability score is a single number that tells you how likely your email is to reach the inbox. Here is what the numbers mean and how to move yours up.</p>
+
+  <div class="card" style="margin-bottom:28px;background:#eef2ff;border-color:#c7d2fe">
+    <h3 style="margin-top:0">Get your score in seconds</h3>
+    <p style="opacity:.8;margin-bottom:14px">The <a href="/dmarc-checker">free InboxProof audit</a> runs a 7-point check (MX, SPF, DKIM, DMARC, TLS, PTR, and IP reputation) and returns a 0-100 score with a plain-English fix list. No signup.</p>
+    <a class="btn btn-primary" href="/dmarc-checker">Run the free check</a>
+  </div>
+
+  <h2 style="font-size:24px;margin:36px 0 12px">What the score measures</h2>
+  <p>A deliverability score is a weighted combination of the signals that mailbox providers (Gmail, Outlook, Yahoo, etc.) use to decide whether to accept your email. The most important signals are:</p>
+  <ul style="font-size:16px;line-height:1.8">
+    <li><b>Authentication</b> (SPF, DKIM, DMARC) - the biggest factor. If these are missing or misconfigured, your score will be low.</li>
+    <li><b>Alignment</b> - the domain in your "From" header must match the domain that passes SPF/DKIM/DMARC.</li>
+    <li><b>IP reputation</b> - whether your sending IP is on a blocklist or has a history of spam.</li>
+    <li><b>List quality</b> - bounce rate, complaint rate, and engagement.</li>
+    <li><b>Content signals</b> - spammy words, too many links, broken links.</li>
+  </ul>
+
+  <h2 style="font-size:24px;margin:36px 0 12px">What is a "good" score?</h2>
+  <div class="card" style="margin-bottom:16px">
+    <h3 style="margin-top:0;color:#16a34a">90-100 (A)</h3>
+    <p style="margin-bottom:0">Excellent. Your domain is well-authenticated, your IP is clean, and you are unlikely to be marked as spam. This is the target for any serious sender.</p>
+  </div>
+  <div class="card" style="margin-bottom:16px">
+    <h3 style="margin-top:0;color:#d97706">70-89 (B)</h3>
+    <p style="margin-bottom:0">Good, but there is room for improvement. You are probably delivering to the inbox most of the time, but a missing record or a weak configuration is holding you back.</p>
+  </div>
+  <div class="card" style="margin-bottom:16px">
+    <h3 style="margin-top:0;color:#d97706">50-69 (C)</h3>
+    <p style="margin-bottom:0">At risk. You are likely landing in spam or being rejected by some providers. Fix the authentication issues first.</p>
+  </div>
+  <div class="card" style="margin-bottom:16px">
+    <h3 style="margin-top:0;color:#dc2626">Below 50 (D)</h3>
+    <p style="margin-bottom:0">Poor. Your email is likely being rejected or marked as spam by most providers. Start with SPF, DKIM, and DMARC.</p>
+  </div>
+
+  <h2 style="font-size:24px;margin:36px 0 12px">How to move your score up</h2>
+  <p>The order to fix things, in priority order:</p>
+  <ol style="font-size:16px;line-height:1.8">
+    <li><b>SPF</b> - make sure your SPF record exists, ends in <code>-all</code>, and stays under the 10-lookup limit.</li>
+    <li><b>DKIM</b> - sign your email with a strong key (1024-bit minimum, 2048-bit preferred).</li>
+    <li><b>DMARC</b> - publish a DMARC record with at least <code>p=none</code> and a reporting address.</li>
+    <li><b>Alignment</b> - make sure your "From" domain matches the SPF/DKIM/DMARC domains.</li>
+    <li><b>IP reputation</b> - check your sending IP against the major blocklists and request delisting if needed.</li>
+    <li><b>List hygiene</b> - clean up your list, remove hard bounces, and respond to complaints quickly.</li>
+  </ol>
+
+  <h2 style="font-size:24px;margin:36px 0 12px">How often should you check?</h2>
+  <p>At minimum, check your score whenever you make a change to your DNS, your sending infrastructure, or your ESP. If you are a regular sender, check it weekly. The InboxProof Pro plan does this automatically and alerts you when anything changes.</p>
+
+  <div class="cta" style="background:#0f172a;color:#fff;border-radius:12px;padding:32px;text-align:center;margin:40px 0">
+    <h2 style="color:#fff;margin-bottom:8px">Check your score now</h2>
+    <p style="opacity:.8;margin-bottom:20px">Run the free 7-point audit and see where you stand.</p>
+    <a class="btn btn-primary btn-lg" href="/dmarc-checker">Run a free audit</a>
+  </div>
+
+  <p style="opacity:.6;font-size:13px;margin-top:28px">Related: <a href="/blog/email-in-spam">Why is my email in spam?</a> · <a href="/blog/is-my-domain-blacklisted">Is my domain blacklisted?</a> · <a href="/blog/dmarc-policies">p=none vs quarantine vs reject</a></p>
+</div>
+
+<footer>
+  <div class="container">
+    <span>© 2026 Inboxproof, Inc.</span>
+    <span><a href="/">Home</a> · <a href="/privacy">Privacy</a></span>
+  </div>
+</footer>
+</body>
+</html>

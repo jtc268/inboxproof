@@ -1,0 +1,175 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Free MX Record Checker — Does Your Domain Have Working Mail Servers?</title>
+<meta name="description" content="Check your domain's MX records, resolve each mail server to its IP, and verify reverse DNS (PTR). Find out in seconds whether your domain can actually receive email. Free, no signup.">
+<meta property="og:title" content="Free MX Record Checker — Inboxproof">
+<meta property="og:description" content="See your MX records, the mail server IPs they resolve to, and their PTR records. Free, no signup.">
+<meta property="og:type" content="website">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="/styles.css">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' rx='8' fill='%236366f1'/%3E%3Cpath d='M8 16h13M15 10l6 6-6 6' stroke='white' stroke-width='3' fill='none' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E">
+<script type="application/ld+json">
+{"@context":"https://schema.org","@type":"WebApplication","name":"Inboxproof Free MX Record Checker","applicationCategory":"Utilities","operatingSystem":"Web","description":"Resolves a domain's MX records, resolves each mail server to its IP address, and checks reverse DNS (PTR) for those IPs.","offers":{"@type":"Offer","price":"0","priceCurrency":"USD"}}
+</script>
+<script type="application/ld+json">
+{"@context":"https://schema.org","@type":"FAQPage","mainEntity":[
+ {"@type":"Question","name":"What are MX records?","acceptedAnswer":{"@type":"Answer","text":"MX (mail exchange) records tell the internet which servers accept inbound email for your domain. If your domain has no MX records, most mail providers treat it as not accepting mail and may reject or discard messages addressed to it."}},
+ {"@type":"Question","name":"What does this MX checker actually test?","acceptedAnswer":{"@type":"Answer","text":"It looks up your MX records, resolves each mail server to its IP address, and checks the reverse DNS (PTR) record for those IPs. A domain whose MX records point to servers that do not resolve to an IP, or that have no PTR, is a common cause of mail being rejected or treated as spam."}},
+ {"@type":"Question","name":"Why do MX and PTR matter for deliverability?","acceptedAnswer":{"@type":"Answer","text":"Receiving mail servers verify that your MX records point to real, resolvable hosts and that those hosts have a matching reverse DNS (PTR) record. Missing MX records, MX hosts that do not resolve, or missing PTR are among the fastest ways to get mail rejected or pushed to the spam folder before SPF, DKIM and DMARC are even evaluated."}},
+ {"@type":"Question","name":"My domain has no MX records. What should I do?","acceptedAnswer":{"@type":"Answer","text":"If you send or receive mail on the domain, add MX records for your mail provider (Google Workspace, Microsoft 365, your host's mail server, or an ESP like SendGrid or Postmark). If the domain never handles mail, consider adding a null MX or documenting that it is not a mail domain."}},
+ {"@type":"Question","name":"Is this MX checker free?","acceptedAnswer":{"@type":"Answer","text":"Yes. The MX, PTR and STARTTLS check is free and requires no signup. You can optionally add an email to run and save the full deliverability audit, which adds SPF, DKIM, DMARC, blocklist and IP reputation checks."}}
+]}
+</script>
+</head>
+<body>
+<nav class="nav">
+  <div class="container">
+    <a class="logo" href="/">
+      <span class="mark"><svg viewBox="0 0 24 24" fill="none"><path d="M4 12h11M11 7l5 5-5 5" stroke="#fff" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"/></svg></span>
+      Inboxproof
+    </a>
+    <div class="nav-links"><a href="/">Run a free audit</a> · <a href="/blog">Guides</a></div>
+  </div>
+</nav>
+
+<div class="container" style="max-width:760px;padding:60px 20px 80px;text-align:center">
+  <div class="kicker">Free tool</div>
+  <h1 style="font-size:38px;margin:10px 0 12px">MX record checker</h1>
+  <p style="opacity:.8;font-size:16px;margin-bottom:30px">Enter your domain. We look up your MX records, resolve each mail server to its IP, and check reverse DNS (PTR). Find out in seconds whether your domain can actually receive email. No signup, no email required.</p>
+
+  <form id="check-form" style="display:flex;gap:10px;max-width:520px;margin:0 auto 10px;flex-wrap:wrap;justify-content:center">
+    <input id="domain" type="text" placeholder="e.g. yourdomain.com" style="flex:1;min-width:220px;padding:14px 16px;border-radius:10px;border:1px solid #d4d4d8;font-size:16px;background:#fff" autocomplete="off" spellcheck="false">
+    <button class="btn btn-primary btn-lg" type="submit">Check MX</button>
+  </form>
+  <p id="err" style="color:#dc2626;font-size:14px;min-height:20px;margin-top:8px"></p>
+
+  <div id="result" style="display:none;text-align:left">
+    <div class="card" id="summary-card" style="margin-bottom:16px">
+      <div style="display:flex;align-items:center;gap:12px;flex-wrap:wrap">
+        <span id="sum-dot" style="width:14px;height:14px;border-radius:50%;display:inline-block;background:#d4d4d8"></span>
+        <strong id="sum-title" style="font-size:20px">–</strong>
+        <span id="sum-sub" style="opacity:.75;font-size:14px"></span>
+      </div>
+      <p id="sum-detail" style="opacity:.8;margin:12px 0 0;font-size:14px"></p>
+    </div>
+    <div id="grid"></div>
+    <div id="lead" style="display:none;margin-top:20px">
+      <div class="card" style="background:#eef2ff;border-color:#c7d2fe">
+        <h3 style="margin-top:0">Check the whole domain, not just the MX</h3>
+        <p style="opacity:.8;margin-bottom:14px">MX and STARTTLS are only two of eight signals. Add your email and we'll run the full audit — SPF, DKIM, DMARC, TLS, reverse DNS, blocklists and IP reputation — and save a shareable report with your score history. Free, no card.</p>
+        <form id="lead-form" style="display:flex;gap:10px;flex-wrap:wrap">
+          <input id="lead-email" type="email" placeholder="you@yourdomain.com" style="flex:1;min-width:220px;padding:12px 14px;border-radius:10px;border:1px solid #c7d2fe;font-size:15px" autocomplete="off" required>
+          <button class="btn btn-primary" type="submit">Run full audit &amp; save</button>
+        </form>
+        <p id="lead-err" style="color:#dc2626;font-size:13px;min-height:18px;margin-top:8px"></p>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="container" style="max-width:760px;padding:0 20px 80px">
+  <div class="card" style="text-align:center">
+    <h3 style="margin-top:0">MX is only one signal</h3>
+    <p style="opacity:.8">A domain with perfect MX records still gets rejected if SPF, DKIM or DMARC are missing or broken. The full audit checks all of it in one pass and gives you a single score you can track over time.</p>
+    <a class="btn btn-primary btn-lg" href="/#audit">Run the full free audit</a>
+    <p style="opacity:.6;font-size:13px;margin-bottom:0">Related: <a href="/blog/spf-dkim-dmarc">SPF, DKIM and DMARC explained</a> · <a href="/blog/email-in-spam">Why my email lands in spam</a> · <a href="/spf-checker">SPF checker</a> · <a href="/dkim-checker">DKIM checker</a> · <a href="/dmarc-checker">DMARC checker</a> · <a href="/blocklist-checker">IP blocklist checker</a> · <a href="/header-analyzer">Email header analyzer</a> · <a href="/ptr-checker">Reverse DNS (PTR) checker</a></p>
+  </div>
+</div>
+
+<footer>
+  <div class="container">
+    <span>© 2026 Inboxproof, Inc.</span>
+    <span><a href="/">Home</a> · <a href="/blog">Guides</a> · <a href="/privacy">Privacy</a></span>
+  </div>
+</footer>
+
+<script>
+const esc = s => String(s == null ? '' : s).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
+document.getElementById('lead-form').addEventListener('submit', async e => {
+  e.preventDefault();
+  const email = document.getElementById('lead-email').value.trim();
+  const le = document.getElementById('lead-err');
+  le.textContent = '';
+  const btn = e.target.querySelector('button');
+  btn.disabled = true; btn.textContent = 'Running…';
+  try {
+    const r = await fetch('/api/audit', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ domain: document.getElementById('domain').value.trim(), email }) });
+    const j = await r.json();
+    if (!r.ok) { le.textContent = j.error || 'Could not save the report.'; return; }
+    window.location.href = '/r/' + j.reportId;
+  } catch {
+    le.textContent = 'Something went wrong. Try again.';
+  } finally {
+    btn.disabled = false; btn.textContent = 'Run full audit & save';
+  }
+});
+document.getElementById('check-form').addEventListener('submit', async e => {
+  e.preventDefault();
+  const err = document.getElementById('err');
+  err.textContent = '';
+  const raw = document.getElementById('domain').value.trim().toLowerCase().replace(/^\.+|\.+$/g, '');
+  if (!/^[a-z0-9.-]{1,253}$/.test(raw)) { err.textContent = 'Enter a valid domain, e.g. yourdomain.com'; return; }
+  const btn = e.target.querySelector('button');
+  btn.disabled = true; btn.textContent = 'Checking…';
+  try {
+    const r = await fetch('/api/mx-check?domain=' + encodeURIComponent(raw));
+    const j = await r.json();
+    if (!r.ok) { err.textContent = j.error || 'Check failed.'; return; }
+    const dot = document.getElementById('sum-dot');
+    const title = document.getElementById('sum-title');
+    const sub = document.getElementById('sum-sub');
+    const detail = document.getElementById('sum-detail');
+    if (!j.hasMx) {
+      dot.style.background = '#dc2626';
+      title.textContent = 'No MX records found';
+      title.style.color = '#dc2626';
+      sub.textContent = j.domain;
+      detail.textContent = j.domain + ' has no MX records' + (j.fallbackA ? ' and no A record either, so mail to this domain has nowhere to go' : ', and it falls back to its A record, which most providers will not accept for mail') + '. Add MX records for your mail provider.';
+    } else if (j.allResolve) {
+      dot.style.background = '#16a34a';
+      title.textContent = 'MX healthy';
+      title.style.color = '#16a34a';
+      sub.textContent = j.domain;
+      detail.textContent = j.domain + ' has ' + j.mxCount + ' MX record' + (j.mxCount === 1 ? '' : 's') + ' and every probed mail server resolves to an IP. Mail routing looks healthy.';
+    } else {
+      dot.style.background = '#d97706';
+      title.textContent = 'MX found, but some servers do not resolve';
+      title.style.color = '#d97706';
+      sub.textContent = j.domain;
+      detail.textContent = j.domain + ' has MX records, but one or more mail servers do not resolve to an IP. Mail to this domain may be rejected or delayed — check your MX configuration.';
+    }
+    const rows = (j.results || []).map(r => {
+      let color = '#16a34a', mark = 'Resolves';
+      if (!r.resolves) { color = '#dc2626'; mark = 'Does not resolve'; }
+      else if (!r.ptr) { color = '#d97706'; mark = 'Resolves, no PTR'; }
+      const lines = [
+        '<span style="width:9px;height:9px;border-radius:50%;background:' + color + ';display:inline-block"></span>',
+        '<strong>' + esc(r.host) + '</strong>',
+        '<span style="color:' + color + ';font-weight:600;font-size:13px">' + esc(mark) + '</span>',
+      ];
+      if (r.ip) lines.push('<code style="font-family:ui-monospace,Menlo,monospace;font-size:12px;background:#f4f4f5;padding:1px 6px;border-radius:4px">' + esc(r.ip) + '</code>');
+      if (r.ptr) lines.push('<span style="opacity:.7;font-size:13px">PTR: ' + esc(r.ptr) + '</span>');
+      return '<div class="card" style="margin-bottom:10px;padding:12px 14px;display:flex;align-items:center;gap:10px;flex-wrap:wrap">' + lines.join('') + '</div>';
+    }).join('');
+    const mxList = (j.mx || []).map(m => m.exchange + ' (priority ' + m.priority + ')').join(', ');
+    document.getElementById('grid').innerHTML =
+      '<div style="opacity:.65;font-size:13px;font-weight:600;margin:4px 0 8px">MX records</div>' +
+      '<div class="card" style="margin-bottom:10px;padding:12px 14px;font-size:14px">' + (j.hasMx ? esc(mxList) : 'None') + '</div>' +
+      '<div style="opacity:.65;font-size:13px;font-weight:600;margin:14px 0 8px">Mail server resolution (top 5)</div>' + rows;
+    document.getElementById('lead').style.display = 'block';
+    const result = document.getElementById('result');
+    result.style.display = 'block';
+    result.scrollIntoView({ behavior: 'smooth', block: 'start' });
+  } catch (ex) {
+    document.getElementById('err').textContent = 'Something went wrong. Try again in a moment.';
+  } finally {
+    btn.disabled = false; btn.textContent = 'Check MX';
+  }
+});
+</script>
+</body>
+</html>

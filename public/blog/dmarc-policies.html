@@ -1,0 +1,74 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>DMARC p=none vs p=quarantine vs p=reject: which should you use? — Inboxproof</title>
+<meta name="description" content="What each DMARC policy actually does, when to use p=none, p=quarantine or p=reject, and the safe order to move from one to the next without breaking your own mail.">
+<meta property="og:title" content="DMARC p=none vs p=quarantine vs p=reject">
+<meta property="og:description" content="What each DMARC policy does and the safe order to move between them.">
+<meta property="og:type" content="article">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="/styles.css">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' rx='8' fill='%236366f1'/%3E%3Cpath d='M8 16h13M15 10l6 6-6 6' stroke='white' stroke-width='3' fill='none' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E">
+<script type="application/ld+json">
+{"@context":"https://schema.org","@type":"Article","headline":"DMARC p=none vs p=quarantine vs p=reject: which should you use?","description":"What each DMARC policy does and the safe order to move between them without breaking legitimate mail.","author":{"@type":"Organization","name":"Inboxproof"},"publisher":{"@type":"Organization","name":"Inboxproof"}}
+</script>
+</head>
+<body>
+<nav class="nav">
+  <div class="container">
+    <a class="logo" href="/">
+      <span class="mark"><svg viewBox="0 0 24 24" fill="none"><path d="M4 12h11M11 7l5 5-5 5" stroke="#fff" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"/></svg></span>
+      Inboxproof
+    </a>
+    <div class="nav-links"><a href="/blog">All guides</a><a href="/">Run a free audit</a></div>
+  </div>
+</nav>
+
+<div class="container" style="max-width:760px;padding:60px 20px 80px">
+  <div class="kicker">Guide</div>
+  <h1 style="font-size:34px;margin:10px 0 24px">p=none, p=quarantine, p=reject: what the difference actually means</h1>
+  <div style="opacity:.85;line-height:1.75;font-size:15.5px">
+    <p>The <code>p=</code> tag in your DMARC record is the only part that tells receivers what to do with mail that fails authentication. Everything else in the record (reporting addresses, subdomain policy, percentage) is supporting detail. Three values exist, and most domains use the wrong one for their stage.</p>
+
+    <h2 style="font-size:22px;margin:34px 0 12px">p=none: monitoring, not protection</h2>
+    <p><code>p=none</code> means "deliver the mail anyway, but send me aggregate reports about it." It changes nothing about how your mail is treated. Its value is entirely diagnostic: the reports (delivered to your <code>rua=</code> address) list every sender that used your domain, whether each one authenticated, and from which IP. If you have no idea who sends mail as your domain, p=none is the only honest way to find out. It is also the minimum that Gmail and Yahoo's bulk-sender requirements ask for.</p>
+
+    <h2 style="font-size:22px;margin:34px 0 12px">p=quarantine: soft enforcement</h2>
+    <p><code>p=quarantine</code> asks receivers to route failing mail to the spam folder instead of the inbox. "Asks" is the right word: it is a request, and each provider implements it differently. In practice, at major providers, it moves failing mail out of the inbox. Use it when your reports show only your own legitimate senders passing, and you want spoofed mail to stop reaching inboxes but you are not ready to refuse delivery outright.</p>
+
+    <h2 style="font-size:22px;margin:34px 0 12px">p=reject: hard enforcement</h2>
+    <p><code>p=reject</code> tells receivers to refuse delivery of failing mail. This is the end state for a domain that is fully managed: every legitimate sender authenticates, so anything that fails is by definition unauthorized. Large senders (Google, Microsoft, Apple) run p=reject on their domains. For a small business, p=reject is reachable, but only after the two prerequisites: SPF and DKIM that actually cover every system that sends for you, and a period of clean reports proving nothing legitimate would break.</p>
+
+    <h2 style="font-size:22px;margin:34px 0 12px">The safe order</h2>
+    <p style="margin:0 0 14px">1. <b>Start at p=none</b> with a <code>rua=</code> address you check. Do not skip this step to "look serious." You cannot safely enforce a policy you have not observed.</p>
+    <p style="margin:0 0 14px">2. <b>Fix everything the reports reveal.</b> Unknown senders, missing DKIM, SPF with too many lookups. This is usually the bulk of the work.</p>
+    <p style="margin:0 0 14px">3. <b>Move to p=quarantine</b> when reports show only expected, authenticating senders for a few weeks.</p>
+    <p style="margin:0 0 14px">4. <b>Move to p=reject</b> after another clean period. Use <code>pct=</code> (for example <code>pct=10</code>) if you want to enforce on a slice of traffic first and ramp up.</p>
+
+    <h2 style="font-size:22px;margin:34px 0 12px">Two tags people forget</h2>
+    <p><code>sp=</code> sets the policy for subdomains separately from the apex. If you run marketing on <code>mail.yourdomain.com</code> but the apex has no real mail, an <code>sp=reject</code> with <code>p=none</code> lets you enforce on the subdomain while the apex stays in monitoring. And <code>pct=</code> applies the policy to a percentage of failing mail, which is how you test enforcement without a hard cutover.</p>
+
+    <h2 style="font-size:22px;margin:34px 0 12px">The common mistake</h2>
+    <p>Domains that jump straight to p=reject without reading reports end up rejecting their own transactional mail: a forgotten ESP, a legacy invoice system, a subdomain that sends with its own SPF. The symptom is "our customers say they never get our emails," and the cause is a policy stricter than the sending setup underneath it. The record is cheap to fix; the week of lost invoices is not.</p>
+
+    <p style="opacity:.6;font-size:13px;margin-top:28px">Related: <a href="/blog/dmarc">What is DMARC?</a> · <a href="/blog/spf-dkim-dmarc">SPF vs DKIM vs DMARC</a> · <a href="/blog/email-not-landing-gmail">Why email misses Gmail's inbox</a> · <a href="/blog/dmarc-report-monitoring">How to monitor DMARC reports</a></p>
+
+    <div style="margin-top:40px;text-align:center;background:linear-gradient(180deg,rgba(99,102,241,.12),transparent);border:1px solid rgba(99,102,241,.35);border-radius:14px;padding:26px">
+      <h3 style="font-size:18px;margin-bottom:6px">Find out where your domain sits</h3>
+      <p style="opacity:.75;font-size:14px;margin-bottom:16px">The free <a href="/dmarc-checker">DMARC checker</a> shows your current record, policy and whether SPF/DKIM are aligned, in seconds. No signup.</p>
+      <a class="btn btn-primary" href="/dmarc-checker">Check my DMARC record</a>
+    </div>
+  </div>
+</div>
+
+<footer>
+  <div class="container">
+    <span>© 2026 Inboxproof, Inc.</span>
+    <span><a href="/blog">All guides</a> · <a href="/">Home</a> · <a href="/privacy">Privacy</a></span>
+  </div>
+</footer>
+</body>
+</html>

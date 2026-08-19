@@ -1,0 +1,101 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>How to Read Email Headers: SPF, DKIM and DMARC Results Explained — Inboxproof</title>
+<meta name="description" content="Learn to read raw email headers: where the SPF, DKIM and DMARC results live, what each value means, and how to tell a legitimate email from a spoof in under a minute.">
+<meta property="og:title" content="How to Read Email Headers: SPF, DKIM and DMARC Results Explained">
+<meta property="og:description" content="Where the SPF, DKIM and DMARC results live in raw headers, what each value means, and how to spot a spoof in under a minute.">
+<meta property="og:type" content="article">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="/styles.css">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' rx='8' fill='%236366f1'/%3E%3Cpath d='M8 16h13M15 10l6 6-6 6' stroke='white' stroke-width='3' fill='none' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E">
+<script type="application/ld+json">
+{"@context":"https://schema.org","@type":"Article","headline":"How to Read Email Headers: SPF, DKIM and DMARC Results Explained","description":"Where the SPF, DKIM and DMARC results live in raw headers, what each value means, and how to spot a spoof in under a minute.","author":{"@type":"Organization","name":"Inboxproof"},"publisher":{"@type":"Organization","name":"Inboxproof"}}
+</script>
+</head>
+<body>
+<nav class="nav">
+  <div class="container">
+    <a class="logo" href="/"><span class="mark"><svg viewBox="0 0 24 24" fill="none"><path d="M4 12h11M11 7l5 5-5 5" stroke="#fff" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"/></svg></span> Inboxproof</a>
+    <div class="nav-links"><a href="/">Run a free audit</a> · <a href="/blog">Guides</a></div>
+  </div>
+</nav>
+
+<header class="hero" style="padding-bottom:28px">
+  <div class="container">
+    <div class="eyebrow"><span class="dot"></span> Deliverability guide</div>
+    <h1>How to read email headers: SPF, DKIM and DMARC results explained</h1>
+    <p class="sub">Every email you receive carries a paper trail in its headers. Here is where the authentication results live, what each value means, and how to tell a real email from a spoof in under a minute.</p>
+  </div>
+</header>
+
+<div class="container" style="max-width:760px;padding-bottom:80px">
+
+  <h2>Where the results actually live</h2>
+  <p>The two lines that matter are <code>Authentication-Results</code> and <code>Received-SPF</code>. The receiving mail server (Gmail, Microsoft, your own MX) appends them after it checks the incoming message. A typical block looks like this:</p>
+  <pre style="background:rgba(255,255,255,.04);border:1px solid rgba(255,255,255,.1);border-radius:10px;padding:14px;font-size:12.5px;overflow-x:auto;line-height:1.7">Authentication-Results: mx.google.com;
+  spf=pass smtp.mailfrom=example.com
+  dkim=pass header.d=example.com
+  dmarc=pass header.d=example.com action=none</pre>
+  <p>Three tokens, three checks. If you only remember one thing: <b>the domain after each check must match the From header</b> for the email to count as properly authenticated.</p>
+
+  <h2>SPF: did the sending IP have permission?</h2>
+  <p><code>spf=pass</code> means the IP that delivered the message is listed in your SPF record. <code>spf=fail</code> means it is not. The value after <code>smtp.mailfrom=</code> is the domain whose SPF was checked, which is usually the envelope sender, not the visible From address. Common variants:</p>
+  <ul style="line-height:1.9">
+    <li><b>pass</b> — the IP is authorized. Good.</li>
+    <li><b>fail</b> — not authorized. The receiving server should reject or filter the message.</li>
+    <li><b>softfail</b> — not authorized, but the record says "be gentle." Often a sign of a misconfigured SPF with a <code>~all</code> mechanism.</li>
+    <li><b>permerror / temperror</b> — the SPF lookup itself broke (too many DNS lookups, malformed record). The mail is treated as unverified.</li>
+  </ul>
+
+  <h2>DKIM: was the message signed, and does the signature verify?</h2>
+  <p><code>dkim=pass header.d=example.com</code> means the message carried a DKIM signature from example.com and the public key in DNS verified it. The signature protects the content: if anyone tampers with the body or headers after signing, verification fails. Two things people miss:</p>
+  <ul style="line-height:1.9">
+    <li><b>dkim=none</b> means the sender did not sign at all. That is not an error, but it means you are relying on SPF alone.</li>
+    <li>A passing DKIM from a <i>different</i> domain than the From header (say, <code>header.d=mailprovider.com</code> on an email that says "from you@example.com") is the classic pattern of a legitimate third-party tool that was not set up with DMARC alignment.</li>
+  </ul>
+
+  <h2>DMARC: the verdict that ties it together</h2>
+  <p>DMARC requires alignment: the SPF or DKIM domain must match the From header. <code>dmarc=pass</code> means at least one aligned check passed and the domain has a DMARC record. The <code>action=</code> value tells you what the policy would do with unaligned mail:</p>
+  <ul style="line-height:1.9">
+    <li><b>action=none</b> — report only. The domain wants to see what is happening but is not yet filtering.</li>
+    <li><b>action=quarantine</b> — unaligned mail goes to spam.</li>
+    <li><b>action=reject</b> — unaligned mail is refused outright.</li>
+  </ul>
+  <p>If you see <code>dmarc=fail</code> on an email that claims to be from your domain, treat it as spoofed until proven otherwise. That is exactly the situation DMARC exists to make unambiguous.</p>
+
+  <h2>Five things people misread in headers</h2>
+  <ol style="line-height:1.9">
+    <li><b>Reading the Received lines top to bottom.</b> They are appended as the mail travels, so the <i>first</i> Received line is the oldest hop and the last is the most recent. The route reads oldest-first, not newest-first.</li>
+    <li><b>Trusting the From header alone.</b> The From field is set by the sender and costs nothing to fake. Only the authentication results are checked by the receiver.</li>
+    <li><b>Assuming spf=pass means the From address is real.</b> SPF authenticates the envelope sender (the IP), not the visible From address. That gap is why DMARC alignment exists.</li>
+    <li><b>Ignoring permerror.</b> A broken SPF lookup (10+ DNS lookups) makes every message from that domain look unverified. The fix is to flatten the SPF record, not to add more includes.</li>
+    <li><b>Stopping at one provider's results.</b> Gmail, Microsoft and your own MX can disagree. If one shows spf=fail and another shows spf=pass, the SPF record is usually the problem, not the mail.</li>
+  </ol>
+
+  <h2>The one-minute spoof test</h2>
+  <p>When a suspicious email lands, open the headers and answer three questions:</p>
+  <ol style="line-height:1.9">
+    <li>Does <code>dkim=pass</code> appear, and does <code>header.d=</code> match the From domain?</li>
+    <li>Does <code>spf=pass</code> appear, and does <code>smtp.mailfrom=</code> match the From domain?</li>
+    <li>Does <code>dmarc=pass</code> appear at all?</li>
+  </ol>
+  <p>If all three say no, the email is unauthenticated: it may still be legitimate, but the sender gave the receiving server no reason to trust it. If it asks for money or credentials, that is your answer.</p>
+
+  <h2>Analyze headers without doing it by hand</h2>
+  <p>The <a href="/header-analyzer">email header analyzer</a> does exactly this test for you: paste the raw headers and it reports the SPF, DKIM and DMARC results in plain English, flags domain alignment, and shows the route. It runs entirely in your browser, so nothing you paste is uploaded. For the other side of the problem, the <a href="/dmarc-checker">DMARC checker</a> and <a href="/spf-checker">SPF checker</a> verify your own records, and the <a href="/">free audit</a> scores all seven deliverability checks at once.</p>
+
+  <p style="opacity:.6;font-size:13px;margin-top:24px">Related: <a href="/blog/spf-dkim-dmarc">SPF vs DKIM vs DMARC</a> · <a href="/blog/spoofing">Is your domain being spoofed?</a> · <a href="/blog/dmarc-policies">DMARC policies explained</a></p>
+</div>
+
+<footer>
+  <div class="container">
+    <span>© 2026 Inboxproof, Inc.</span>
+    <span><a href="/">Home</a> · <a href="/blog">All guides</a> · <a href="/privacy">Privacy</a></span>
+  </div>
+</footer>
+</body>
+</html>

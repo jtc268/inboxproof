@@ -1,0 +1,147 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Free TLS / STARTTLS Checker — Does Your Mail Server Encrypt Email?</title>
+<meta name="description" content="Check whether your mail server offers STARTTLS and whether its certificate is valid. We test every MX host on port 25, verify the TLS handshake, and report the certificate. Free, no signup.">
+<meta property="og:title" content="Free TLS / STARTTLS Checker — Inboxproof">
+<meta property="og:description" content="Find out if your mail server encrypts email in transit. Free TLS/STARTTLS check, no signup.">
+<meta property="og:type" content="website">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="/styles.css">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' rx='8' fill='%236366f1'/%3E%3Cpath d='M8 16h13M15 10l6 6-6 6' stroke='white' stroke-width='3' fill='none' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E">
+<script type="application/ld+json">
+{"@context":"https://schema.org","@type":"WebApplication","name":"Inboxproof TLS / STARTTLS Checker","applicationCategory":"Utilities","operatingSystem":"Web","description":"Checks whether a domain's mail servers offer STARTTLS and whether their TLS certificates are valid, by testing each MX host on port 25.","offers":{"@type":"Offer","price":"0","priceCurrency":"USD"}}
+</script>
+<script type="application/ld+json">
+{"@context":"https://schema.org","@type":"FAQPage","mainEntity":[
+  {"@type":"Question","name":"What is STARTTLS?","acceptedAnswer":{"@type":"Answer","text":"STARTTLS is the mechanism an SMTP mail server uses to upgrade a plain connection to an encrypted TLS one. If your mail server does not offer STARTTLS, email sent to and from your domain can travel across the internet in plaintext, where it can be read or tampered with."}},
+  {"@type":"Question","name":"How do I check if my mail server supports TLS?","acceptedAnswer":{"@type":"Answer","text":"You connect to the mail server on port 25, send an EHLO command, and look for a STARTTLS capability in the response. This checker does that automatically for every MX host of your domain and also verifies the TLS certificate is present and not expired."}},
+  {"@type":"Question","name":"Why does TLS matter for deliverability?","acceptedAnswer":{"@type":"Answer","text":"Receiving providers treat a sender that cannot encrypt as a weak signal. Gmail and Microsoft expect TLS for most mail. A missing or expired certificate is a common, fixable reason mail gets down-ranked or flagged."}},
+  {"@type":"Question","name":"Is this TLS checker free?","acceptedAnswer":{"@type":"Answer","text":"Yes. The check is free and does not require a signup. It runs a live connection to your mail servers, so results reflect the current state of your infrastructure."}},
+  {"@type":"Question","name":"What if my domain has no MX records?","acceptedAnswer":{"@type":"Answer","text":"If there are no MX records, the checker falls back to the domain's own A record. If neither exists, it reports that there is no mail host to test."}}
+]}
+</script>
+</head>
+<body>
+<nav class="nav">
+  <div class="container">
+    <a class="logo" href="/">
+      <span class="mark"><svg viewBox="0 0 24 24" fill="none"><path d="M4 12h11M11 7l5 5-5 5" stroke="#fff" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"/></svg></span>
+      Inboxproof
+    </a>
+    <div class="nav-links"><a href="/">Run a free audit</a> · <a href="/blog">Guides</a></div>
+  </div>
+</nav>
+
+<div class="container" style="max-width:760px;padding:60px 20px 40px;text-align:center">
+  <div class="kicker">Free tool</div>
+  <h1 style="font-size:38px;margin:10px 0 12px">TLS / STARTTLS checker</h1>
+  <p style="opacity:.8;font-size:16px;margin-bottom:30px">Find out whether your mail server encrypts email in transit. We connect to each MX host on port 25, check for STARTTLS, and verify the certificate. Free, no signup.</p>
+
+  <div class="card" style="text-align:left;padding:22px 24px;margin-bottom:16px">
+    <form id="form">
+      <label for="domain" style="display:block;font-size:13px;font-weight:600;margin-bottom:6px;opacity:.8">Domain</label>
+      <div style="display:flex;gap:10px;flex-wrap:wrap">
+        <input id="domain" type="text" placeholder="yourdomain.com" autocomplete="off" style="flex:1;min-width:200px;padding:12px 14px;border-radius:9px;border:1px solid #d4d4d8;font-size:15px;background:#fff">
+        <button class="btn btn-primary btn-lg" type="submit">Check TLS</button>
+      </div>
+    </form>
+    <p id="err" style="color:#dc2626;font-size:14px;min-height:20px;margin-top:10px"></p>
+  </div>
+
+  <div id="result" style="display:none;text-align:left"></div>
+</div>
+
+<div class="container" style="max-width:760px;padding:0 20px 40px">
+  <div class="card">
+    <h3 style="margin-top:0">What a good result looks like</h3>
+    <ul style="opacity:.85;line-height:1.7;font-size:14px;padding-left:20px;margin:8px 0 0">
+      <li><strong>STARTTLS offered</strong> on every MX host you actually use.</li>
+      <li><strong>Certificate valid</strong> and not expiring within the next two weeks.</li>
+      <li><strong>Issuer is a trusted CA</strong> (Let's Encrypt, DigiCert, etc.).</li>
+      <li><strong>No plaintext fallback</strong> for your real traffic.</li>
+    </ul>
+  </div>
+</div>
+
+<div class="container" style="max-width:760px;padding:0 20px 80px">
+  <div class="card" style="text-align:center">
+    <h3 style="margin-top:0">Check the whole picture</h3>
+    <p style="opacity:.8">TLS is one piece. Run the full cold email readiness check to see SPF, DKIM, DMARC, IP reputation and routing together.</p>
+    <a class="btn btn-primary btn-lg" href="/cold-email-checker">Check my domain</a>
+    <p style="opacity:.6;font-size:13px;margin-bottom:0">More tools: <a href="/dmarc-checker">DMARC checker</a> · <a href="/spf-checker">SPF checker</a> · <a href="/dkim-checker">DKIM checker</a> · <a href="/blocklist-checker">IP blocklist checker</a> · <a href="/mx-checker">MX record checker</a> · <a href="/blog/cold-email-deliverability">Cold email deliverability guide</a></p>
+  </div>
+</div>
+
+<footer>
+  <div class="container">
+    <span>© 2026 Inboxproof, Inc.</span>
+    <span><a href="/">Home</a> · <a href="/blog">Guides</a> · <a href="/privacy">Privacy</a></span>
+  </div>
+</footer>
+
+<script>
+const $ = id => document.getElementById(id);
+const errEl = $('err');
+const resultEl = $('result');
+const VERDICT = {
+  pass: { label: 'TLS OK', color: '#16a34a', bg: '#f0fdf4', msg: 'Your mail server offers STARTTLS with a valid certificate.' },
+  warn: { label: 'Needs attention', color: '#d97706', bg: '#fffbeb', msg: 'Some issue found. Check the details below.' },
+  fail: { label: 'Not encrypted', color: '#dc2626', bg: '#fef2f2', msg: 'Your mail server does not properly offer STARTTLS.' },
+  'no-mx': { label: 'No mail host', color: '#6b7280', bg: '#f9fafb', msg: 'No MX or A record found to test.' }
+};
+const STATUS_DOT = { pass: '#16a34a', warn: '#d97706', fail: '#dc2626' };
+
+function render(r) {
+  const v = VERDICT[r.verdict] || VERDICT.warn;
+  const rows = r.hosts.map(h => {
+    const dot = STATUS_DOT[h.status] || '#6b7280';
+    const cert = h.cert ? (h.cert.issuer ? h.cert.issuer + ' · ' : '') + (h.cert.valid_to || '') : '—';
+    return '<tr><td style="padding:9px 10px;border-top:1px solid #ececf0"><span style="display:inline-block;width:9px;height:9px;border-radius:50%;background:' + dot + ';margin-right:8px"></span>' + h.host + '</td><td style="padding:9px 10px;border-top:1px solid #ececf0">' + (h.starttls ? 'Yes' : 'No') + '</td><td style="padding:9px 10px;border-top:1px solid #ececf0;font-size:13px;opacity:.8">' + cert + '</td><td style="padding:9px 10px;border-top:1px solid #ececf0;font-size:13px">' + h.detail + '</td></tr>';
+  }).join('');
+  resultEl.innerHTML =
+    '<div style="border-radius:12px;padding:18px 20px;margin-bottom:16px;background:' + v.bg + ';border:1px solid ' + v.color + '33">' +
+      '<div style="font-size:22px;font-weight:800;color:' + v.color + '">' + v.label + '</div>' +
+      '<div style="font-size:14px;opacity:.8;margin-top:4px">' + v.msg + '</div>' +
+    '</div>' +
+    (r.hosts.length ?
+      '<div class="card" style="padding:18px 20px">' +
+        '<div style="font-size:13px;font-weight:600;margin:4px 0 6px">Per-host results</div>' +
+        '<table style="width:100%;border-collapse:collapse;font-size:14px"><thead><tr style="text-align:left;color:var(--dim);font-size:12px"><th style="padding:6px 10px">Host</th><th style="padding:6px 10px">STARTTLS</th><th style="padding:6px 10px">Certificate</th><th style="padding:6px 10px">Detail</th></tr></thead><tbody>' + rows + '</tbody></table>' +
+      '</div>' : '') +
+    '<div class="card" style="padding:18px 20px;margin-top:16px">' +
+      '<div style="font-size:13px;font-weight:600;margin:4px 0 6px">If this failed</div>' +
+      '<ul style="opacity:.85;line-height:1.7;font-size:14px;padding-left:20px;margin:0">' +
+        '<li>Enable <strong>Force TLS</strong> in your hosting panel (Security → TLS).</li>' +
+        '<li>Renew an <strong>expired certificate</strong> before it causes outages.</li>' +
+        '<li>Make sure your <strong>MX hosts</strong> match the servers that actually send mail.</li>' +
+      '</ul>' +
+    '</div>';
+  resultEl.style.display = 'block';
+  resultEl.scrollIntoView({ behavior: 'smooth', block: 'start' });
+}
+
+$('form').addEventListener('submit', async e => {
+  e.preventDefault();
+  const domain = $('domain').value.trim().replace(/^https?:\/\//, '').replace(/\/.*$/, '');
+  if (!domain) { errEl.textContent = 'Enter the domain you send mail from.'; return; }
+  errEl.textContent = '';
+  const btn = e.target.querySelector('button');
+  btn.disabled = true; btn.textContent = 'Checking…';
+  try {
+    const r = await fetch('/api/tls-check', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ domain }) });
+    const j = await r.json();
+    if (!r.ok) { errEl.textContent = j.error || 'Check failed.'; return; }
+    render(j.result);
+  } catch {
+    errEl.textContent = 'Something went wrong. Try again in a moment.';
+  } finally {
+    btn.disabled = false; btn.textContent = 'Check TLS';
+  }
+});
+</script>
+</body>
+</html>

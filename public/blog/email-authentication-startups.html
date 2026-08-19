@@ -1,0 +1,86 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Email authentication for startups: the 2026 checklist | InboxProof</title>
+<meta name="description" content="The complete 2026 checklist for email authentication for startups: SPF, DKIM, DMARC, and the other records you need to get into the inbox.">
+<link rel="canonical" href="https://inboxproof.email/blog/email-authentication-startups">
+<meta property="og:title" content="Email authentication for startups: the 2026 checklist">
+<meta property="og:description" content="The complete 2026 checklist for email authentication for startups.">
+<meta property="og:type" content="article">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="/styles.css">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' rx='8' fill='%236366f1'/%3E%3Cpath d='M8 16h13M15 10l6 6-6 6' stroke='white' stroke-width='3' fill='none' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E">
+<script type="application/ld+json">
+{"@context":"https://schema.org","@type":"Article","headline":"Email authentication for startups: the 2026 checklist","description":"The complete 2026 checklist for email authentication for startups.","author":{"@type":"Organization","name":"InboxProof"},"publisher":{"@type":"Organization","name":"InboxProof"}}
+</script>
+</head>
+<body>
+<nav class="nav">
+  <div class="container">
+    <a class="logo" href="/">
+      <span class="mark"><svg viewBox="0 0 24 24" fill="none"><path d="M4 12h11M11 7l5 5-5 5" stroke="#fff" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"/></svg></span>
+      Inboxproof
+    </a>
+    <div class="nav-links"><a href="/">Run a free audit</a></div>
+  </div>
+</nav>
+
+<div class="container" style="max-width:760px;padding:60px 20px 80px">
+  <div class="kicker">Startups</div>
+  <h1 style="font-size:34px;margin:10px 0 12px">Email authentication for startups: the 2026 checklist</h1>
+  <p style="opacity:.8;font-size:16px;margin-bottom:36px">If you are a startup sending email, you need to get into the inbox. Here is the complete 2026 checklist for email authentication.</p>
+
+  <div class="card" style="margin-bottom:28px;background:#eef2ff;border-color:#c7d2fe">
+    <h3 style="margin-top:0">Check your domain in seconds</h3>
+    <p style="opacity:.8;margin-bottom:14px">The <a href="/#audit">free InboxProof audit</a> checks SPF, DKIM, DMARC, MX, TLS, PTR, and IP reputation for your domain. No signup.</p>
+    <a class="btn btn-primary" href="/#audit">Run the free audit</a>
+  </div>
+
+  <h2 style="font-size:24px;margin:36px 0 12px">1. SPF</h2>
+  <p>SPF tells the world which servers are allowed to send email for your domain. Without it, your email will be rejected by most providers.</p>
+  <p>Run the free <a href="/spf-checker">SPF checker</a> to verify your SPF record is configured correctly.</p>
+
+  <h2 style="font-size:24px;margin:36px 0 12px">2. DKIM</h2>
+  <p>DKIM adds a digital signature to your email, proving it was sent by you and not tampered with. Without it, your email will fail authentication.</p>
+  <p>Run the free <a href="/dkim-checker">DKIM checker</a> to verify your DKIM record is configured correctly.</p>
+
+  <h2 style="font-size:24px;margin:36px 0 12px">3. DMARC</h2>
+  <p>DMARC tells receiving servers what to do with email that fails SPF or DKIM. Without it, your domain is vulnerable to spoofing.</p>
+  <p>Run the free <a href="/dmarc-checker">DMARC checker</a> to verify your DMARC record is configured correctly.</p>
+
+  <h2 style="font-size:24px;margin:36px 0 12px">4. MX</h2>
+  <p>MX records tell the world which servers receive email for your domain. Without them, email to your domain will bounce.</p>
+  <p>The free audit checks your MX records and tells you if they are configured correctly.</p>
+
+  <h2 style="font-size:24px;margin:36px 0 12px">5. TLS</h2>
+  <p>TLS encrypts email in transit. Without it, your email is vulnerable to interception.</p>
+  <p>The free audit checks your TLS configuration and tells you if it is secure.</p>
+
+  <h2 style="font-size:24px;margin:36px 0 12px">6. PTR</h2>
+  <p>PTR records map your IP address back to a hostname. Without them, your email will be flagged as suspicious.</p>
+  <p>The free audit checks your PTR record and tells you if it is configured correctly.</p>
+
+  <h2 style="font-size:24px;margin:36px 0 12px">7. IP reputation</h2>
+  <p>Your IP address has a reputation. If it is on a blocklist, your email will be rejected.</p>
+  <p>The free audit checks your IP reputation and tells you if it is on any blocklists.</p>
+
+  <div class="cta" style="background:#0f172a;color:#fff;border-radius:12px;padding:32px;text-align:center;margin:40px 0">
+    <h2 style="color:#fff;margin-bottom:8px">Run the full checklist</h2>
+    <p style="opacity:.8;margin-bottom:20px">The free audit checks all seven records and shows the exact record to add.</p>
+    <a class="btn btn-primary btn-lg" href="/#audit">Run the free audit</a>
+  </div>
+
+  <p style="opacity:.6;font-size:13px;margin-top:28px">Related: <a href="/blog/spf-dkim-dmarc">SPF vs DKIM vs DMARC</a> · <a href="/blog/dmarc-record">How to set up a DMARC record</a> · <a href="/blog/google-workspace-spf-dkim-dmarc">SPF, DKIM, DMARC for Google Workspace</a> · <a href="/blog/microsoft-365-spf-dkim-dmarc">SPF, DKIM, DMARC for Microsoft 365</a></p>
+</div>
+
+<footer>
+  <div class="container">
+    <span>© 2026 Inboxproof, Inc.</span>
+    <span><a href="/">Home</a> · <a href="/privacy">Privacy</a></span>
+  </div>
+</footer>
+</body>
+</html>

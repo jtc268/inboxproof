@@ -1,0 +1,35 @@
+# Secrets — never publish
+.credentials
+*.env
+.env*
+deploy-key
+deploy-key.pub
+*.pem
+*.key
+
+# Data (may contain user leads / emails)
+data/
+
+# Internal / operational docs (not for public)
+LAUNCH-KIT.md
+LAUNCH.md
+MARKETING.md
+DEPLOY.md
+NETWORK.md
+
+# Deployment/ops scripts + cloud state (reference credentials)
+scripts/
+deploy-all.ps1
+.vc-create.json
+.vc-kv-skill.md
+.vc-kv.json
+.vc-projects.json
+.vercelignore
+tunnel-cf.log
+tunnel-state.json
+tunnel.log
+
+# OS / editor
+.DS_Store
+Thumbs.db
+node_modules/

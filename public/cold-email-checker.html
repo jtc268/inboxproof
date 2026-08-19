@@ -1,0 +1,194 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Free Cold Email Deliverability Checker — Is Your Domain Ready to Send?</title>
+<meta name="description" content="Check if your domain is ready for cold email. We test SPF, DKIM, DMARC, IP reputation, TLS and more, then score your cold email readiness. Free, no signup.">
+<meta property="og:title" content="Free Cold Email Deliverability Checker — Inboxproof">
+<meta property="og:description" content="Find out if your domain will land in the inbox or the spam folder. Free cold email readiness check, no signup.">
+<meta property="og:type" content="website">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="/styles.css">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' rx='8' fill='%236366f1'/%3E%3Cpath d='M8 16h13M15 10l6 6-6 6' stroke='white' stroke-width='3' fill='none' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E">
+<script type="application/ld+json">
+{"@context":"https://schema.org","@type":"WebApplication","name":"Inboxproof Cold Email Deliverability Checker","applicationCategory":"Utilities","operatingSystem":"Web","description":"Checks SPF, DKIM, DMARC, IP reputation, TLS and routing for a domain and scores its readiness for cold email outreach.","offers":{"@type":"Offer","price":"0","priceCurrency":"USD"}}
+</script>
+<script type="application/ld+json">
+{"@context":"https://schema.org","@type":"FAQPage","mainEntity":[
+ {"@type":"Question","name":"What makes a domain ready for cold email?","acceptedAnswer":{"@type":"Answer","text":"Receivers like Gmail and Microsoft judge cold mail by sender reputation. A domain needs a clean sending IP (not blocklisted), valid SPF, a signing DKIM key, and a DMARC record. Missing any of these is a strong spam signal for unsolicited mail."}},
+ {"@type":"Question","name":"Should I use my main domain for cold email?","acceptedAnswer":{"@type":"Answer","text":"No. Send cold email from a secondary domain (for example getyourbrand.com). If the secondary domain gets flagged, your brand domain's reputation for transactional mail stays intact."}},
+ {"@type":"Question","name":"What is a cold email readiness score?","acceptedAnswer":{"@type":"Answer","text":"We weight the checks that matter most for unsolicited mail: IP reputation carries the most weight, followed by DMARC, SPF and DKIM. A score of 90+ with no critical failures means the domain is ready to start warming up."}},
+ {"@type":"Question","name":"Is this cold email checker free?","acceptedAnswer":{"@type":"Answer","text":"Yes. The readiness check is free and does not require a signup. You can optionally add an email to save the full report and track your score over time."}},
+ {"@type":"Question","name":"How long should I warm up a new domain?","acceptedAnswer":{"@type":"Answer","text":"Two to four weeks. Start at 20-30 cold emails per day per mailbox and increase slowly while keeping reply and open rates healthy. Rushing the ramp is the most common way to burn a new sending domain."}}
+]}
+</script>
+</head>
+<body>
+<nav class="nav">
+  <div class="container">
+    <a class="logo" href="/">
+      <span class="mark"><svg viewBox="0 0 24 24" fill="none"><path d="M4 12h11M11 7l5 5-5 5" stroke="#fff" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"/></svg></span>
+      Inboxproof
+    </a>
+    <div class="nav-links"><a href="/">Run a free audit</a> · <a href="/blog">Guides</a></div>
+  </div>
+</nav>
+
+<div class="container" style="max-width:760px;padding:60px 20px 80px;text-align:center">
+  <div class="kicker">Free tool</div>
+  <h1 style="font-size:38px;margin:10px 0 12px">Cold email deliverability checker</h1>
+  <p style="opacity:.8;font-size:16px;margin-bottom:30px">Enter the domain you send cold email from. We test SPF, DKIM, DMARC, IP reputation, TLS and routing, then score whether it will land in the inbox or the spam folder. No signup, no email required.</p>
+
+  <form id="check-form" style="display:flex;gap:10px;max-width:520px;margin:0 auto 10px;flex-wrap:wrap;justify-content:center">
+    <input id="domain" type="text" placeholder="send.yourdomain.com" style="flex:1;min-width:220px;padding:14px 16px;border-radius:10px;border:1px solid #d4d4d8;font-size:16px;background:#fff" autocomplete="off" spellcheck="false">
+    <button class="btn btn-primary btn-lg" type="submit">Check readiness</button>
+  </form>
+  <p id="err" style="color:#dc2626;font-size:14px;min-height:20px;margin-top:8px"></p>
+
+  <div id="result" style="display:none;text-align:left">
+    <div class="card" id="verdict-card" style="margin-bottom:16px">
+      <div style="display:flex;align-items:center;gap:14px;flex-wrap:wrap">
+        <div id="score-ring" style="width:64px;height:64px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:22px;font-weight:800;background:#e4e4e7;color:#18181b">–</div>
+        <div>
+          <div id="verdict" style="font-size:20px;font-weight:700">–</div>
+          <div id="verdict-sub" style="opacity:.75;font-size:14px;margin-top:2px">–</div>
+        </div>
+      </div>
+      <div id="critical" style="display:none;margin-top:14px;padding:12px 14px;background:#fef2f2;border:1px solid #fecaca;border-radius:8px;font-size:14px;color:#991b1b"></div>
+    </div>
+    <div id="checks"></div>
+    <div id="lead" style="display:none;margin-top:20px">
+      <div class="card" style="background:#eef2ff;border-color:#c7d2fe">
+        <h3 style="margin-top:0">Save this report</h3>
+        <p style="opacity:.8;margin-bottom:14px">Add your email and we'll save this report, keep your score history, and monitor the domain so you know the moment a record breaks or your IP gets listed. Free, no card.</p>
+        <form id="lead-form" style="display:flex;gap:10px;flex-wrap:wrap">
+          <input id="lead-email" type="email" placeholder="you@yourdomain.com" style="flex:1;min-width:220px;padding:12px 14px;border-radius:10px;border:1px solid #c7d2fe;font-size:15px" autocomplete="off" required>
+          <button class="btn btn-primary" type="submit">Save &amp; monitor</button>
+        </form>
+        <p id="lead-err" style="color:#dc2626;font-size:13px;min-height:18px;margin-top:8px"></p>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="container" style="max-width:760px;padding:0 20px 40px">
+  <div class="card">
+    <h3 style="margin-top:0">Cold email checklist</h3>
+    <ul style="opacity:.85;line-height:1.7;font-size:14px;padding-left:20px;margin:8px 0 0">
+      <li><strong>Use a secondary domain</strong> for outreach (e.g. getyourbrand.com). Never cold email from your brand domain.</li>
+      <li><strong>Warm up for 2-4 weeks</strong> before real campaigns. Start at 20-30 sends per day per mailbox and ramp slowly. Use the <a href="/warm-up-calculator" style="color:#6366f1;font-weight:600">warm-up calculator</a> to get a day-by-day schedule.</li>
+      <li><strong>Keep volume low</strong>: under 50 cold emails per mailbox per day once warmed up.</li>
+      <li><strong>One recipient per email</strong>, a real reply-to address, and plain text. No images, no heavy HTML.</li>
+      <li><strong>Align SPF, DKIM and DMARC</strong> with the provider you actually send through — the check above verifies that.</li>
+    </ul>
+  </div>
+</div>
+
+<div class="container" style="max-width:760px;padding:0 20px 80px">
+  <div class="card" style="text-align:center">
+    <h3 style="margin-top:0">Want the full picture?</h3>
+    <p style="opacity:.8">The readiness check covers the records that decide inbox placement. The full audit adds report parsing, monitoring and history so a broken record never catches you by surprise.</p>
+    <a class="btn btn-primary btn-lg" href="/#audit">Run the full free audit</a>
+    <p style="opacity:.6;font-size:13px;margin-bottom:0">More tools: <a href="/warm-up-calculator">warm-up calculator</a> · <a href="/tls-checker">TLS/STARTTLS checker</a> · <a href="/dmarc-checker">DMARC checker</a> · <a href="/spf-checker">SPF checker</a> · <a href="/dkim-checker">DKIM checker</a> · <a href="/blocklist-checker">IP blocklist checker</a> · <a href="/header-analyzer">email header analyzer</a> · <a href="/blog/cold-email-deliverability">Cold email deliverability guide</a> · <a href="/blog/cold-email-tools">Best cold email tools</a> · <a href="/blog/email-deliverability-for-agencies">Deliverability for agencies</a></p>
+  </div>
+</div>
+
+<footer>
+  <div class="container">
+    <span>© 2026 Inboxproof, Inc.</span>
+    <span><a href="/">Home</a> · <a href="/blog">Guides</a> · <a href="/privacy">Privacy</a></span>
+  </div>
+</footer>
+
+<script>
+const form = document.getElementById('check-form');
+const err = document.getElementById('err');
+const result = document.getElementById('result');
+const leadEl = document.getElementById('lead');
+let lastDomain = '';
+document.getElementById('lead-form').addEventListener('submit', async e => {
+  e.preventDefault();
+  const email = document.getElementById('lead-email').value.trim();
+  const le = document.getElementById('lead-err');
+  le.textContent = '';
+  const btn = e.target.querySelector('button');
+  btn.disabled = true; btn.textContent = 'Saving…';
+  try {
+    const r = await fetch('/api/audit', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ domain: lastDomain, email }) });
+    const j = await r.json();
+    if (!r.ok) { le.textContent = j.error || 'Could not save the report.'; return; }
+    window.location.href = '/r/' + j.reportId;
+  } catch {
+    le.textContent = 'Something went wrong. Try again.';
+  } finally {
+    btn.disabled = false; btn.textContent = 'Save & monitor';
+  }
+});
+const STATUS = {
+  pass: { color: '#16a34a', label: 'OK' },
+  warn: { color: '#d97706', label: 'Needs attention' },
+  fail: { color: '#dc2626', label: 'Failing' },
+};
+const CE_WEIGHTS = { rbl: 30, dmarc: 20, spf: 15, dkim: 15, tls: 10, ptr: 5, mx: 5 };
+const CE_NAMES = { rbl: 'IP reputation (most important for cold mail)', dmarc: 'DMARC', spf: 'SPF', dkim: 'DKIM', tls: 'TLS & STARTTLS', ptr: 'Reverse DNS (PTR)', mx: 'MX & mail routing' };
+const CE_TIPS = {
+  rbl: 'Cold mail from a blocklisted IP goes straight to spam. Delist the IP or send from a clean one.',
+  dmarc: 'Gmail and Microsoft use DMARC as a hard filter signal for bulk and unsolicited mail.',
+  spf: 'Without SPF, receivers cannot verify your sending servers — a top spoofing and spam vector.',
+  dkim: 'DKIM signs each message. Unsigned cold mail is treated as untrusted by major inboxes.',
+  tls: 'Plaintext mail is a negative reputation signal and a security risk.',
+  ptr: 'Receivers check that your sending IP has a matching reverse DNS record.',
+  mx: 'Mail for this domain must be routable for verification to work at all.'
+};
+function render(a) {
+  const c = id => a.checks.find(x => x.id === id);
+  const score = Math.round(a.checks.reduce((s, x) => s + (CE_WEIGHTS[x.id] || 0) * (x.status === 'pass' ? 1 : x.status === 'warn' ? 0.5 : 0), 0));
+  const hardFails = ['spf', 'dkim', 'rbl'].filter(id => c(id) && c(id).status === 'fail');
+  let verdict, vcolor, sub;
+  if (score >= 90 && !hardFails.length) { verdict = 'Ready to send'; vcolor = '#16a34a'; sub = 'All critical checks pass. Start warming up this domain before real campaigns.'; }
+  else if (score >= 70) { verdict = 'Almost ready'; vcolor = '#d97706'; sub = 'Fix the items below, re-check, then start your warm-up.'; }
+  else { verdict = 'Not ready yet'; vcolor = '#dc2626'; sub = 'Cold email from this domain will land in spam until the items below are fixed.'; }
+  const ring = document.getElementById('score-ring');
+  ring.style.background = vcolor + '1a'; ring.style.color = vcolor; ring.textContent = score + '/100';
+  document.getElementById('verdict').textContent = verdict;
+  document.getElementById('verdict').style.color = vcolor;
+  document.getElementById('verdict-sub').textContent = sub;
+  const crit = document.getElementById('critical');
+  if (hardFails.length) {
+    crit.style.display = 'block';
+    crit.innerHTML = '<strong>Blocking for cold email:</strong> ' + hardFails.map(id => c(id).name + ' — ' + c(id).detail.replace(/</g, '&lt;')).join(' &middot; ');
+  } else crit.style.display = 'none';
+  document.getElementById('checks').innerHTML = '<div style="opacity:.65;font-size:13px;font-weight:600;margin:4px 0 8px">What we checked on ' + a.domain + '</div>' + a.checks.map(x => {
+    const o = STATUS[x.status] || STATUS.fail;
+    const tip = CE_TIPS[x.id] ? '<div style="opacity:.7;font-size:13px;margin-top:6px">' + CE_TIPS[x.id] + '</div>' : '';
+    const fix = (x.fix && x.status !== 'pass') ? '<div style="margin-top:8px;padding:10px 12px;background:#f4f4f5;border-radius:8px;font-size:13px;white-space:pre-wrap;opacity:.85"><strong>How to fix:</strong> ' + x.fix.replace(/</g, '&lt;') + '</div>' : '';
+    return '<div class="card" style="margin-bottom:10px;padding:14px 16px"><div style="display:flex;align-items:center;gap:10px;flex-wrap:wrap"><span style="width:10px;height:10px;border-radius:50%;background:' + o.color + ';display:inline-block"></span><strong>' + (CE_NAMES[x.id] || x.name) + '</strong><span style="color:' + o.color + ';font-weight:600;font-size:13px">' + o.label + '</span></div><div style="opacity:.8;font-size:14px;margin-top:8px">' + x.detail.replace(/</g, '&lt;') + '</div>' + tip + fix + '</div>';
+  }).join('');
+}
+form.addEventListener('submit', async e => {
+  e.preventDefault();
+  err.textContent = '';
+  const domain = document.getElementById('domain').value.trim().toLowerCase().replace(/^https?:\/\//, '').replace(/\/.*$/, '');
+  if (!domain) { err.textContent = 'Enter the domain you send cold email from.'; return; }
+  const btn = form.querySelector('button');
+  btn.disabled = true; btn.textContent = 'Checking…';
+  try {
+    const r = await fetch('/api/audit', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ domain }) });
+    const j = await r.json();
+    if (!r.ok) { err.textContent = j.error || 'Check failed.'; return; }
+    lastDomain = j.audit.domain;
+    render(j.audit);
+    leadEl.style.display = 'block';
+    result.style.display = 'block';
+    result.scrollIntoView({ behavior: 'smooth', block: 'start' });
+  } catch {
+    err.textContent = 'Something went wrong. Try again in a moment.';
+  } finally {
+    btn.disabled = false; btn.textContent = 'Check readiness';
+  }
+});
+</script>
+</body>
+</html>

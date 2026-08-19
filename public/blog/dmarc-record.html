@@ -1,0 +1,75 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>How to create a DMARC record (step by step, with the exact TXT) — Inboxproof</title>
+<meta name="description" content="The exact steps to create and publish a DMARC record: what the TXT looks like, where it goes in your DNS, which policy to start with, and how to confirm it is live.">
+<meta property="og:title" content="How to create a DMARC record">
+<meta property="og:description" content="Step-by-step: the exact DMARC TXT record, where it goes in your DNS, and how to confirm it is live.">
+<meta property="og:type" content="article">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="/styles.css">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' rx='8' fill='%236366f1'/%3E%3Cpath d='M8 16h13M15 10l6 6-6 6' stroke='white' stroke-width='3' fill='none' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E">
+<script type="application/ld+json">
+{"@context":"https://schema.org","@type":"Article","headline":"How to create a DMARC record (step by step)","description":"The exact steps to create and publish a DMARC record, including the TXT value, DNS placement, starting policy, and how to verify it is live.","author":{"@type":"Organization","name":"Inboxproof"},"publisher":{"@type":"Organization","name":"Inboxproof"}}
+</script>
+</head>
+<body>
+<nav class="nav">
+  <div class="container">
+    <a class="logo" href="/">
+      <span class="mark"><svg viewBox="0 0 24 24" fill="none"><path d="M4 12h11M11 7l5 5-5 5" stroke="#fff" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"/></svg></span>
+      Inboxproof
+    </a>
+    <div class="nav-links"><a href="/blog">All guides</a><a href="/">Run a free audit</a></div>
+  </div>
+</nav>
+
+<div class="container" style="max-width:760px;padding:60px 20px 80px">
+  <div class="kicker">Guide</div>
+  <h1 style="font-size:34px;margin:10px 0 24px">How to create a DMARC record, step by step</h1>
+  <div style="opacity:.85;line-height:1.75;font-size:15.5px">
+    <p>A DMARC record is a single DNS TXT record published at <code>_dmarc.yourdomain</code>. It tells email receivers what to do with mail that claims your domain but fails SPF or DKIM. Creating one takes minutes. Getting it right the first time is the part most guides skip. This is the short version.</p>
+
+    <h2 style="font-size:22px;margin:34px 0 12px">Step 1: decide your starting policy</h2>
+    <p>Start with <code>p=none</code>. It changes how no one's mail is treated; it only sends you aggregate reports about who is sending as your domain. You need that picture before you enforce anything. Moving to <code>p=quarantine</code> and then <code>p=reject</code> comes later, once the reports prove your legitimate senders all authenticate. <a href="/blog/dmarc-policies">Here is what each policy actually does.</a></p>
+
+    <h2 style="font-size:22px;margin:34px 0 12px">Step 2: pick a reporting address</h2>
+    <p>The <code>rua=</code> tag is where receivers send their aggregate reports. Use an address you (or your email team) will actually check, ideally one that is not a single person's inbox. <code>reports@yourdomain.com</code> is a common choice. This is also the one field that must be a valid, deliverable mailbox or the reports simply vanish.</p>
+
+    <h2 style="font-size:22px;margin:34px 0 12px">Step 3: build the record</h2>
+    <p>The minimum record that works looks like this:</p>
+    <div style="font-family:ui-monospace,monospace;font-size:14px;background:#f4f4f5;border:1px solid #e4e4e7;border-radius:10px;padding:14px;white-space:pre-wrap;word-break:break-all;margin:0 0 14px">v=DMARC1; p=none; rua=mailto:reports@yourdomain.com; pct=100</div>
+    <p style="margin:0 0 14px"><code>v=DMARC1</code> is required and must be first. <code>p=none</code> is your policy. <code>rua=</code> is where reports go. <code>pct=100</code> means the policy applies to all failing mail (you can lower it to test enforcement on a slice). You can add more tags later, but this is the correct, safe starting point.</p>
+    <p style="margin:0 0 14px">Rather than hand-build it, the <a href="/dmarc-generator">free DMARC record generator</a> writes the exact TXT for you from your domain, policy and reporting address, and shows where to paste it in Cloudflare, GoDaddy, Namecheap, Route 53 and Google Workspace.</p>
+
+    <h2 style="font-size:22px;margin:34px 0 12px">Step 4: add it to your DNS</h2>
+    <p>In your DNS provider, add a <strong>TXT</strong> record. The host/name is <code>_dmarc</code> (some providers ask for the full <code>_dmarc.yourdomain</code>; a few only want the subdomain part). The value is the record from step 3. Leave the TTL at the default or "auto." Save.</p>
+    <p style="margin:0 0 14px">One record only. If you already have a DMARC TXT at <code>_dmarc</code>, you are replacing it, not adding a second one. Duplicate or conflicting DMARC records make the whole record invalid to most receivers.</p>
+
+    <h2 style="font-size:22px;margin:34px 0 12px">Step 5: confirm it is live</h2>
+    <p>DNS propagation takes anywhere from a few minutes to several hours. Once it is live, a lookup of <code>_dmarc.yourdomain</code> returns your record. The <a href="/dmarc-checker">free DMARC checker</a> confirms it is published and readable, and shows your SPF and DKIM alignment at the same time, so you know the record is actually doing something useful.</p>
+
+    <h2 style="font-size:22px;margin:34px 0 12px">What to do after it is live</h2>
+    <p>Watch the reports for a few weeks. They list every sender that used your domain, whether it authenticated, and from which IP. Fix the senders that fail (usually a missing DKIM signature or an SPF that does not cover a system), then move <code>p=</code> from <code>none</code> to <code>quarantine</code>, and to <code>reject</code> only after a clean run. That is the whole path from "record exists" to "domain is protected."</p>
+
+    <p style="opacity:.6;font-size:13px;margin-top:28px">Related: <a href="/blog/dmarc">What is DMARC?</a> · <a href="/blog/dmarc-policies">p=none vs quarantine vs reject</a> · <a href="/blog/spf-dkim-dmarc">SPF vs DKIM vs DMARC</a></p>
+
+    <div style="margin-top:40px;text-align:center;background:linear-gradient(180deg,rgba(99,102,241,.12),transparent);border:1px solid rgba(99,102,241,.35);border-radius:14px;padding:26px">
+      <h3 style="font-size:18px;margin-bottom:6px">Get the exact record for your domain</h3>
+      <p style="opacity:.75;font-size:14px;margin-bottom:16px">The free <a href="/dmarc-generator">DMARC record generator</a> builds the TXT for you and shows where to paste it. No signup.</p>
+      <a class="btn btn-primary" href="/dmarc-generator">Generate my DMARC record</a>
+    </div>
+  </div>
+</div>
+
+<footer>
+  <div class="container">
+    <span>© 2026 Inboxproof, Inc.</span>
+    <span><a href="/blog">All guides</a> · <a href="/">Home</a> · <a href="/privacy">Privacy</a></span>
+  </div>
+</footer>
+</body>
+</html>

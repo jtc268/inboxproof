@@ -1,0 +1,73 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>What is DMARC? A practical guide — Inboxproof</title>
+<meta name="description" content="How DMARC works, what p=none really does, and the minimum DMARC setup that stops your domain being used for mail you didn't authorize.">
+<meta property="og:title" content="What is DMARC? A practical guide">
+<meta property="og:description" content="How DMARC works, what p=none really does, and the minimum setup that stops your domain being spoofed.">
+<meta property="og:type" content="article">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="/styles.css">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' rx='8' fill='%236366f1'/%3E%3Cpath d='M8 16h13M15 10l6 6-6 6' stroke='white' stroke-width='3' fill='none' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E">
+<script type="application/ld+json">
+{"@context":"https://schema.org","@type":"Article","headline":"What is DMARC? A practical guide for small business domains","description":"How DMARC works, what p=none really does, and the minimum setup that stops your domain being spoofed.","author":{"@type":"Organization","name":"Inboxproof"},"publisher":{"@type":"Organization","name":"Inboxproof"}}
+</script>
+</head>
+<body>
+<nav class="nav">
+  <div class="container">
+    <a class="logo" href="/">
+      <span class="mark"><svg viewBox="0 0 24 24" fill="none"><path d="M4 12h11M11 7l5 5-5 5" stroke="#fff" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"/></svg></span>
+      Inboxproof
+    </a>
+    <div class="nav-links"><a href="/blog">All guides</a><a href="/">Run a free audit</a></div>
+  </div>
+</nav>
+
+<div class="container" style="max-width:760px;padding:60px 20px 80px">
+  <div class="kicker">Guide</div>
+  <h1 style="font-size:34px;margin:10px 0 24px">What is DMARC, in plain terms</h1>
+  <div style="opacity:.85;line-height:1.75;font-size:15.5px">
+    <p>DMARC is a DNS TXT record that tells email receivers <b>what to do with mail claiming to come from your domain that failed authentication</b>. It sits on top of two other records, SPF (which IPs may send for you) and DKIM (a cryptographic signature on each message). DMARC itself sends no mail and signs nothing. It is a policy: "check this mail against my SPF and DKIM, and if it fails, do X."</p>
+
+    <h2 style="font-size:22px;margin:34px 0 12px">Where the record lives</h2>
+    <p>At a host named <code>_dmarc.yourdomain.com</code>. A minimal record:</p>
+    <p style="margin:16px 0"><code style="opacity:.8;display:block;background:rgba(255,255,255,.04);border:1px solid rgba(255,255,255,.08);border-radius:10px;padding:14px 16px;font-size:13px;white-space:pre-wrap;word-break:break-all">v=DMARC1; p=none; rua=mailto:dmarc@yourdomain.com</code></p>
+    <p><code>p=none</code> means "monitor only": receivers still deliver the mail, but they send you aggregate reports to the <code>rua</code> address so you can see who is sending as your domain and whether that mail authenticates. <code>p=quarantine</code> asks receivers to route failures to spam; <code>p=reject</code> asks them to refuse delivery outright.</p>
+
+    <h2 style="font-size:22px;margin:34px 0 12px">What p=none actually does (and doesn't)</h2>
+    <p>A lot of guides imply that publishing <code>p=none</code> "protects" your domain. It does not block anything by itself. What it does is three things: (1) it starts the flow of aggregate reports, which is the only reliable way to find out who is sending as your domain; (2) it is a published policy that large providers treat as a signal your domain is managed; and (3) it is a prerequisite before you can safely move to quarantine or reject. Google and Yahoo's bulk-sender requirements ask for a published DMARC record at <code>p=none</code> as the minimum, and for aligned SPF or DKIM on top of that.</p>
+
+    <h2 style="font-size:22px;margin:34px 0 12px">Alignment: the part everyone skips</h2>
+    <p>DMARC passes when the domain in the From header "aligns" with the domain that passed SPF or DKIM. The default is relaxed alignment: <code>mail@sub.yourdomain.com</code> aligns with <code>yourdomain.com</code>. If you send from a completely different domain (a third-party ESP's own domain, for example), alignment fails and DMARC fails too, even if SPF and DKIM are both configured correctly. This is the most common reason a "configured" DMARC still shows failures in the reports.</p>
+
+    <h2 style="font-size:22px;margin:34px 0 12px">A safe order of operations</h2>
+    <p style="margin:0 0 14px">1. <b>Check what exists.</b> Look up your SPF, DKIM and DMARC records. If you have no idea who sends mail for your domain (marketing tools, transactional mail, legacy systems), that's the first thing to sort out, because you can't safely enforce a policy you don't understand.</p>
+    <p style="margin:0 0 14px">2. <b>Fix SPF and DKIM first.</b> DMARC is only as good as the two records underneath it. A broken SPF with a strict DMARC just rejects your own legitimate mail.</p>
+    <p style="margin:0 0 14px">3. <b>Publish p=none and read the reports.</b> Aggregate reports arrive as XML files; you don't need to parse them by hand, but you do need to see whether the senders you expect are authenticating.</p>
+    <p style="margin:0 0 14px">4. <b>Move to p=quarantine, then p=reject</b>, once the reports show only your legitimate senders passing. Most domains that have been sitting at p=none for years can make this jump in a week.</p>
+
+    <h2 style="font-size:22px;margin:34px 0 12px">What to watch for</h2>
+    <p>If you find a domain you don't recognize in the reports, that's a real signal, not a false alarm: someone is sending mail as you. The fix is the same order of operations, faster. And if your domain has no DMARC at all, you have no way of knowing whether that's happening today, which is the whole point of the record.</p>
+
+    <p style="opacity:.6;font-size:13px;margin-top:28px">Related: <a href="/blog/dmarc-policies">p=none vs quarantine vs reject</a> · <a href="/blog/spf-dkim-dmarc">SPF vs DKIM vs DMARC</a> · <a href="/blog/email-not-landing-gmail">Why email misses Gmail's inbox</a></p>
+
+    <div style="margin-top:40px;text-align:center;background:linear-gradient(180deg,rgba(99,102,241,.12),transparent);border:1px solid rgba(99,102,241,.35);border-radius:14px;padding:26px">
+      <h3 style="font-size:18px;margin-bottom:6px">Check your own domain</h3>
+      <p style="opacity:.75;font-size:14px;margin-bottom:16px">The free audit checks SPF, DKIM, DMARC, MX, TLS and more in about 30 seconds, and shows the exact record to add if one is missing.</p>
+      <a class="btn btn-primary" href="/#audit">Run the free audit</a>
+    </div>
+  </div>
+</div>
+
+<footer>
+  <div class="container">
+    <span>© 2026 Inboxproof, Inc.</span>
+    <span><a href="/blog">All guides</a> · <a href="/">Home</a> · <a href="/privacy">Privacy</a></span>
+  </div>
+</footer>
+</body>
+</html>

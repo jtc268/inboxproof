@@ -1,0 +1,98 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Gmail SMTP error 550-5.7.26: how to fix it | InboxProof</title>
+<meta name="description" content="Why Gmail rejects your email with SMTP error 550-5.7.26, and how to fix it by configuring SPF, DKIM, and DMARC correctly.">
+<link rel="canonical" href="https://inboxproof.email/blog/gmail-smtp-error-550-5-7-26">
+<meta property="og:title" content="Gmail SMTP error 550-5.7.26: how to fix it">
+<meta property="og:description" content="Why Gmail rejects your email with SMTP error 550-5.7.26, and how to fix it.">
+<meta property="og:type" content="article">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="/styles.css">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' rx='8' fill='%236366f1'/%3E%3Cpath d='M8 16h13M15 10l6 6-6 6' stroke='white' stroke-width='3' fill='none' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E">
+<script type="application/ld+json">
+{"@context":"https://schema.org","@type":"Article","headline":"Gmail SMTP error 550-5.7.26: how to fix it","description":"Why Gmail rejects your email with SMTP error 550-5.7.26, and how to fix it by configuring SPF, DKIM, and DMARC correctly.","author":{"@type":"Organization","name":"InboxProof"},"publisher":{"@type":"Organization","name":"InboxProof"}}
+</script>
+</head>
+<body>
+<nav class="nav">
+  <div class="container">
+    <a class="logo" href="/">
+      <span class="mark"><svg viewBox="0 0 24 24" fill="none"><path d="M4 12h11M11 7l5 5-5 5" stroke="#fff" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"/></svg></span>
+      Inboxproof
+    </a>
+    <div class="nav-links"><a href="/">Run a free audit</a></div>
+  </div>
+</nav>
+
+<div class="container" style="max-width:760px;padding:60px 20px 80px">
+  <div class="kicker">Troubleshooting</div>
+  <h1 style="font-size:34px;margin:10px 0 12px">Gmail SMTP error 550-5.7.26: how to fix it</h1>
+  <p style="opacity:.8;font-size:16px;margin-bottom:36px">If you are sending email to Gmail and getting back "550-5.7.26" or similar SMTP errors, it usually means your email is failing authentication. Here is how to diagnose and fix it.</p>
+
+  <div class="card" style="margin-bottom:28px;background:#eef2ff;border-color:#c7d2fe">
+    <h3 style="margin-top:0">Check your setup in seconds</h3>
+    <p style="opacity:.8;margin-bottom:14px">The <a href="/dmarc-checker">free InboxProof audit</a> runs a 7-point check (MX, SPF, DKIM, DMARC, TLS, PTR, and IP reputation) and returns a 0-100 score with a plain-English fix list. No signup.</p>
+    <a class="btn btn-primary" href="/dmarc-checker">Run the free check</a>
+  </div>
+
+  <h2 style="font-size:24px;margin:36px 0 12px">What does 550-5.7.26 mean?</h2>
+  <p>This error code means Gmail has rejected your email because it failed one or more authentication checks. Common variants include:</p>
+  <ul style="font-size:16px;line-height:1.8">
+    <li><b>550-5.7.26</b> - Message rejected due to SPF failure</li>
+    <li><b>550-5.7.25</b> - Message rejected due to DMARC failure</li>
+    <li><b>550-5.7.1</b> - Message rejected due to DKIM failure</li>
+  </ul>
+  <p>All of these point to the same root cause: your domain is not properly authenticated.</p>
+
+  <h2 style="font-size:24px;margin:36px 0 12px">Step 1: Check your SPF record</h2>
+  <p>SPF tells Gmail which IPs are allowed to send email on behalf of your domain. If your sending IP is not in your SPF record, Gmail will reject the email.</p>
+  <p>Run this command to check your SPF record:</p>
+  <pre style="background:#0f172a;color:#e2e8f0;padding:16px;border-radius:8px;font-size:14px;overflow-x:auto">dig +short TXT yourdomain.com</pre>
+  <p>Make sure the SPF record includes your sending service. For example, if you use Google Workspace, your SPF record should include <code>include:_spf.google.com</code>.</p>
+
+  <h2 style="font-size:24px;margin:36px 0 12px">Step 2: Check your DKIM signature</h2>
+  <p>DKIM signs your email with a private key, proving it was sent by you. If your DKIM signature is missing or invalid, Gmail will reject the email.</p>
+  <p>Run this command to check your DKIM record:</p>
+  <pre style="background:#0f172a;color:#e2e8f0;padding:16px;border-radius:8px;font-size:14px;overflow-x:auto">dig +short TXT google._domainkey.yourdomain.com</pre>
+  <p>Make sure the DKIM record exists and matches the selector your email provider uses.</p>
+
+  <h2 style="font-size:24px;margin:36px 0 12px">Step 3: Check your DMARC record</h2>
+  <p>DMARC ties SPF and DKIM together and tells Gmail what to do with unauthenticated email. If your DMARC record is missing or misconfigured, Gmail will reject the email.</p>
+  <p>Run this command to check your DMARC record:</p>
+  <pre style="background:#0f172a;color:#e2e8f0;padding:16px;border-radius:8px;font-size:14px;overflow-x:auto">dig +short TXT _dmarc.yourdomain.com</pre>
+  <p>Make sure the DMARC record exists and has a valid policy (p=none, p=quarantine, or p=reject).</p>
+
+  <h2 style="font-size:24px;margin:36px 0 12px">Step 4: Check your IP reputation</h2>
+  <p>If your sending IP is on a blocklist, Gmail will reject your email regardless of your SPF, DKIM, and DMARC configuration.</p>
+  <p>Run the free InboxProof audit to check your IP reputation against major blocklists.</p>
+
+  <h2 style="font-size:24px;margin:36px 0 12px">Step 5: Verify the fix</h2>
+  <p>After making the changes, run the free InboxProof audit to confirm all three protocols are configured correctly. The audit checks:</p>
+  <ul style="font-size:16px;line-height:1.8">
+    <li>SPF record exists and is valid</li>
+    <li>DKIM key is published and strong</li>
+    <li>DMARC record exists with a reporting address</li>
+    <li>Alignment between your "From" domain and the SPF/DKIM domains</li>
+  </ul>
+
+  <div class="cta" style="background:#0f172a;color:#fff;border-radius:12px;padding:32px;text-align:center;margin:40px 0">
+    <h2 style="color:#fff;margin-bottom:8px">Fix your Gmail SMTP error</h2>
+    <p style="opacity:.8;margin-bottom:20px">Run the free audit and see if your SPF, DKIM, and DMARC are configured correctly.</p>
+    <a class="btn btn-primary btn-lg" href="/dmarc-checker">Run a free audit</a>
+  </div>
+
+  <p style="opacity:.6;font-size:13px;margin-top:28px">Related: <a href="/blog/spf-dkim-dmarc">SPF vs DKIM vs DMARC</a> · <a href="/blog/spf-not-working">SPF record not working?</a> · <a href="/blog/dmarc-record">How to set up a DMARC record</a> · <a href="/blog/email-in-spam">Why email lands in spam</a></p>
+</div>
+
+<footer>
+  <div class="container">
+    <span>© 2026 Inboxproof, Inc.</span>
+    <span><a href="/">Home</a> · <a href="/privacy">Privacy</a></span>
+  </div>
+</footer>
+</body>
+</html>

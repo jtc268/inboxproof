@@ -1,0 +1,95 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Is my domain blacklisted? How to check your IP reputation | InboxProof</title>
+<meta name="description" content="How to check if your domain or sending IP is on a blocklist, what blocklisting means for deliverability, and how to get delisted fast.">
+<link rel="canonical" href="https://inboxproof.email/blog/is-my-domain-blacklisted">
+<meta property="og:title" content="Is my domain blacklisted? How to check your IP reputation">
+<meta property="og:description" content="How to check if your domain or sending IP is on a blocklist, and how to get delisted.">
+<meta property="og:type" content="article">
+<style>
+:root{--ink:#0f172a;--mut:#475569;--line:#e2e8f0;--bg:#f8fafc;--card:#fff;--acc:#2563eb;--good:#16a34a;--warn:#d97706;--bad:#dc2626}
+*{box-sizing:border-box}body{margin:0;font:16px/1.7 -apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Helvetica,Arial,sans-serif;color:var(--ink);background:var(--bg)}
+.wrap{max-width:760px;margin:0 auto;padding:48px 24px}
+h1{font-size:34px;line-height:1.2;margin:0 0 12px}h2{font-size:24px;margin:40px 0 12px}p{margin:0 0 16px}
+.meta{color:var(--mut);font-size:14px;margin-bottom:32px}
+a{color:var(--acc)}
+.card{background:var(--card);border:1px solid var(--line);border-radius:12px;padding:24px;margin:24px 0}
+.cta{background:var(--ink);color:#fff;border-radius:12px;padding:32px;text-align:center;margin:40px 0}
+.cta a{display:inline-block;background:var(--acc);color:#fff;padding:14px 28px;border-radius:8px;text-decoration:none;font-weight:600;margin-top:12px}
+ul{margin:0 0 16px;padding-left:24px}li{margin-bottom:8px}
+code{background:#f1f5f9;padding:2px 6px;border-radius:4px;font-size:14px}
+</style>
+<script type="application/ld+json">
+{"@context":"https://schema.org","@type":"Article","headline":"Is my domain blacklisted? How to check your IP reputation","description":"How to check if your domain or sending IP is on a blocklist, and how to get delisted.","author":{"@type":"Organization","name":"InboxProof"},"publisher":{"@type":"Organization","name":"InboxProof"}}
+</script>
+</head>
+<body>
+<div class="wrap">
+<h1>Is my domain blacklisted? How to check your IP reputation</h1>
+<div class="meta">By InboxProof &middot; 6 min read</div>
+
+<p>If your emails suddenly stopped arriving, a blocklist listing is one of the first things to check. A blocklist (or blacklist) is a list of IPs or domains that are known to send spam. Major mailbox providers like Gmail, Outlook, and Yahoo check these lists before deciding whether to accept your email. If your sending IP is listed, your mail will be rejected or sent straight to spam.</p>
+
+<div class="card">
+<strong>Quick check:</strong> The <a href="/blocklist-checker">free IP blocklist checker</a> tests your sending IP against 9 major blocklists including Spamhaus, SpamCop, and Barracuda. No email needed.
+</div>
+
+<h2>What is a blocklist?</h2>
+<p>A blocklist is a database maintained by anti-spam organizations that lists IP addresses and domains known to send spam. When a mailbox provider receives an email, it checks the sender's IP against these lists. If the IP is listed, the email is rejected or flagged.</p>
+<p>The most common blocklists include:</p>
+<ul>
+<li><strong>Spamhaus</strong> (zen.spamhaus.org) - the most widely used blocklist</li>
+<li><strong>SpamCop</strong> (bl.spamcop.net) - a community-driven blocklist</li>
+<li><strong>Barracuda</strong> (b.barracudacentral.org) - used by many enterprise mail servers</li>
+</ul>
+
+<h2>How to check if your IP is listed</h2>
+<p>You can check your IP against a blocklist by doing a DNS lookup. The blocklist uses a special DNS format where you reverse the IP octets and append the blocklist domain.</p>
+<p>For example, if your IP is <code>1.2.3.4</code>, you would check:</p>
+<ul>
+<li><code>4.3.2.1.zen.spamhaus.org</code> for Spamhaus</li>
+<li><code>4.3.2.1.bl.spamcop.net</code> for SpamCop</li>
+</ul>
+<p>If the DNS lookup returns an IP address (usually in the 127.0.0.x range), your IP is listed. If it returns "not found," your IP is clean.</p>
+<p>The InboxProof audit does this automatically for you, checking your sending IP against three major blocklists.</p>
+
+<h2>Why does it matter?</h2>
+<p>Blocklist listings are one of the most common causes of sudden deliverability drops. If your IP gets listed, your emails will be rejected by major mailbox providers, and you'll see bounce rates spike. This can happen for several reasons:</p>
+<ul>
+<li>Your IP was previously used by a spammer</li>
+<li>Your email was reported as spam by recipients</li>
+<li>Your IP is shared with other senders who are sending spam</li>
+</ul>
+
+<h2>How to get delisted</h2>
+<p>If your IP is listed, you need to request delisting. Most blocklists have a delisting process:</p>
+<ul>
+<li><strong>Spamhaus</strong>: Use their <a href="https://check.spamhaus.org" target="_blank" rel="noopener">check tool</a> to see why you're listed and request delisting</li>
+<li><strong>SpamCop</strong>: Use their <a href="https://www.spamcop.net" target="_blank" rel="noopener">delisting form</a></li>
+<li><strong>Barracuda</strong>: Use their <a href="https://www.barracudacentral.org" target="_blank" rel="noopener">delisting request</a></li>
+</ul>
+<p>Before requesting delisting, make sure you've fixed the underlying issue. If you're still sending spam, you'll get re-listed.</p>
+
+<h2>Prevent future listings</h2>
+<p>The best way to avoid blocklist listings is to maintain good email hygiene:</p>
+<ul>
+<li>Use a dedicated IP for your sending domain</li>
+<li>Monitor your sender reputation</li>
+<li>Keep your bounce rate low</li>
+<li>Respond to spam complaints quickly</li>
+<li>Warm up new IPs gradually</li>
+</ul>
+
+<div class="cta">
+<h2>Check your IP reputation now</h2>
+<p>Run the free IP blocklist checker and see if your sending IP is on any of the 9 major blocklists.</p>
+<a href="/blocklist-checker">Check my IP</a>
+</div>
+
+<p><em>Related: <a href="/blog/email-in-spam">Why is my email in spam? The 7 causes</a> &middot; <a href="/blog/email-not-landing-gmail">Why your email isn't landing in Gmail</a></em></p>
+</div>
+</body>
+</html>

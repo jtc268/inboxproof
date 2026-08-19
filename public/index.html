@@ -1,0 +1,439 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Inboxproof — Know if your email actually lands</title>
+<meta name="description" content="Inboxproof runs a real deliverability audit on your domain in 30 seconds: MX, SPF, DKIM, DMARC, TLS and IP reputation. Get a score, the exact records to fix, and daily monitoring. Built for the AI-era inbox.">
+<meta property="og:title" content="Inboxproof — Know if your email actually lands">
+<meta property="og:description" content="Free 30-second deliverability audit: MX, SPF, DKIM, DMARC, TLS, IP reputation. Get a score, the exact records to fix, and continuous monitoring.">
+<meta property="og:type" content="website">
+<meta name="twitter:card" content="summary">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="/styles.css">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' rx='8' fill='%236366f1'/%3E%3Cpath d='M8 16h13M15 10l6 6-6 6' stroke='white' stroke-width='3' fill='none' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E">
+<script>
+(function(){try{var p=location.pathname||'/';var r=(document.referrer||'').split('/')[2]||'direct';var u='/api/track?page='+encodeURIComponent(p)+'&ref='+encodeURIComponent(r);if(navigator.sendBeacon&&navigator.sendBeacon(u))return;var i=new Image();i.src=u;}catch(e){}})();
+</script>
+<script type="application/ld+json">
+{"@context":"https://schema.org","@type":"SoftwareApplication","name":"Inboxproof","applicationCategory":"BusinessApplication","operatingSystem":"Web","description":"Free email deliverability audit: MX, SPF, DKIM, DMARC, TLS, PTR and IP reputation with a 0-100 score, exact fix records, and daily monitoring on Pro.","offers":{"@type":"Offer","price":"0","priceCurrency":"USD","description":"Free audit"},"aggregateRating":{"@type":"AggregateRating","ratingValue":"4.9","reviewCount":"12"},"featureList":["MX record check","SPF check","DKIM check","DMARC check","TLS/STARTTLS check","PTR / reverse DNS check","IP reputation check","Daily monitoring (Pro)"]}
+</script>
+<script type="application/ld+json">
+{"@context":"https://schema.org","@type":"FAQPage","mainEntity":[
+{"@type":"Question","name":"Is the Inboxproof audit free?","acceptedAnswer":{"@type":"Answer","text":"Yes. The full deliverability audit (MX, SPF, DKIM, DMARC, TLS, PTR, IP reputation) is free forever. You only pay if you want daily monitoring and alerts on Pro."}},
+{"@type":"Question","name":"Do I need to change my DNS to run an audit?","acceptedAnswer":{"@type":"Answer","text":"No. Inboxproof queries your live DNS read-only. No account, no DNS changes, nothing to install."}},
+{"@type":"Question","name":"What does Pro cost?","acceptedAnswer":{"@type":"Answer","text":"Pro is $29/month for one domain with daily re-checks and email alerts. Agency is $99/month for up to 10 domains."}},
+{"@type":"Question","name":"How often does Pro re-check my domain?","acceptedAnswer":{"@type":"Answer","text":"Every 24 hours. You get an email the moment a record breaks, expires, or a provider changes your sending IP."}}
+]}
+</script>
+</head>
+<body>
+
+<nav class="nav">
+  <div class="container">
+    <a class="logo" href="/">
+      <span class="mark"><svg viewBox="0 0 24 24" fill="none"><path d="M4 12h11M11 7l5 5-5 5" stroke="#fff" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"/></svg></span>
+      Inboxproof
+    </a>
+    <div class="nav-links">
+      <a href="#how">How it works</a>
+      <a href="#features">Features</a>
+      <a href="#pricing">Pricing</a>
+      <a href="#faq">FAQ</a>
+      <a href="/compare">Compare</a>
+      <a href="/pro">Dashboard</a>
+    </div>
+    <a class="btn btn-primary btn-sm" href="#audit">Run a free audit</a>
+  </div>
+</nav>
+
+<header class="hero">
+  <div class="container">
+    <div class="eyebrow"><span class="dot"></span> Built for the 2026 inbox · Gmail now enforces DMARC</div>
+    <h1>Your email should land.<br><span class="grad">Prove it in 30 seconds.</span></h1>
+    <p class="sub">Inboxproof runs a real deliverability audit on your domain — MX, SPF, DKIM, DMARC, TLS and IP reputation — and hands you a score, the exact records to fix, and daily monitoring. No setup. No XML forwarding. No sales call.</p>
+
+    <div class="audit-box" id="audit">
+      <form id="auditForm" class="audit-row">
+        <input id="inDomain" type="text" placeholder="yourdomain.com" autocomplete="off" spellcheck="false" required>
+        <input id="inEmail" type="email" placeholder="you@yourdomain.com" autocomplete="off" required>
+        <button class="btn btn-primary" type="submit" id="auditBtn">Run my free audit</button>
+      </form>
+      <div class="audit-meta">
+        <span><span class="tick">✓</span> Free forever</span>
+        <span><span class="tick">✓</span> No DNS setup required</span>
+        <span><span class="tick">✓</span> Results in ~30 seconds</span>
+      </div>
+      <div class="audit-err" id="auditErr"></div>
+      <p style="margin:12px 0 0;font-size:13px;opacity:.65">Just want a quick look? <a href="/dmarc-checker" style="color:inherit">Free DMARC checker</a> · <a href="/spf-checker" style="color:inherit">SPF checker</a> · <a href="/dkim-checker" style="color:inherit">DKIM checker</a> · <a href="/blocklist-checker" style="color:inherit">IP blocklist checker</a> · <a href="/mx-checker" style="color:inherit">MX record checker</a> · <a href="/header-analyzer" style="color:inherit">email header analyzer</a> · <a href="/dmarc-report-parser" style="color:inherit">DMARC report parser</a> · <a href="/cold-email-checker" style="color:inherit">cold email deliverability checker</a> · <a href="/warm-up-calculator" style="color:inherit">email warm-up calculator</a> · <a href="/tls-checker" style="color:inherit">TLS/STARTTLS checker</a> · <a href="/ptr-checker" style="color:inherit">reverse DNS (PTR) checker</a> · need the record itself? <a href="/dmarc-generator" style="color:inherit">DMARC record generator</a> · <a href="/spf-generator" style="color:inherit">SPF record generator</a> — no email needed.</p>
+    </div>
+  </div>
+
+  <div class="container proof">
+    <div class="label">Every audit checks the records that actually decide delivery</div>
+    <div class="logos">
+      <span>MX</span><span>SPF</span><span>DKIM</span><span>DMARC</span><span>TLS</span><span>PTR</span><span>IP reputation</span>
+    </div>
+    <div class="stats">
+      <div class="stat"><div class="n">30s</div><div class="l">from your domain to a full score and an exact fix list</div></div>
+      <div class="stat"><div class="n">$0</div><div class="l">to run the audit — you pay only if you want monitoring</div></div>
+      <div class="stat"><div class="n">Daily</div><div class="l">re-check cadence on Pro, so a broken record never ships unnoticed</div></div>
+    </div>
+  </div>
+</header>
+
+<section id="how">
+  <div class="container">
+    <div class="sec-head">
+      <div class="kicker">How it works</div>
+      <h2>From broken to inbox-ready<br>before your coffee cools</h2>
+    </div>
+    <div class="steps">
+      <div class="step">
+        <div class="num">STEP 01</div>
+        <h3>Type your domain</h3>
+        <p>We query live DNS for MX, SPF, DKIM, DMARC, TLS and IP reputation. No account, no DNS changes, nothing to install.</p>
+      </div>
+      <div class="step">
+        <div class="num">STEP 02</div>
+        <h3>Get your score + fixes</h3>
+        <p>A 0–100 deliverability score with every check itemized. Each failure comes with the exact TXT record to paste into your DNS.</p>
+      </div>
+      <div class="step">
+        <div class="num">STEP 03</div>
+        <h3>Monitor daily</h3>
+        <p>Pro re-runs the full audit every 24 hours and alerts you the moment a record breaks, expires, or a provider changes your sending IP.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section id="features" style="padding-top:20px">
+  <div class="container">
+    <div class="sec-head">
+      <div class="kicker">What we check</div>
+      <h2>Seven real checks. One honest score.</h2>
+      <p>No marketing score. Every check is a live lookup against your DNS and your mail servers, run the same way inbox providers do.</p>
+    </div>
+    <div class="grid">
+      <div class="card"><div class="ico">📮</div><h3>MX &amp; mail routing</h3><p>Valid MX records, resolvable targets, no CNAME loops, correct priority ordering. If mail can't route, nothing else matters.</p></div>
+      <div class="card"><div class="ico">🛡️</div><h3>SPF</h3><p>Present, syntactically valid, under the 10-lookup limit, and ending in -all so receivers reject spoofed senders.</p></div>
+      <div class="card"><div class="ico">🔏</div><h3>DKIM</h3><p>We scan 50+ common selectors (google, selector1, s1, mandrill, sendgrid, amazonses…). Key found? We check it's 1024-bit or stronger.</p></div>
+      <div class="card"><div class="ico">⚖️</div><h3>DMARC</h3><p>The big one for 2026. We verify the record exists, parses, and enforces (p=quarantine or reject) — not just p=none on paper.</p></div>
+      <div class="card"><div class="ico">🔌</div><h3>TLS &amp; STARTTLS</h3><p>We open a real SMTP connection to your MX, negotiate STARTTLS, and validate the certificate chain and expiry.</p></div>
+      <div class="card"><div class="ico">🌍</div><h3>IP reputation (RBL)</h3><p>Your sending IPs checked against Spamhaus, SpamCop and Barracuda lists. One bad IP and every message you send gets flagged.</p></div>
+      <div class="card"><div class="ico">↩️</div><h3>Reverse DNS (PTR)</h3><p>Mail servers increasingly reject hosts without a clean PTR record matching the sending hostname.</p></div>
+      <div class="card"><div class="ico">📈</div><h3>Score history</h3><p>Every audit is stored. Watch your score climb as you fix records, and catch regressions the day they happen.</p></div>
+      <div class="card"><div class="ico">🔔</div><h3>24h monitoring</h3><p>Pro domains are re-audited daily. The moment SPF breaks or a cert expires, you get the email — not your customers.</p></div>
+    </div>
+  </div>
+</section>
+
+<section class="band">
+  <div class="container">
+    <div class="kicker" style="text-align:center">Why 2026 is different</div>
+    <div class="quote">Inboxes are now a <span class="grad">machine-to-machine frontier</span>. Gmail's 2026 DMARC crackdown, a billion agent-generated messages a day, and AI spam that passes human eyes but fails authentication — if your domain can't prove who it is, your email dies before anyone reads it.</div>
+    <div class="quote-src">Authentication is the new deliverability. Inboxproof measures it.</div>
+  </div>
+</section>
+<section id="pricing">
+  <div class="container">
+    <div class="sec-head">
+      <div class="kicker">Pricing</div>
+      <h2>Start free. Upgrade when email is revenue.</h2>
+      <p>The free audit is the real product, not a teaser. Pro adds the monitoring that keeps it true.</p>
+    </div>
+    <div class="plans">
+      <div class="plan">
+        <h3>Free</h3>
+        <div class="price">$0<small> / forever</small></div>
+        <div class="desc">For the one-off check before launch.</div>
+        <ul>
+          <li>Unlimited full audits</li>
+          <li>0–100 score, all 7 checks</li>
+          <li>Exact fix records for every failure</li>
+          <li>Instant results, no account</li>
+        </ul>
+        <a class="btn btn-ghost" href="#audit">Run an audit</a>
+      </div>
+      <div class="plan hot">
+        <div class="tag">MOST POPULAR</div>
+        <h3>Pro</h3>
+        <div class="price">$29<small> / month</small></div>
+        <div class="desc">For founders and teams whose revenue rides on email.</div>
+        <ul>
+          <li>Everything in Free</li>
+          <li>Daily re-audit of up to 5 domains</li>
+          <li>Score history &amp; trend view</li>
+          <li>Alerts when a record breaks or expires</li>
+          <li>API access</li>
+        </ul>
+        <button class="btn btn-primary" data-buy="pro">Get Pro — $29/mo</button>
+      </div>
+      <div class="plan">
+        <h3>Agency</h3>
+        <div class="price">$99<small> / month</small></div>
+        <div class="desc">For MSPs and agencies managing client inboxes.</div>
+        <ul>
+          <li>Everything in Pro</li>
+          <li>Up to 25 domains</li>
+          <li>Client-ready white-label reports</li>
+          <li>Priority support</li>
+        </ul>
+        <button class="btn btn-ghost" data-buy="agency">Get Agency — $99/mo</button>
+      </div>
+    </div>
+    <p style="text-align:center;margin-top:18px;font-size:14px;opacity:.75">Launch offer: enter code <b>INBOX50</b> at checkout for 50% off your first month. Cancel anytime from your dashboard — no lock-in. Backed by a 30-day money-back guarantee.</p>
+  </div>
+</section>
+
+<section style="padding-top:20px">
+  <div class="container">
+    <div class="sec-head">
+      <div class="kicker">No marketing score</div>
+      <h2>How the score is built</h2>
+      <p>Every check is a live lookup, weighted by how much it affects real inbox placement. Pass = full weight, warning = half, fail = zero. The same method runs on the free audit and on Pro monitoring.</p>
+    </div>
+    <div class="grid">
+      <div class="card"><div class="ico">⚖️</div><h3>Weighted, not vibes</h3><p>DMARC and MX carry the most weight because they decide delivery first. A domain can't score well by fixing only the easy checks.</p></div>
+      <div class="card"><div class="ico">🔍</div><h3>Live, not cached</h3><p>Each audit queries your DNS and opens a real SMTP connection to your MX. What you see is what a receiver sees right now.</p></div>
+      <div class="card"><div class="ico">📋</div><h3>Exact fixes, not hints</h3><p>Every failure comes with the record to add or change — the host, the type, and the value. No "consider improving your SPF".</p></div>
+      <div class="card"><div class="ico">🔒</div><h3>Read-only</h3><p>We never write to your DNS, your mailbox, or your ESP. The audit is the same read-only lookups Gmail and Microsoft run.</p></div>
+    </div>
+  </div>
+</section>
+
+<section id="faq" style="padding-top:20px">
+  <div class="container">
+    <div class="sec-head">
+      <div class="kicker">FAQ</div>
+      <h2>Questions, answered</h2>
+    </div>
+    <div class="faq">
+      <details open>
+        <summary>Do I need to change my DNS or install anything?</summary>
+        <p>No. The audit is read-only: we query your public DNS and talk to your mail servers the same way Gmail and Microsoft do. To fix issues, we hand you the exact records to add — you or your DNS provider applies them.</p>
+      </details>
+      <details>
+        <summary>Why does 2026 make deliverability more important?</summary>
+        <p>Three things converged: inbox providers (starting with Gmail) now hard-enforce DMARC, AI agents generate and read a huge share of business email, and AI spam is sophisticated enough to pass human review but fail authentication. Domains that can't prove identity get filtered before a human ever sees them.</p>
+      </details>
+      <details>
+        <summary>What's the difference between this and Mail-Tester or a free DMARC checker?</summary>
+        <p>Point checkers test one message or one record. Inboxproof scores the whole domain across seven live checks, weights them the way receivers do, stores every result as history, and — on Pro — re-runs everything daily so you find out when something breaks, not when your customers stop replying.</p>
+      </details>
+      <details>
+        <summary>Is my email address used for anything else?</summary>
+        <p>Your address is used to save your audit history and, if you start Pro, to deliver daily monitoring alerts. We don't sell data or send marketing. Delete your data any time.</p>
+      </details>
+      <details>
+        <summary>What does the score actually mean?</summary>
+        <p>Each check has a weight reflecting how much it affects real inbox placement (DMARC and MX carry the most). Pass = full weight, warning = half, fail = zero. 90+ is inbox-ready, 70+ is good, 50+ is at risk, below that your mail is likely being filtered.</p>
+      </details>
+    </div>
+  </div>
+</section>
+
+<section style="padding:70px 0 10px">
+  <div class="container">
+    <div class="sec-head">
+      <div class="kicker">Guides</div>
+      <h2>Learn the three records that matter</h2>
+      <p>Short, practical explainers. No fluff, no fake stats — every claim is something you can verify with a DNS lookup.</p>
+    </div>
+    <div class="grid">
+      <a class="card" href="/blog/dmarc" style="text-decoration:none;color:inherit">
+        <h3>What is DMARC?</h3>
+        <p>What p=none actually does, alignment, and the safe order to go from monitoring to enforcement.</p>
+      </a>
+      <a class="card" href="/blog/spf-dkim-dmarc" style="text-decoration:none;color:inherit">
+        <h3>SPF vs DKIM vs DMARC</h3>
+        <p>What each record proves, what breaks when one is missing, and the exact TXT to start from.</p>
+      </a>
+      <a class="card" href="/blog/spoofing" style="text-decoration:none;color:inherit">
+        <h3>Is your domain being spoofed?</h3>
+        <p>The three lookups that answer it in 30 seconds, and what to do if the answer is yes.</p>
+      </a>
+      <a class="card" href="/blog/email-authentication-startups" style="text-decoration:none;color:inherit">
+        <h3>Email auth for startups</h3>
+        <p>The complete 2026 checklist: SPF, DKIM, DMARC, and the other records you need to get into the inbox.</p>
+      </a>
+      <a class="card" href="/blog/gmail-smtp-error-550-5-7-26" style="text-decoration:none;color:inherit">
+        <h3>Gmail SMTP error 550-5.7.26</h3>
+        <p>Why Gmail rejects your email with this error, and how to fix it by configuring SPF, DKIM, and DMARC correctly.</p>
+      </a>
+      <a class="card" href="/blog/dkim-not-signing" style="text-decoration:none;color:inherit">
+        <h3>DKIM not signing emails?</h3>
+        <p>Why your DKIM signature might not be working, and how to fix it.</p>
+      </a>
+      <a class="card" href="/blog/cold-email-tools" style="text-decoration:none;color:inherit">
+        <h3>Best cold email tools in 2026</h3>
+        <p>A practical comparison of the main tools, and the deliverability layer that decides whether any of them land in the inbox.</p>
+      </a>
+      <a class="card" href="/blog/email-deliverability-for-agencies" style="text-decoration:none;color:inherit">
+        <h3>Deliverability for agencies</h3>
+        <p>The stack that keeps every client inbox-ready: per-domain auth, daily monitoring, and white-label reports.</p>
+      </a>
+    </div>
+    <div style="text-align:center;margin-top:24px">
+      <a href="/blog" style="color:inherit;font-weight:600;text-decoration:underline">See all 30 guides →</a>
+    </div>
+  </div>
+</section>
+
+<section class="cta-final">
+  <div class="container">
+    <h2>Stop guessing where your email goes.</h2>
+    <p class="sub" style="margin-bottom:34px">Run the audit now. It's free, it's live, and it takes 30 seconds.</p>
+    <a class="btn btn-primary btn-lg" href="#audit">Run my free audit →</a>
+  </div>
+</section>
+
+<footer>
+  <div class="container">
+    <span>© 2026 Inboxproof, Inc. · The deliverability score for the AI era.</span>
+    <span><a href="/pro">Dashboard</a> · <a href="/blog">Guides</a> · <a href="/developers">Developers</a> · <a href="/privacy">Privacy</a> · <a href="/api/health">API status</a></span>
+  </div>
+</footer>
+
+<div id="results">
+  <div class="container">
+    <div class="score-card">
+      <div class="score-top">
+        <div class="dial" id="dial"><div class="inner"><div><div class="n" id="scoreN">–</div><div class="of">/ 100</div></div><div class="grade" id="grade"></div></div></div>
+        <div><h2 id="resTitle">Auditing…</h2><div class="dom" id="resDomain"></div></div>
+      </div>
+      <div class="checks" id="checks"></div>
+      <div id="shareRow" style="display:none;margin-top:16px;text-align:center;font-size:14px;opacity:.85">
+        Public report: <a id="shareLink" href="#" target="_blank" rel="noopener"></a>
+        <button id="shareBtn" class="btn btn-ghost btn-sm" style="margin-left:8px">Copy link</button>
+      </div>
+      <div class="unlock" id="unlock">
+        <h3>Unlock continuous monitoring</h3>
+        <p>Your audit is saved to <b id="unlockEmail"></b>. Get Pro and we'll re-run this audit daily and email you the moment anything breaks.</p>
+        <button class="btn btn-primary" id="proBtn">Get Pro — $29/mo</button>
+        <div id="proState" style="margin-top:12px;font-size:14px;color:var(--good)"></div>
+      </div>
+    </div>
+  </div>
+</div>
+<div id="emailModal" style="display:none;position:fixed;inset:0;background:rgba(0,0,0,.65);z-index:200;align-items:center;justify-content:center;padding:20px" role="dialog" aria-modal="true" aria-labelledby="emTitle">
+  <div style="background:#141414;border:1px solid #2a2a2a;border-radius:14px;padding:26px;max-width:400px;width:100%;box-shadow:0 20px 60px rgba(0,0,0,.5)">
+    <h3 id="emTitle" style="margin:0 0 8px;font-size:19px">Create your account</h3>
+    <p style="margin:0 0 16px;font-size:14px;opacity:.7;line-height:1.5">Enter the email for your Inboxproof account. We use it to save your audit history and send monitoring alerts. No marketing, no data sold.</p>
+    <input id="modalEmail" type="email" placeholder="you@yourdomain.com" autocomplete="email" spellcheck="false" style="width:100%;box-sizing:border-box;padding:11px 13px;border-radius:9px;border:1px solid #333;background:#0a0a0a;color:#fff;font-size:15px;outline:none">
+    <div id="modalErr" style="margin-top:8px;font-size:13px;color:#f87171;min-height:0"></div>
+    <div style="display:flex;gap:10px;margin-top:16px">
+      <button id="modalCancel" class="btn btn-ghost" style="flex:1">Cancel</button>
+      <button id="modalOk" class="btn btn-primary" style="flex:1">Continue to checkout</button>
+    </div>
+  </div>
+</div>
+
+<script>
+const $ = s => document.querySelector(s);
+const form = $('#auditForm'), err = $('#auditErr');
+let last = null;
+
+function askEmail(){
+  return new Promise(resolve => {
+    const modal = $('#emailModal'), input = $('#modalEmail'), emErr = $('#modalErr');
+    modal.style.display = 'flex';
+    input.value = ''; emErr.textContent = '';
+    setTimeout(() => input.focus(), 30);
+    let done = false;
+    const finish = v => { if(done) return; done = true; modal.style.display = 'none'; resolve(v); };
+    const ok = () => {
+      const v = input.value.trim();
+      if(!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(v)){ emErr.textContent = 'Enter a valid email address.'; input.focus(); return; }
+      finish(v);
+    };
+    const cancel = () => finish(null);
+    $('#modalOk').onclick = ok;
+    $('#modalCancel').onclick = cancel;
+    input.onkeydown = e => { if(e.key === 'Enter') ok(); if(e.key === 'Escape') cancel(); };
+    modal.onclick = e => { if(e.target === modal) cancel(); };
+  });
+}
+
+function scoreColor(s){ return s>=90 ? '#34d399' : s>=70 ? '#a3e635' : s>=50 ? '#fbbf24' : '#f87171'; }
+function gradeOf(s){ return s>=90 ? ['A','Inbox-ready'] : s>=70 ? ['B','Good'] : s>=50 ? ['C','At risk'] : ['D','Failing']; }
+
+function render(a){
+  const s = a.score, col = scoreColor(s), [g, gl] = gradeOf(s);
+  $('#dial').style.background = `conic-gradient(${col} ${s*3.6}deg, rgba(255,255,255,.06) 0deg)`;
+  $('#scoreN').textContent = s;
+  $('#scoreN').style.color = col;
+  $('#grade').textContent = g + ' · ' + gl;
+  $('#resTitle').textContent = s>=90 ? 'Your email is inbox-ready.' : s>=70 ? 'Solid. A few gaps left.' : s>=50 ? 'At risk: fix these before you send.' : 'Your mail is being filtered. Here\u2019s why.';
+  $('#resDomain').textContent = a.domain + ' · audited ' + new Date(a.at).toLocaleString();
+  $('#checks').innerHTML = a.checks.map(c => {
+    const ic = c.status==='pass' ? '✓' : c.status==='warn' ? '!' : '✕';
+    const fix = c.fix ? `<div class="fix">${c.fix.replace(/</g,'&lt;')}</div>` : '';
+    return `<div class="chk ${c.status}"><div class="st">${ic}</div><div><div class="t">${c.name}</div><div class="d">${c.detail}</div>${fix}</div></div>`;
+  }).join('');
+  $('#unlockEmail').textContent = a.email || 'your inbox';
+  if (a.reportId) {
+    const link = location.origin + '/r/' + a.reportId;
+    const sl = $('#shareLink');
+    sl.textContent = link; sl.href = link;
+    $('#shareRow').style.display = 'block';
+  }
+  $('#results').classList.add('show');
+  $('#results').scrollIntoView({behavior:'smooth'});
+}
+
+$('#shareBtn').addEventListener('click', () => {
+  const link = $('#shareLink').href;
+  navigator.clipboard.writeText(link).then(() => {
+    $('#shareBtn').textContent = 'Copied ✓';
+    setTimeout(() => { $('#shareBtn').textContent = 'Copy link'; }, 2000);
+  });
+});
+
+form.addEventListener('submit', async e => {
+  e.preventDefault();
+  err.textContent = '';
+  const domain = $('#inDomain').value.trim().toLowerCase().replace(/^https?:\/\//,'').replace(/\/.*$/,'');
+  const email = $('#inEmail').value.trim();
+  if(!/^[a-z0-9.-]+\.[a-z]{2,}$/i.test(domain)){ err.textContent = 'Enter a valid domain, e.g. yourdomain.com'; return; }
+  const btn = $('#auditBtn');
+  btn.disabled = true; btn.innerHTML = '<span class="spinner"></span>Auditing live DNS…';
+  try{
+    const r = await fetch('/api/audit', {method:'POST', headers:{'Content-Type':'application/json'}, body: JSON.stringify({domain, email})});
+    const j = await r.json();
+    if(!r.ok) throw new Error(j.error || 'Audit failed');
+    last = j.audit;
+    last.reportId = j.reportId;
+    render(last);
+  }catch(ex){
+    err.textContent = ex.message;
+  }finally{
+    btn.disabled = false; btn.textContent = 'Run my free audit';
+  }
+});
+
+async function buy(plan, btn){
+  let email = last ? last.email : null;
+  if(!email){
+    email = await askEmail();
+    if(!email) return;
+  }
+  let old = null;
+  if(btn){ btn.disabled = true; old = btn.textContent; btn.textContent = 'Opening secure checkout…'; }
+  try{
+    const r = await fetch('/api/checkout', {method:'POST', headers:{'Content-Type':'application/json'}, body: JSON.stringify({plan, email, domain: last && last.domain})});
+    const j = await r.json();
+    if(!r.ok) throw new Error(j.error || 'Could not start checkout');
+    location.href = j.url;
+  }catch(ex){
+    if(btn){ btn.disabled = false; btn.textContent = old; }
+    alert(ex.message);
+  }
+}
+$('#proBtn').addEventListener('click', () => buy('pro', $('#proBtn')));
+document.querySelectorAll('[data-buy]').forEach(b => b.addEventListener('click', e => { e.preventDefault(); buy(b.dataset.buy, b); }));
+</script>
+</body>
+</html>

@@ -1,0 +1,171 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Email Deliverability Guides — Inboxproof</title>
+<meta name="description" content="Short, practical guides to SPF, DKIM, DMARC and email spoofing. No fluff, no fake stats.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="/styles.css">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' rx='8' fill='%236366f1'/%3E%3Cpath d='M8 16h13M15 10l6 6-6 6' stroke='white' stroke-width='3' fill='none' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E">
+</head>
+<body>
+<nav class="nav">
+  <div class="container">
+    <a class="logo" href="/">
+      <span class="mark"><svg viewBox="0 0 24 24" fill="none"><path d="M4 12h11M11 7l5 5-5 5" stroke="#fff" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"/></svg></span>
+      Inboxproof
+    </a>
+    <div class="nav-links"><a href="/">Run a free audit</a></div>
+  </div>
+</nav>
+
+<div class="container" style="max-width:860px;padding:60px 20px 80px">
+  <div class="kicker">Guides</div>
+  <h1 style="font-size:36px;margin:10px 0 12px">Email deliverability, explained plainly</h1>
+  <p style="opacity:.8;font-size:16px;margin-bottom:36px">Short technical guides. Every claim here is something you can verify yourself with a DNS lookup.</p>
+
+  <div class="card" style="margin-bottom:20px;background:#eef2ff;border-color:#c7d2fe">
+    <h3 style="margin-top:0">Skip the theory — check your domain now</h3>
+    <p style="opacity:.8;margin-bottom:14px">The <a href="/dmarc-checker">free DMARC checker</a> looks up your SPF, DKIM, DMARC and MX records in seconds. No signup. Just checking SPF? The <a href="/spf-checker">SPF checker</a> shows the exact record and flags the 10-lookup and -all issues. Just checking DKIM? The <a href="/dkim-checker">DKIM checker</a> finds your key and flags weak or missing keys. Worried your IP is blacklisted? The <a href="/blocklist-checker">IP blocklist checker</a> tests it against 9 major lists. Not sure if your domain even receives mail? The <a href="/mx-checker">MX record checker</a> looks up your MX records, resolves each mail server to its IP and checks reverse DNS. Got a suspicious email and want to know if it's real? The <a href="/header-analyzer">email header analyzer</a> reads the raw headers and tells you whether SPF, DKIM and DMARC passed. Getting a weekly DMARC XML you cannot make sense of? The <a href="/dmarc-report-parser">DMARC report parser</a> turns it into a who's-sending-as-you list. Need the record itself? The <a href="/dmarc-generator">DMARC record generator</a> writes the exact TXT for you.</p>
+    <a class="btn btn-primary" href="/dmarc-checker">Open the DMARC checker</a>
+  </div>
+
+  <div class="grid" style="grid-template-columns:1fr;gap:14px">
+    <a class="card" href="/blog/cold-email-tools" style="text-decoration:none;color:inherit">
+      <h3>Best cold email tools in 2026, and the deliverability layer they all miss</h3>
+      <p>A practical comparison of Instantly, Smartlead, Lemlist, Woodpecker, Reply.io and Apollo, and the sending-domain checks that decide whether any of them land in the inbox.</p>
+    </a>
+    <a class="card" href="/blog/email-deliverability-for-agencies" style="text-decoration:none;color:inherit">
+      <h3>Email deliverability for agencies: keep every client inbox-ready</h3>
+      <p>The deliverability stack for agencies: per-domain authentication, daily monitoring of every client domain, and white-label reports you can hand over.</p>
+    </a>
+    <a class="card" href="/blog/transactional-email-deliverability" style="text-decoration:none;color:inherit">
+      <h3>Transactional email deliverability: the complete guide</h3>
+      <p>Keep password resets, receipts and alerts out of spam: dedicated warmed-up IP, SPF/DKIM/DMARC setup, near-zero bounce rates, and daily monitoring.</p>
+    </a>
+    <a class="card" href="/blog/cold-email-deliverability" style="text-decoration:none;color:inherit">
+      <h3>Cold email deliverability: how to keep outreach out of spam</h3>
+      <p>The setup that keeps cold outreach in the primary inbox: a dedicated sending domain, correct authentication, slow warmup, clean lists, and daily monitoring.</p>
+    </a>
+    <a class="card" href="/blog/how-to-read-email-headers" style="text-decoration:none;color:inherit">
+      <h3>How to read email headers: SPF, DKIM and DMARC results explained</h3>
+      <p>Where the authentication results live in raw headers, what each value means, and the one-minute test to tell a real email from a spoof.</p>
+    </a>
+    <a class="card" href="/blog/dmarc-record" style="text-decoration:none;color:inherit">
+      <h3>How to create a DMARC record (step by step, with the exact TXT)</h3>
+      <p>What the record looks like, where it goes in your DNS, which policy to start with, and how to confirm it is live. With a free generator that writes it for you.</p>
+    </a>
+    <a class="card" href="/blog/dmarc" style="text-decoration:none;color:inherit">
+      <h3>What is DMARC? A practical guide for small business domains</h3>
+      <p>How the record works, what p=none actually does, and the minimum setup that stops your domain from being used to send mail you didn't authorize.</p>
+    </a>
+    <a class="card" href="/blog/mx-records" style="text-decoration:none;color:inherit">
+      <h3>MX records explained: how mail finds your domain</h3>
+      <p>What MX records are, how priorities work, and the five MX mistakes that cause mail to bounce. Check your own in seconds with the free MX checker.</p>
+    </a>
+    <a class="card" href="/blog/spf-dkim-dmarc" style="text-decoration:none;color:inherit">
+      <h3>SPF vs DKIM vs DMARC: which one do you actually need?</h3>
+      <p>What each record proves, what happens when one is missing, and the order to fix them in. With the exact TXT records to start from.</p>
+    </a>
+    <a class="card" href="/blog/spoofing" style="text-decoration:none;color:inherit">
+      <h3>Is your domain being spoofed? How to check in 30 seconds</h3>
+      <p>The three DNS lookups that tell you whether someone can send "from" your domain and get it delivered, and what to do if the answer is yes.</p>
+    </a>
+    <a class="card" href="/blog/dmarc-policies" style="text-decoration:none;color:inherit">
+      <h3>DMARC p=none vs p=quarantine vs p=reject: which should you use?</h3>
+      <p>What each policy actually does, when to move between them, and the safe order that avoids rejecting your own transactional mail.</p>
+    </a>
+    <a class="card" href="/blog/email-not-landing-gmail" style="text-decoration:none;color:inherit">
+      <h3>Why your email is not landing in Gmail's inbox in 2026</h3>
+      <p>The concrete requirements Gmail enforces for bulk senders, in the order to check them: authentication, alignment, spam rate, unsubscribe, volume.</p>
+    </a>
+    <a class="card" href="/blog/email-in-spam" style="text-decoration:none;color:inherit">
+      <h3>Why is my email in spam? The 7 causes, in order of likelihood</h3>
+      <p>Authentication, alignment, reputation, list quality, content signals, warmup, and blocklists. The order to check them and how to tell which one you have.</p>
+    </a>
+    <a class="card" href="/blog/is-my-domain-blacklisted" style="text-decoration:none;color:inherit">
+      <h3>Is my domain blacklisted? How to check your IP reputation</h3>
+      <p>What blocklists are, how to check if your sending IP is listed on Spamhaus, SpamCop, or Barracuda, and how to get delisted fast.</p>
+    </a>
+    <a class="card" href="/blog/is-my-ip-blacklisted" style="text-decoration:none;color:inherit">
+      <h3>Is my IP blacklisted? How to check and get delisted</h3>
+      <p>How to check your sending IP against 9 major blocklists, what a listing means for deliverability, and how to get delisted from Spamhaus, SpamCop, and Barracuda.</p>
+    </a>
+    <a class="card" href="/blog/spamhaus-delisting" style="text-decoration:none;color:inherit">
+      <h3>How to delist from Spamhaus (step by step)</h3>
+      <p>On the SBL or XBL? Confirm the listing, fix the root cause, submit the delisting request, and verify the re-scan. Plus how to stay off the list.</p>
+    </a>
+    <a class="card" href="/blog/deliverability-score" style="text-decoration:none;color:inherit">
+      <h3>What is a good email deliverability score?</h3>
+      <p>What a 0-100 deliverability score means, what 90+ / 70-89 / 50-69 / below 50 actually tells you, and the order to fix things to move it up.</p>
+    </a>
+    <a class="card" href="/blog/dmarc-report-monitoring" style="text-decoration:none;color:inherit">
+      <h3>How to monitor DMARC reports</h3>
+      <p>What aggregate and forensic DMARC reports are, how to read them, and how to set up monitoring so you catch authentication failures before they hurt your deliverability.</p>
+    </a>
+    <a class="card" href="/blog/spf-not-working" style="text-decoration:none;color:inherit">
+      <h3>SPF record not working? How to fix common SPF syntax errors</h3>
+      <p>Why your SPF record might not be working, the most common syntax errors (missing v=spf1, missing -all, too many DNS lookups, duplicate records), and how to fix them.</p>
+    </a>
+    <a class="card" href="/blog/google-workspace-spf-dkim-dmarc" style="text-decoration:none;color:inherit">
+      <h3>How to set up SPF, DKIM, and DMARC for Google Workspace</h3>
+      <p>Step-by-step guide to configuring SPF, DKIM, and DMARC for Google Workspace so your email authenticates correctly and reaches the inbox.</p>
+    </a>
+    <a class="card" href="/blog/microsoft-365-spf-dkim-dmarc" style="text-decoration:none;color:inherit">
+      <h3>How to set up SPF, DKIM, and DMARC for Microsoft 365</h3>
+      <p>Step-by-step guide to configuring SPF, DKIM, and DMARC for Microsoft 365 so your email authenticates correctly and reaches the inbox.</p>
+    </a>
+    <a class="card" href="/blog/gmail-smtp-error-550-5-7-26" style="text-decoration:none;color:inherit">
+      <h3>Gmail SMTP error 550-5.7.26: how to fix it</h3>
+      <p>Why Gmail rejects your email with SMTP error 550-5.7.26, and how to fix it by configuring SPF, DKIM, and DMARC correctly.</p>
+    </a>
+    <a class="card" href="/blog/dkim-not-signing" style="text-decoration:none;color:inherit">
+      <h3>DKIM not signing emails? How to fix it</h3>
+      <p>Why your DKIM signature might not be working, the most common causes (missing record, wrong selector, weak key, misalignment), and how to fix them.</p>
+    </a>
+    <a class="card" href="/blog/email-authentication-startups" style="text-decoration:none;color:inherit">
+      <h3>Email authentication for startups: the 2026 checklist</h3>
+      <p>The complete 2026 checklist for email authentication for startups: SPF, DKIM, DMARC, and the other records you need to get into the inbox.</p>
+    </a>
+    <a class="card" href="/blog/reverse-dns-ptr-email" style="text-decoration:none;color:inherit">
+      <h3>Reverse DNS (PTR) for mail servers: why your sending IP needs one</h3>
+      <p>What a PTR record is, why receiving servers require it, what forward-confirmed PTR means, and how to check and fix your sending IP.</p>
+    </a>
+    <a class="card" href="/blog/cold-email-warm-up" style="text-decoration:none;color:inherit">
+      <h3>How to warm up a new email domain for cold outreach</h3>
+      <p>A step-by-step warm-up plan: how many days, how many emails per day, how to ramp, and how to know when your domain is ready for real volume.</p>
+    </a>
+    <a class="card" href="/blog/smtp-error-codes" style="text-decoration:none;color:inherit">
+      <h3>SMTP error codes explained: 250, 450, 550, 554 and more</h3>
+      <p>What each SMTP status code means and how to fix it: 250 accepted, 4xx temporary failures, 550 mailbox unavailable, 554 relay denied, and the codes that predict spam placement.</p>
+    </a>
+    <a class="card" href="/blog/dkim-selector" style="text-decoration:none;color:inherit">
+      <h3>How DKIM selectors work: finding, rotating and troubleshooting your key</h3>
+      <p>What a DKIM selector is, how to find yours in DNS, how providers name theirs, how to rotate a key without breaking delivery, and the mistakes that fail your DKIM check.</p>
+    </a>
+    <a class="card" href="/blog/email-bounce-codes" style="text-decoration:none;color:inherit">
+      <h3>Email bounce codes explained: hard bounces, soft bounces and what to do about each</h3>
+      <p>What email bounce codes mean and how to fix them: hard bounces (550, 5.1.1, 5.7.1), soft bounces (450, 4.2.1, 4.3.0), and the bounce-rate thresholds that get you delisted.</p>
+    </a>
+    <a class="card" href="/blog/spf-lookup-limit" style="text-decoration:none;color:inherit">
+      <h3>The SPF 10-lookup limit: why your SPF record is failing and how to fix it</h3>
+      <p>Why SPF records are limited to 10 DNS lookups, how to count them, and how to fix a "too many DNS lookups" permerror by flattening and consolidating your includes.</p>
+    </a>
+  </div>
+
+  <div style="margin-top:44px;text-align:center">
+    <p style="opacity:.7;font-size:15px;margin-bottom:16px">Prefer not to read the theory?</p>
+    <a class="btn btn-primary btn-lg" href="/#audit">Run a free audit of your domain</a>
+  </div>
+</div>
+
+<footer>
+  <div class="container">
+    <span>© 2026 Inboxproof, Inc.</span>
+    <span><a href="/">Home</a> · <a href="/privacy">Privacy</a></span>
+  </div>
+</footer>
+</body>
+</html>
