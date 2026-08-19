@@ -1,0 +1,86 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Email Deliverability for E-commerce: SPF, DKIM, DMARC for Online Stores — Inboxproof</title>
+<meta name="description" content="Why order confirmations and marketing emails from your online store land in spam, and the exact SPF, DKIM, DMARC and sender-reputation fixes for Shopify, WooCommerce and headless stores.">
+<meta property="og:title" content="Email Deliverability for E-commerce: SPF, DKIM, DMARC for Online Stores">
+<meta property="og:description" content="Why order confirmations and marketing emails from your online store land in spam, and the exact fixes.">
+<meta property="og:type" content="article">
+<link rel="stylesheet" href="/styles.css">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' rx='8' fill='%236366f1'/%3E%3Cpath d='M8 16h13M15 10l6 6-6 6' stroke='white' stroke-width='3' fill='none' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E">
+<script type="application/ld+json">
+{"@context":"https://schema.org","@type":"Article","headline":"Email Deliverability for E-commerce: SPF, DKIM, DMARC for Online Stores","description":"Why order confirmations and marketing emails from your online store land in spam, and the exact SPF, DKIM, DMARC and sender-reputation fixes.","author":{"@type":"Organization","name":"Inboxproof"},"publisher":{"@type":"Organization","name":"Inboxproof"}}
+</script>
+</head>
+<body>
+<nav class="nav">
+  <div class="container">
+    <a class="logo" href="/"><span class="mark"><svg viewBox="0 0 24 24" fill="none"><path d="M4 12h11M11 7l5 5-5 5" stroke="#fff" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"/></svg></span> Inboxproof</a>
+    <div class="nav-links"><a href="/">Run a free audit</a></div>
+  </div>
+</nav>
+<div class="container" style="max-width:760px;padding:56px 20px 80px">
+  <div class="kicker">Guide</div>
+  <h1>Email deliverability for e-commerce: why your store's emails land in spam</h1>
+  <p style="opacity:.75;font-size:14px">Updated for 2026 · 6 min read</p>
+
+  <p>If your customers never see an order confirmation, or your cart-abandonment and marketing emails keep landing in the spam folder, the problem is almost never the copy. It is the DNS records and sender reputation behind the sending domain. This guide covers the specific deliverability setup an online store needs, whether you run on Shopify, WooCommerce, or a headless stack.</p>
+
+  <h2>The two email streams that matter for a store</h2>
+  <p>E-commerce sends two very different kinds of email, and they need different treatment:</p>
+  <ul>
+    <li><strong>Transactional</strong> — order confirmations, shipping updates, password resets. These are expected, one-to-one, and have very high open rates. They should be sent from a domain with a clean reputation and strict authentication.</li>
+    <li><strong>Marketing / lifecycle</strong> — abandoned cart, back-in-stock, win-back, newsletters. These are bulk, and are where most spam-folder problems start.</li>
+  </ul>
+  <p>Many stores send both from the same domain (e.g. <code>yourstore.com</code>) via the platform's default email service. That is workable, but it couples your marketing reputation to your transactional reputation. A better setup separates them: transactional from the store domain, marketing from a dedicated subdomain (e.g. <code>mail.yourstore.com</code>) so a bad marketing campaign never drags your order confirmations into spam.</p>
+
+  <h2>The DNS records a store must have</h2>
+  <p>Every sending domain needs four records. Most store platforms handle SPF and DKIM for you, but you still need to verify they are actually published and not conflicting.</p>
+  <ol>
+    <li><strong>SPF</strong> — a TXT record listing the servers allowed to send for the domain. If your platform (Shopify, Klaviyo, Mailchimp, etc.) adds its own SPF include and you also have a hand-written SPF, you can exceed the 10-DNS-lookup limit and break authentication. Use the <a href="/spf-checker">SPF checker</a> to see your effective record and catch that.</li>
+    <li><strong>DKIM</strong> — a signature proving the message came from you. Each sending service has its own selector. If you send through more than one provider you need one DKIM record per provider. The <a href="/dkim-checker">DKIM checker</a> finds your live key and flags weak (1024-bit) or missing keys.</li>
+    <li><strong>DMARC</strong> — the policy that tells receivers what to do with unauthenticated mail. Start at <code>p=none</code>, read the reports, then move to <code>p=quarantine</code> and finally <code>p=reject</code>. The <a href="/dmarc-checker">DMARC checker</a> shows your current policy and the <a href="/dmarc-report-parser">DMARC report parser</a> turns the XML reports into a list of who is actually sending as you.</li>
+    <li><strong>MX</strong> — even if you only send, you need a valid MX record so the domain is not treated as a throwaway. The <a href="/mx-checker">MX checker</a> confirms it resolves.</li>
+  </ol>
+
+  <h2>Sender reputation: the part DNS cannot fix</h2>
+  <p>DNS authentication gets your email accepted; reputation gets it to the inbox. Three reputation levers matter most for a store:</p>
+  <ul>
+    <li><strong>Warm up new sending domains.</strong> A brand-new domain sending 5,000 marketing emails on day one will get flagged. Ramp volume over 2–4 weeks. The <a href="/warm-up-calculator">warm-up calculator</a> gives you a daily send schedule.</li>
+    <li><strong>Keep bounce rate low.</strong> E-commerce lists accumulate stale addresses from old orders. A hard-bounce rate above 2–3% hurts reputation fast. Clean the list before big campaigns. The <a href="/blog/cold-email-bounce-rate">bounce-rate guide</a> covers the thresholds.</li>
+    <li><strong>Watch your blocklists.</strong> If your sending IP or domain lands on a blocklist, even perfectly authenticated mail gets rejected. The <a href="/blocklist-checker">IP blocklist checker</a> tests against the major lists, and the <a href="/blog/spamhaus-delisting">delisting guide</a> walks through getting off Spamhaus.</li>
+  </ul>
+
+  <h2>A quick pre-launch checklist</h2>
+  <ul>
+    <li>SPF published and under the 10-lookup limit</li>
+    <li>DKIM live for every sending service, 2048-bit</li>
+    <li>DMARC at <code>p=none</code> minimum, reports being read</li>
+    <li>MX record valid</li>
+    <li>Marketing on a separate subdomain from transactional</li>
+    <li>New domains warmed up before bulk sends</li>
+    <li>Bounce rate under 3%</li>
+    <li>No blocklist hits on sending IP or domain</li>
+  </ul>
+
+  <p>Run the <a href="/">free audit</a> against your store domain and it checks SPF, DKIM, DMARC, MX, TLS and IP reputation in about 30 seconds, then tells you exactly which of the above is broken.</p>
+
+  <div style="margin:36px 0;padding:24px;background:#eef2ff;border-radius:12px;text-align:center">
+    <p style="font-size:16px;margin:0 0 14px"><strong>Check your store domain free, no signup.</strong> SPF, DKIM, DMARC, TLS and IP reputation in ~30 seconds.</p>
+    <a class="btn" href="/">Run a free audit</a>
+  </div>
+
+  <p style="font-size:14px;opacity:.75;margin-top:28px">Related: <a href="/blog/email-deliverability-for-agencies">deliverability for agencies</a> · <a href="/blog/cold-email-bounce-rate">bounce-rate guide</a> · <a href="/deliverability-tools">best deliverability tools</a> · <a href="/blog">all guides</a></p>
+
+  <p style="font-size:14px;opacity:.8;margin-top:24px">Need continuous monitoring of your store's sending domain? <a href="/#pricing">Inboxproof Pro</a> re-checks your records daily and emails you the moment authentication or reputation breaks.</p>
+</div>
+<footer>
+  <div class="container">
+    <span>© 2026 Inboxproof, Inc.</span>
+    <span><a href="/">Home</a> · <a href="/privacy">Privacy</a> · <a href="https://github.com/jtc268/inboxproof" target="_blank" rel="noopener">GitHub</a></span>
+  </div>
+</footer>
+</body>
+</html>
