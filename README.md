@@ -31,6 +31,12 @@ change.
 - [TLS / STARTTLS checker](https://inboxproof-phi.vercel.app/tls-checker)
 - [Reverse DNS (PTR) checker](https://inboxproof-phi.vercel.app/ptr-checker)
 
+## Comparisons
+
+- [Best email deliverability testing tools (2026)](https://inboxproof-phi.vercel.app/deliverability-tools)
+- [Mail-Tester alternatives](https://inboxproof-phi.vercel.app/mail-tester-alternatives)
+- [GlockApps alternatives](https://inboxproof-phi.vercel.app/glockapps-alternatives)
+
 Plus 42 short, practical [guides](https://inboxproof-phi.vercel.app/blog) on
 SPF, DKIM, DMARC, and deliverability.
 
