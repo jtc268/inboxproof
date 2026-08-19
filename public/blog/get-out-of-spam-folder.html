@@ -1,0 +1,60 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>How to get out of the spam folder, and keep it there — Inboxproof</title>
+<meta name="description" content="A step-by-step checklist for getting email out of the spam folder: fix authentication, clear blocklists, warm up sending, and monitor so it never happens again.">
+<meta property="og:title" content="How to get out of the spam folder, and keep it there">
+<meta property="og:description" content="A step-by-step checklist for getting email out of the spam folder and keeping it there.">
+<meta property="og:type" content="article">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="/styles.css">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' rx='8' fill='%236366f1'/%3E%3Cpath d='M8 16h13M15 10l6 6-6 6' stroke='white' stroke-width='3' fill='none' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E">
+<script type="application/ld+json">
+{"@context":"https://schema.org","@type":"Article","headline":"How to get out of the spam folder, and keep it there","description":"A step-by-step checklist for getting email out of the spam folder: fix authentication, clear blocklists, warm up sending, and monitor so it never happens again.","author":{"@type":"Organization","name":"Inboxproof"},"publisher":{"@type":"Organization","name":"Inboxproof"}}
+</script>
+</head>
+<body>
+<nav class="nav">
+  <div class="container">
+    <a class="logo" href="/">
+      <span class="mark"><svg viewBox="0 0 24 24" fill="none"><path d="M4 12h11M11 7l5 5-5 5" stroke="#fff" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"/></svg></span>
+      Inboxproof
+    </a>
+    <div class="nav-links"><a href="/blog">All guides</a><a href="/">Run a free audit</a></div>
+  </div>
+</nav>
+
+<div class="container" style="max-width:760px;padding:60px 20px 80px">
+  <div class="kicker">Guide</div>
+  <h1 style="font-size:34px;margin:10px 0 24px">How to get out of the spam folder, and keep it there</h1>
+  <div style="opacity:.85;line-height:1.75;font-size:15.5px">
+    <p>Email lands in the spam folder for a small number of reasons, and almost all of them are fixable. The good news is that the fixes are the same whether you are sending transactional email, marketing, or cold outreach: get the authentication right, get off the blocklists, and send from a reputation that is not broken. This is the order to work through them, because each step depends on the one before it.</p>
+
+    <h2 style="font-size:22px;margin:34px 0 12px">Step 1: Confirm the domain is actually authenticated</h2>
+    <p>Most "my email is in spam" problems are an authentication problem in disguise. The receiving mailbox checks three records, and if any of them is missing or wrong, the email is treated as untrusted. Check that <b>SPF</b> lists every server that sends for you and ends in <code>-all</code>. Check that <b>DKIM</b> is signing on the domain in your From header. Check that <b>DMARC</b> is present. If you are not sure which of the three is broken, the <a href="/spf-dkim-dmarc">SPF, DKIM and DMARC checker</a> runs all three in one pass and tells you exactly which record is the problem. This is the highest-leverage fix: a single missing DKIM selector will keep you in spam no matter how clean everything else is.</p>
+
+    <h2 style="font-size:22px;margin:34px 0 12px">Step 2: Get off the blocklists</h2>
+    <p>Even with perfect authentication, a single blocklist hit will sink you. Check the sending IP and the domain against the major lists. The <a href="/is-my-ip-blacklisted">IP blacklist checker</a> and <a href="/is-my-domain-blacklisted">domain blacklist checker</a> show which lists you are on and, more importantly, the delisting process for each one. For the big ones like Spamhaus, the <a href="/spamhaus-delisting">Spamhaus delisting guide</a> walks through the exact request. The key point: delisting only works if the underlying cause (a compromised mailbox, an open relay, a burst of bad traffic) is fixed first, or you will just get listed again within days.</p>
+
+    <h2 style="font-size:22px;margin:34px 0 12px">Step 3: Fix the sending behavior</h2>
+    <p>Authentication and blocklists are the floor. What keeps you out of spam long-term is sending behavior. Keep volume gradual, especially if you have been quiet or are sending from a new domain: ramp up over days, not hours. Keep your bounce rate low by validating addresses before you send. Make sure your content matches your sending domain (a new domain suddenly sending heavy promotional email is a classic trigger). If you are doing cold outreach, this is where <a href="/cold-email-warm-up">warm up</a> matters: a fresh domain needs a reputation built before it can send at volume.</p>
+
+    <h2 style="font-size:22px;margin:34px 0 12px">Step 4: Watch it so it does not come back</h2>
+    <p>The reason spam-folder problems recur is that nobody is watching. A record breaks, an IP gets listed, a mailbox gets compromised, and the next campaign dies quietly. The fix is continuous monitoring: check the domain daily, get alerted the moment a record changes or a blocklist hit appears, and fix it in minutes instead of discovering it from a drop in deliverability. That is what <a href="/#pricing">Inboxproof Pro</a> does, and the <a href="/#pricing">Agency tier</a> does the same for up to ten client domains with white-label reports.</p>
+
+    <h2 style="font-size:22px;margin:34px 0 12px">The order that matters</h2>
+    <p>Work the steps in this order: authentication first, then blocklists, then sending behavior, then monitoring. Skipping ahead is why people "fix" the spam problem and have it back a week later. Start by running the <a href="/cold-email-checker">free deliverability checker</a> on your sending domain. It scores all seven checks and points at the exact record to fix first. Once the floor is solid, the monitoring keeps you out for good.</p>
+  </div>
+</div>
+
+<footer>
+  <div class="container">
+    <span>© 2026 Inboxproof, Inc.</span>
+    <span><a href="/blog">All guides</a> · <a href="/">Home</a> · <a href="/privacy">Privacy</a> · <a href="https://github.com/jtc268/inboxproof" target="_blank" rel="noopener">GitHub</a></span>
+  </div>
+</footer>
+</body>
+</html>

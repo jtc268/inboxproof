@@ -1,0 +1,60 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Gmail Postmaster Tools, explained: what the metrics actually mean — Inboxproof</title>
+<meta name="description" content="Gmail Postmaster Tools shows your domain's reputation with Gmail. Here is what each metric means, how to read it, and what to do when a number moves the wrong way.">
+<meta property="og:title" content="Gmail Postmaster Tools, explained">
+<meta property="og:description" content="What each Gmail Postmaster Tools metric means, how to read it, and what to do when a number moves the wrong way.">
+<meta property="og:type" content="article">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="/styles.css">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' rx='8' fill='%236366f1'/%3E%3Cpath d='M8 16h13M15 10l6 6-6 6' stroke='white' stroke-width='3' fill='none' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E">
+<script type="application/ld+json">
+{"@context":"https://schema.org","@type":"Article","headline":"Gmail Postmaster Tools, explained: what the metrics actually mean","description":"Gmail Postmaster Tools shows your domain's reputation with Gmail. Here is what each metric means, how to read it, and what to do when a number moves the wrong way.","author":{"@type":"Organization","name":"Inboxproof"},"publisher":{"@type":"Organization","name":"Inboxproof"}}
+</script>
+</head>
+<body>
+<nav class="nav">
+  <div class="container">
+    <a class="logo" href="/">
+      <span class="mark"><svg viewBox="0 0 24 24" fill="none"><path d="M4 12h11M11 7l5 5-5 5" stroke="#fff" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"/></svg></span>
+      Inboxproof
+    </a>
+    <div class="nav-links"><a href="/blog">All guides</a><a href="/">Run a free audit</a></div>
+  </div>
+</nav>
+
+<div class="container" style="max-width:760px;padding:60px 20px 80px">
+  <div class="kicker">Guide</div>
+  <h1 style="font-size:34px;margin:10px 0 24px">Gmail Postmaster Tools, explained</h1>
+  <div style="opacity:.85;line-height:1.75;font-size:15.5px">
+    <p>Gmail Postmaster Tools is the one place where the largest mailbox provider shows you its own view of your domain: how Gmail is treating your email, and why. It is not a marketing dashboard and it is not a guarantee, but it is the single most useful signal you can get about whether Gmail will deliver. The problem is that most people open it, see a bunch of numbers, and have no idea what any of them mean. This is what they mean, and what to do when one of them moves the wrong way.</p>
+
+    <h2 style="font-size:22px;margin:34px 0 12px">First: get your domain in there</h2>
+    <p>Postmaster Tools only shows data for domains you have verified and added. You need a Google account, and you verify the sending domain (the one in your From header, the one your SPF and DKIM point to). Until the domain is verified, you will see no data at all, which is the most common reason people think the tool is broken. If you are not sure which domain is the one that matters, run the <a href="/spf-dkim-dmarc">SPF, DKIM and DMARC checker</a> first: the domain that passes authentication is the domain to verify here.</p>
+
+    <h2 style="font-size:22px;margin:34px 0 12px">The metric that matters most: reputation</h2>
+    <p>Reputation is the headline number. It tells you how Gmail views your sending domain, on a scale from bad to good. A good or excellent reputation means Gmail is willing to put your email in the primary inbox. A bad or poor reputation means Gmail is actively filtering you, and no amount of good content will fix that on its own. Reputation is built from your history: bounce rates, spam complaints, and whether your email was marked as spam. It moves slowly, which is why a sudden drop is a red flag worth investigating the same day. If reputation drops, the usual causes are a spike in complaints, a batch of bad addresses causing hard bounces, or a blocklist hit. The <a href="/is-my-domain-blacklisted">domain blacklist checker</a> and <a href="/is-my-ip-blacklisted">IP blacklist checker</a> are the fast way to rule the blocklist cause in or out.</p>
+
+    <h2 style="font-size:22px;margin:34px 0 12px">The two numbers that explain reputation</h2>
+    <p>Reputation is the result; the two inputs are the spam complaint rate and the hard bounce rate. The <b>spam complaint rate</b> is the fraction of your mail that recipients mark as spam. Gmail wants this low, and a high complaint rate is the fastest way to tank reputation. The <b>hard bounce rate</b> is the fraction of your mail that bounces because the address does not exist. A high hard bounce rate means your list is stale, and Gmail reads that as a sign you are not managing your recipients. Both of these are things you can control: validate addresses before you send, and keep your unsubscribe path easy and working. When either number climbs, that is your lead, not the reputation number itself.</p>
+
+    <h2 style="font-size:22px;margin:34px 0 12px">The other numbers, briefly</h2>
+    <p><b>Feedback</b> shows the raw complaint and "not spam" counts over time, useful for spotting a sudden spike. <b>Delivery status</b> shows how much of your mail Gmail accepted versus rejected, and at what stage. <b>IP address</b> lets you look at reputation per sending IP, which matters if you send from more than one. <b>Authentication</b> shows how much of your mail passes SPF, DKIM, and DMARC. If your authentication pass rate is not near 100%, that is a direct, fixable problem: the <a href="/spf-dkim-dmarc">SPF, DKIM and DMARC checker</a> will tell you which record is failing. A domain that fails authentication will never build a good reputation, no matter how clean everything else is.</p>
+
+    <h2 style="font-size:22px;margin:34px 0 12px">How to use it without overreacting</h2>
+    <p>Postmaster Tools is a trend tool, not a daily panic button. Reputation moves slowly, so a single day of noise is not a signal. Watch the direction over days and weeks, and act on the inputs (complaint rate, bounce rate, authentication) when they move. The healthy habit is to check it on a schedule, not in a panic. That is what <a href="/#pricing">Inboxproof Pro</a> automates: it monitors the sending domain continuously and alerts you when a record changes or a blocklist hit appears, so you are fixing the cause the day it happens instead of finding out from a reputation drop a week later. For agencies, the <a href="/#pricing">Agency tier</a> runs the same monitoring across up to ten client domains.</p>
+  </div>
+</div>
+
+<footer>
+  <div class="container">
+    <span>© 2026 Inboxproof, Inc.</span>
+    <span><a href="/blog">All guides</a> · <a href="/">Home</a> · <a href="/privacy">Privacy</a> · <a href="https://github.com/jtc268/inboxproof" target="_blank" rel="noopener">GitHub</a></span>
+  </div>
+</footer>
+</body>
+</html>
