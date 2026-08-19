@@ -16,6 +16,7 @@ change.
 
 ## Tools (all free, no signup)
 
+- [Email spam checker](https://inboxproof-phi.vercel.app/spam-checker)
 - [DMARC checker](https://inboxproof-phi.vercel.app/dmarc-checker)
 - [SPF checker](https://inboxproof-phi.vercel.app/spf-checker)
 - [DKIM checker](https://inboxproof-phi.vercel.app/dkim-checker)
