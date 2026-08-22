@@ -417,6 +417,12 @@ window.trackEvent=function(ev){try{var p=location.pathname||'/';var u='/api/trac
       <div class="unlock" id="unlock">
         <h3>Unlock continuous monitoring</h3>
         <p>Your audit is saved to <b id="unlockEmail"></b>. Get Pro and we'll re-run this audit daily and email you the moment anything breaks.</p>
+        <div style="display:flex;gap:16px;justify-content:center;flex-wrap:wrap;margin-bottom:18px;font-size:13.5px;color:var(--muted)">
+          <span>✓ Daily re-audit (5 domains)</span>
+          <span>✓ Score history &amp; trend</span>
+          <span>✓ Break alerts by email</span>
+          <span>✓ API access</span>
+        </div>
         <button class="btn btn-primary" id="proBtn">Get Pro: $14.50/mo</button>
         <div id="proState" style="margin-top:12px;font-size:14px;color:var(--good)"></div>
       </div>
