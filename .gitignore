@@ -40,6 +40,8 @@ resend-env.mjs
 test-send.mjs
 env-check.txt
 alert-from.txt
+verify-prices.mjs
+check-repos.mjs
 
 # OS / editor
 .DS_Store
