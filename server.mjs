@@ -583,6 +583,7 @@ async function handler(req, res) {
         if (!secret || u.searchParams.get('secret') !== secret) return sendJson(res, 403, { error: 'Forbidden' });
         const totalAudits = Object.values(audits).reduce((n, a) => n + a.length, 0);
         const pro = Object.values(leads).filter(l => l.pro);
+        const referred = Object.values(leads).filter(l => l.referredBy).map(l => ({ email: l.email, referredBy: l.referredBy, at: l.referredAt || null }));
         return sendJson(res, 200, {
           pageViews: stats.pageViews || 0,
           byPage: stats.byPage || {},
@@ -596,6 +597,8 @@ async function handler(req, res) {
           pro: pro.length,
           proEmails: pro.map(l => l.email),
           proSince: pro.map(l => ({ email: l.email, plan: l.plan, since: l.proSince })),
+          referrals: referred.length,
+          referredLeads: referred,
         });
       }
       if (u.pathname === '/api/history') {
