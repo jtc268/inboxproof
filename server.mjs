@@ -607,6 +607,12 @@ async function handler(req, res) {
         const totalAudits = Object.values(audits).reduce((n, a) => n + a.length, 0);
         const pro = Object.values(leads).filter(l => l.pro);
         const referred = Object.values(leads).filter(l => l.referredBy).map(l => ({ email: l.email, referredBy: l.referredBy, at: l.referredAt || null }));
+        // Real (non-test) counts: test leads are tagged `test: true`; test audit emails are also
+        // matched by pattern (some test audits predate the leads store or use throwaway addresses).
+        const isTest = (email) => !!(leads[email] && leads[email].test) || email.endsWith('@inboxproof.test') || email === 'leadtest@example.com';
+        const realLeads = Object.values(leads).filter(l => !l.test);
+        const realPro = realLeads.filter(l => l.pro);
+        const realAudits = Object.keys(audits).filter(email => !isTest(email)).reduce((n, email) => n + audits[email].length, 0);
         const ev = stats.byEvent || {};
         // checkout_start was the event name in an earlier deploy; count both.
         const checkoutStarted = (ev.checkout_started || 0) + (ev.checkout_start || 0);
@@ -632,6 +638,9 @@ async function handler(req, res) {
           leads: Object.keys(leads).length,
           audits: totalAudits,
           pro: pro.length,
+          realLeads: realLeads.length,
+          realAudits: realAudits,
+          realPro: realPro.length,
           proEmails: pro.map(l => l.email),
           proSince: pro.map(l => ({ email: l.email, plan: l.plan, since: l.proSince })),
           referrals: referred.length,
@@ -1034,7 +1043,7 @@ async function monitorCycle() {
   let last = lastMonitorRun;
   if (REMOTE) { try { const v = await upGet('monitor:lastRun'); if (v) last = Number(v) || 0; } catch {} }
   if (now - last < (Number(process.env.MONITOR_GATE_MS) || 5 * 3600e3)) return 0; // gate: max one cycle per 5h (MONITOR_GATE_MS overrides for tests)
-  const pro = Object.values(leads).filter(l => l.pro && l.domain).slice(0, 15);
+  const pro = Object.values(leads).filter(l => l.pro && l.domain && !l.test).slice(0, 15);
   for (const lead of pro) {
     try {
       const prevScore = lead.lastScore;
