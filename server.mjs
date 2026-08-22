@@ -145,9 +145,20 @@ function genRefCode() {
   for (let i = 0; i < 6; i++) s += abc[crypto.randomInt(abc.length)];
   return s;
 }
-function findLeadByRefCode(code) {
+async function findLeadByRefCode(code) {
   const c = String(code || '').toUpperCase().trim();
   if (!c) return null;
+  if (REMOTE) {
+    // In-memory leads is stale across Vercel instances (each hydrates once).
+    // Read fresh from storage so a referring lead created on another instance is found.
+    const v = await upGet('leads');
+    if (v) {
+      try {
+        const fresh = JSON.parse(v);
+        for (const l of Object.values(fresh)) if (l.refCode && l.refCode.toUpperCase() === c) return l;
+      } catch {}
+    }
+  }
   for (const l of Object.values(leads)) if (l.refCode && l.refCode.toUpperCase() === c) return l;
   return null;
 }
@@ -755,7 +766,7 @@ async function handler(req, res) {
         await upsertLead(email, domain);
         const lead = leads[email];
         if (lead && lead.brand && lead.brand.name) audit.brand = lead.brand;
-        if (refIn && refIn !== lead.refCode && findLeadByRefCode(refIn)) {
+        if (refIn && refIn !== lead.refCode && await findLeadByRefCode(refIn)) {
           lead.referredBy = refIn;
           lead.referredAt = Date.now();
           await persist('leads');
