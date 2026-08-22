@@ -51,7 +51,7 @@
         <button id="shareCard" style="padding:8px 14px;border-radius:9px;border:1px solid rgba(99,102,241,.4);background:rgba(99,102,241,.12);color:inherit;font-size:13px;cursor:pointer" title="Download a shareable score card image">Share score card</button>
         <button id="shareX" style="padding:8px 12px;border-radius:9px;border:1px solid rgba(255,255,255,.18);background:rgba(255,255,255,.06);color:inherit;font-size:13px;cursor:pointer" title="Post to X">Post on X</button>
         <button id="shareLi" style="padding:8px 12px;border-radius:9px;border:1px solid rgba(255,255,255,.18);background:rgba(255,255,255,.06);color:inherit;font-size:13px;cursor:pointer" title="Share on LinkedIn">LinkedIn</button>
-        <button id="shareTeam" style="padding:8px 12px;border-radius:9px;border:1px solid rgba(52,211,153,.4);background:rgba(52,211,153,.12);color:inherit;font-size:13px;cursor:pointer" title="Share with your team">Share with team</button>
+        <button id="shareTeam" style="padding:8px 12px;border-radius:9px;border:1px solid rgba(52,211,153,.4);background:rgba(52,211,153,.12);color:inherit;font-size:13px;cursor:pointer" title="Copy your personal link. When someone you refer upgrades to Pro, you earn a free month of Pro.">Share with team</button>
       </div>
       <div id="saveRow" style="margin-top:14px;padding:14px 16px;border:1px solid rgba(255,255,255,.1);border-radius:10px;background:rgba(255,255,255,.03)">
         <div style="font-size:13px;opacity:.85;margin-bottom:9px">Keep this report. We'll email you a copy of your <b id="saveDomain"></b> audit, with the exact fixes to apply first.</div>
@@ -331,7 +331,7 @@ $('#shareTeam').addEventListener('click', async () => {
   const b = $('#shareTeam');
   const old = b.textContent;
   b.textContent = 'Team link copied';
-  b.title = 'Your team can run their own free audit from this link';
+  b.title = refCode ? 'Your team can run their own free audit from this link. When one of them upgrades to Pro, you earn a free month of Pro.' : 'Your team can run their own free audit from this link';
   setTimeout(() => { b.textContent = old; }, 2200);
 });
 </script>

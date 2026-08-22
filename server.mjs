@@ -43,11 +43,24 @@ const stripe = async (m, p, body) => {
 };
 const activatePro = async (email, plan, stripeInfo = {}) => {
   const lead = await upsertLead(email, null);
+  const wasPro = !!lead.pro;
   lead.pro = true;
   lead.plan = plan;
   lead.proSince = lead.proSince || new Date().toISOString();
   if (!lead.apiKey) lead.apiKey = 'ip_' + crypto.randomBytes(16).toString('hex');
   Object.assign(lead, stripeInfo);
+  // Referral reward: when a referred lead first becomes Pro, the referrer earns a free month of Pro.
+  if (!wasPro && lead.referredBy) {
+    const fresh = await findLeadByRefCode(lead.referredBy);
+    if (fresh && fresh.email !== lead.email) {
+      const r = leads[fresh.email] || (leads[fresh.email] = Object.assign({}, fresh));
+      r.referralCredits = (r.referralCredits || 0) + 1;
+      r.referralProUntil = Math.max(r.referralProUntil || 0, Date.now() + 30 * 86400e3);
+      if (!r.pro) { r.pro = true; r.plan = r.plan || 'pro'; r.proSince = r.proSince || new Date().toISOString(); }
+      r.lastReferralRewardAt = new Date().toISOString();
+      console.log('[referral] reward month:', r.email, 'for', lead.email);
+    }
+  }
   await persist('leads');
   return lead;
 };
@@ -802,6 +815,23 @@ async function handler(req, res) {
       await persist('leads');
       return sendJson(res, 200, { ok: true, email: lead.email });
     }
+    if (req.method === 'GET' && u.pathname === '/api/referrals') {
+      const email = String(u.searchParams.get('email') || '').toLowerCase().trim();
+      if (!EMAIL_RE.test(email)) return sendJson(res, 400, { error: 'Valid email required' });
+      let all = leads;
+      if (REMOTE) { try { const v = await upGet('leads'); if (v) all = JSON.parse(v); } catch {} }
+      const lead = all[email];
+      if (!lead) return sendJson(res, 404, { error: 'No account found for this email' });
+      const code = lead.refCode || '';
+      const referred = Object.values(all).filter(l => l.referredBy && l.referredBy.toUpperCase() === code);
+      return sendJson(res, 200, {
+        refCode: code,
+        link: 'https://inboxproof.email/?ref=' + code,
+        referred: referred.length,
+        referredPro: referred.filter(l => l.pro).length,
+        monthsEarned: lead.referralCredits || 0,
+      });
+    }
     if (req.method === 'POST' && u.pathname === '/api/audit') {
       const body = await readBody(req);
       const domain = cleanDomain(body.domain);
@@ -987,7 +1017,12 @@ async function handler(req, res) {
         console.log('[webhook] paid:', obj.client_reference_id, obj.metadata?.plan);
       } else if (ev.type === 'customer.subscription.deleted' && obj.customer) {
         const c = await stripe('GET', '/customers/' + obj.customer);
-        if (c.email && leads[c.email]) { leads[c.email].pro = false; await persist('leads'); console.log('[webhook] cancelled:', c.email); }
+        if (c.email && leads[c.email]) {
+          const l = leads[c.email];
+          if (l.referralProUntil && l.referralProUntil > Date.now()) { console.log('[webhook] cancelled, referral window keeps Pro until', new Date(l.referralProUntil).toISOString(), ':', c.email); }
+          else { l.pro = false; console.log('[webhook] cancelled:', c.email); }
+          await persist('leads');
+        }
       }
       return sendJson(res, 200, { received: true });
     }
@@ -1040,6 +1075,16 @@ let lastMonitorRun = 0; // in-memory gate (local mode)
 async function monitorCycle() {
   await hydrate();
   const now = Date.now();
+  // Expire referral-granted Pro once the 30-day window passes (only if no paid subscription).
+  let expired = false;
+  for (const l of Object.values(leads)) {
+    if (l.pro && l.referralProUntil && l.referralProUntil < now && !l.stripeSubscriptionId) {
+      l.pro = false;
+      expired = true;
+      console.log('[referral] window expired:', l.email);
+    }
+  }
+  if (expired) await persist('leads');
   let last = lastMonitorRun;
   if (REMOTE) { try { const v = await upGet('monitor:lastRun'); if (v) last = Number(v) || 0; } catch {} }
   if (now - last < (Number(process.env.MONITOR_GATE_MS) || 5 * 3600e3)) return 0; // gate: max one cycle per 5h (MONITOR_GATE_MS overrides for tests)

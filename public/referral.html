@@ -1,0 +1,169 @@
+<!doctype html>
+<html lang="en">
+<head>
+<script>(function(){try{var p=location.pathname||'/';var r=(document.referrer||'').split('/')[2]||'direct';var q=new URLSearchParams(location.search);var ref=q.get('ref')||'';if(ref){try{localStorage.setItem('ip_ref',ref);}catch(e){}}var u='/api/track?page='+encodeURIComponent(p)+'&ref='+encodeURIComponent(r)+(ref?'&team='+encodeURIComponent(ref):'');if(navigator.sendBeacon&&navigator.sendBeacon(u))return;var i=new Image();i.src=u;}catch(e){}})();</script>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Referral program: earn free Pro months - Inboxproof</title>
+<meta name="description" content="Share your personal Inboxproof link. When someone you refer upgrades to Pro, you earn a free month of Pro. No account needed to start.">
+<meta property="og:title" content="Inboxproof referral program">
+<meta property="og:description" content="Share your link. When someone you refer upgrades to Pro, you earn a free month of Pro.">
+<meta property="og:type" content="website">
+<meta property="og:url" content="https://inboxproof.email/referral">
+<link rel="canonical" href="https://inboxproof.email/referral">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="/styles.css">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' rx='8' fill='%236366f1'/%3E%3Cpath d='M8 16h13M15 10l6 6-6 6' stroke='white' stroke-width='3' fill='none' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E">
+</head>
+<body>
+<nav class="nav">
+  <div class="container">
+    <a class="logo" href="/">
+      <span class="mark"><svg viewBox="0 0 24 24" fill="none"><path d="M4 12h11M11 7l5 5-5 5" stroke="#fff" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"/></svg></span>
+      Inboxproof
+    </a>
+    <div class="nav-links">
+      <a href="/#how">How it works</a>
+      <a href="/#pricing">Pricing</a>
+      <a href="/referral">Referrals</a>
+    </div>
+    <a class="btn btn-primary btn-sm" href="/#audit">Run a free audit</a>
+  </div>
+</nav>
+
+<div class="container" style="max-width:760px;padding:64px 20px 80px">
+  <div class="kicker">Referral program</div>
+  <h1 style="font-size:36px;margin:10px 0 18px">Share your link. Earn free Pro months.</h1>
+  <p style="color:var(--muted);font-size:17px;line-height:1.7">Every Inboxproof account gets a personal link. Send it to your team or a client. When someone who used your link upgrades to Pro, you get a free month of Pro. That is the whole program.</p>
+
+  <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:14px;margin-top:34px">
+    <div class="card" style="padding:22px">
+      <div style="font-size:22px;font-weight:800;color:#60a5fa">1</div>
+      <div style="font-weight:700;margin-top:8px">Run a free audit</div>
+      <p style="margin-top:6px;font-size:14px">No account needed. Your personal link is created the first time you run an audit.</p>
+    </div>
+    <div class="card" style="padding:22px">
+      <div style="font-size:22px;font-weight:800;color:#60a5fa">2</div>
+      <div style="font-weight:700;margin-top:8px">Share your link</div>
+      <p style="margin-top:6px;font-size:14px">Anyone who opens it gets their own free audit, tracked to your link. No sign-up required on their side either.</p>
+    </div>
+    <div class="card" style="padding:22px">
+      <div style="font-size:22px;font-weight:800;color:#60a5fa">3</div>
+      <div style="font-weight:700;margin-top:8px">Earn a month of Pro</div>
+      <p style="margin-top:6px;font-size:14px">When a referral upgrades to Pro, you get a free month. Stacks with every referral, paid or not.</p>
+    </div>
+  </div>
+
+  <div style="margin-top:40px;background:var(--panel);border:1px solid var(--line2);border-radius:16px;padding:28px">
+    <div style="font-size:12.5px;letter-spacing:.08em;text-transform:uppercase;color:var(--dim);margin-bottom:14px">Your referral link</div>
+    <div style="display:flex;gap:10px;flex-wrap:wrap">
+      <input id="refemail" type="email" placeholder="The email you ran an audit with" style="flex:1;min-width:220px;padding:12px 14px;border-radius:10px;border:1px solid var(--line);background:var(--bg2);color:var(--text);font:inherit;font-size:14.5px;outline:none">
+      <button id="refbtn" class="btn btn-primary" style="padding:12px 18px">Get my link</button>
+    </div>
+    <div id="refout" style="margin-top:16px;display:none">
+      <div style="display:flex;gap:10px;flex-wrap:wrap;align-items:center">
+        <code id="reflink" style="flex:1;min-width:240px;background:var(--bg2);border:1px solid var(--line);border-radius:10px;padding:12px 14px;font-size:13.5px;word-break:break-all"></code>
+        <button id="refcopy" class="btn btn-ghost btn-sm" style="padding:10px 16px">Copy link</button>
+      </div>
+      <div id="refstats" style="display:flex;gap:26px;margin-top:16px;font-size:14px;color:var(--muted)"></div>
+    </div>
+    <div id="refmsg" style="margin-top:12px;font-size:13.5px;color:var(--muted)"></div>
+  </div>
+
+  <h2 style="font-size:22px;margin:44px 0 18px">How it works, in detail</h2>
+  <div style="color:var(--muted);font-size:15.5px;line-height:1.75">
+    <p style="margin-bottom:14px">Your link looks like <code style="color:var(--text)">inboxproof.email/?ref=ABC123</code>. When someone runs an audit from that link, we quietly attach your code to their audit. Nothing is shown to them, and no account is needed. If they later upgrade to Pro, your account gets a free month added to it.</p>
+    <p style="margin-bottom:14px">If you are already on Pro, the month stacks: when your paid subscription ends, your account stays Pro until the earned window runs out. If you are not on Pro yet, the first earned month activates Pro for you right away, for 30 days.</p>
+    <p style="margin-bottom:14px">It works for agencies the same way it works for individuals. Share your link with a client whose domain is failing, let them run the free audit, and if they bring their monitoring in-house with Pro, you keep a month of your own.</p>
+  </div>
+
+  <h2 style="font-size:22px;margin:44px 0 18px">Questions</h2>
+  <div class="faq" style="max-width:760px">
+    <details>
+      <summary>Do the people I refer know I sent them the link?</summary>
+      <p>No. The link just gives them the same free audit anyone gets. Referral tracking happens on our side, and we never show it to them.</p>
+    </details>
+    <details>
+      <summary>What counts as a referral that earns a month?</summary>
+      <p>A person who ran an audit through your link and then upgrades to Pro. Free audits alone do not earn months, because the program rewards the people who bring a paying customer.</p>
+    </details>
+    <details>
+      <summary>Does it work for the Agency plan?</summary>
+      <p>Yes. If a referral upgrades to Agency, you still earn a full month of Pro. The reward is the same for any paid upgrade.</p>
+    </details>
+    <details>
+      <summary>Can I refer myself?</summary>
+      <p>No. A link does not count against the account that owns it.</p>
+    </details>
+    <details>
+      <summary>How long does an earned month last?</summary>
+      <p>30 days from when the referral upgrades. Multiple referrals stack, and the window extends with each one.</p>
+    </details>
+  </div>
+
+  <div class="cta-final" style="margin-top:56px;padding:48px 20px;border-radius:16px">
+    <h2 style="font-size:26px;margin:0 0 10px">Start with a free audit</h2>
+    <p style="color:var(--muted);font-size:15.5px;margin:0 0 22px">Your personal link is ready the moment your first audit finishes.</p>
+    <a class="btn btn-primary" href="/#audit">Run a free audit</a>
+  </div>
+</div>
+
+<footer>
+  <div class="container">
+    <span>&copy; 2026 Inboxproof, Inc.</span>
+    <span><a href="/blog">All guides</a> &middot; <a href="/">Home</a> &middot; <a href="/privacy">Privacy</a> &middot; <a href="https://github.com/jtc268/inboxproof" target="_blank" rel="noopener">GitHub</a></span>
+  </div>
+</footer>
+
+<script>
+const $ = s => document.querySelector(s);
+function trackEvent(name){
+  try {
+    const u = '/api/track?event=' + encodeURIComponent(name) + '&page=' + encodeURIComponent(location.pathname);
+    if (navigator.sendBeacon && navigator.sendBeacon(u)) return;
+    const i = new Image(); i.src = u;
+  } catch (e) {}
+}
+$('#refbtn').addEventListener('click', async () => {
+  const email = $('#refemail').value.trim().toLowerCase();
+  const msg = $('#refmsg');
+  if (!email) { msg.style.color = '#fbbf24'; msg.textContent = 'Enter the email you used for an audit.'; return; }
+  msg.style.color = 'var(--muted)'; msg.textContent = 'Looking up your link…';
+  try {
+    const r = await fetch('/api/referrals?email=' + encodeURIComponent(email));
+    const j = await r.json();
+    if (!r.ok) throw new Error(j.error || 'Could not find your account');
+    $('#reflink').textContent = j.link;
+    $('#refstats').innerHTML =
+      '<span><b style="color:var(--text)">' + j.referred + '</b> audits from your link</span>' +
+      '<span><b style="color:var(--text)">' + j.referredPro + '</b> upgraded to Pro</span>' +
+      '<span><b style="color:#34d399">' + j.monthsEarned + '</b> free month' + (j.monthsEarned === 1 ? '' : 's') + ' earned</span>';
+    $('#refout').style.display = 'block';
+    msg.style.color = '#34d399'; msg.textContent = 'This is your link. Share it anywhere.';
+    trackEvent('referral_link_view');
+  } catch (e) {
+    $('#refout').style.display = 'none';
+    msg.style.color = '#f87171';
+    msg.textContent = e.message === 'No account found for this email' ? 'No audit found for that email. Run a free audit first, then come back.' : e.message;
+  }
+});
+$('#refcopy').addEventListener('click', async () => {
+  const url = $('#reflink').textContent;
+  try {
+    await navigator.clipboard.writeText(url);
+  } catch (e) {
+    const ta = document.createElement('textarea');
+    ta.value = url; document.body.appendChild(ta); ta.select();
+    try { document.execCommand('copy'); } catch (_) {}
+    document.body.removeChild(ta);
+  }
+  const b = $('#refcopy');
+  const old = b.textContent;
+  b.textContent = 'Copied';
+  trackEvent('referral_link_copy');
+  setTimeout(() => { b.textContent = old; }, 1800);
+});
+</script>
+</body>
+</html>
