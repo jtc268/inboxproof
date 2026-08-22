@@ -1,0 +1,161 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Email deliverability for startups | Keep transactional email in the inbox | Inboxproof</title>
+<meta name="description" content="Inboxproof for startups: audit your domain's MX, SPF, DKIM and DMARC in 30 seconds, get the exact record to fix, and keep welcome emails, receipts and password resets out of the spam folder. Free audit, no account.">
+<link rel="canonical" href="https://inboxproof.email/startups">
+<meta property="og:title" content="Email deliverability for startups">
+<meta property="og:description" content="Audit your domain in 30 seconds, get the exact record to fix, and keep transactional email in the inbox. Free audit, no account.">
+<meta property="og:url" content="https://inboxproof.email/startups">
+<meta property="og:type" content="website">
+<meta property="og:site_name" content="Inboxproof">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:title" content="Email deliverability for startups">
+<meta name="twitter:description" content="Audit your domain in 30 seconds, get the exact record to fix, and keep transactional email in the inbox.">
+<meta name="twitter:image" content="https://inboxproof.email/og.png">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="/styles.css">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' rx='8' fill='%236366f1'/%3E%3Cpath d='M8 16h13M15 10l6 6-6 6' stroke='white' stroke-width='3' fill='none' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E">
+<script>
+(function(){try{var p=location.pathname||'/';var r=(document.referrer||'').split('/')[2]||'direct';var q=new URLSearchParams(location.search);var ref=q.get('ref')||'';if(ref){try{localStorage.setItem('ip_ref',ref);}catch(e){}}var u='/api/track?page='+encodeURIComponent(p)+'&ref='+encodeURIComponent(r)+(ref?'&team='+encodeURIComponent(ref):'');if(navigator.sendBeacon&&navigator.sendBeacon(u))return;var i=new Image();i.src=u;}catch(e){}})();
+window.trackEvent=function(ev){try{var p=location.pathname||'/';var u='/api/track?page='+encodeURIComponent(p)+'&event='+encodeURIComponent(ev);if(navigator.sendBeacon&&navigator.sendBeacon(u))return;var i=new Image();i.src=u;}catch(e){}};
+</script>
+<script type="application/ld+json">
+{"@context":"https://schema.org","@type":"SoftwareApplication","name":"Inboxproof for Startups","applicationCategory":"BusinessApplication","operatingSystem":"Web","description":"Email deliverability for startups: audit your domain, fix broken SPF, DKIM and DMARC records, and keep transactional email in the inbox.","offers":{"@type":"Offer","price":"14.50","priceCurrency":"USD","description":"Pro plan, launch price"}}
+</script>
+<script type="application/ld+json">
+{"@context":"https://schema.org","@type":"FAQPage","mainEntity":[
+ {"@type":"Question","name":"Do I need to change my DNS to run an audit?","acceptedAnswer":{"@type":"Answer","text":"No. The free audit queries live DNS read-only. No account, no DNS changes, nothing to install."}},
+ {"@type":"Question","name":"What does a broken SPF record do to my startup's email?","acceptedAnswer":{"@type":"Answer","text":"If your SPF record is missing or misconfigured, mailbox providers like Gmail and Outlook treat your domain as unverified. Welcome emails, password resets and receipts can land in spam or get rejected outright."}},
+ {"@type":"Question","name":"How often should I re-check my domain?","acceptedAnswer":{"@type":"Answer","text":"Email providers change sending IPs and DNS providers rotate records. The Pro plan re-audits up to 5 domains every 24 hours and emails you the moment a record breaks."}},
+ {"@type":"Question","name":"Is the audit really free?","acceptedAnswer":{"@type":"Answer","text":"Yes. The full 7-check audit (MX, SPF, DKIM, DMARC, TLS, PTR, blocklists) is free and needs no account. Pro adds daily monitoring, score history and alerts."}}
+]}
+</script>
+</head>
+<body>
+<nav class="nav">
+  <div class="container">
+    <a class="logo" href="/">
+      <span class="mark"><svg viewBox="0 0 24 24" fill="none"><path d="M4 12h11M11 7l5 5-5 5" stroke="#fff" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"/></svg></span>
+      Inboxproof
+    </a>
+    <div class="nav-links">
+      <a href="/#how">How it works</a>
+      <a href="/#pricing">Pricing</a>
+      <a href="/pro">Dashboard</a>
+    </div>
+    <a class="btn btn-primary btn-sm" href="/#audit">Run a free audit</a>
+  </div>
+</nav>
+
+<section class="hero">
+  <div class="container">
+    <div class="kicker">Startups</div>
+    <h1>Your users sign up. Your email should land.</h1>
+    <p style="max-width:620px;margin:18px auto 0;font-size:18px;color:var(--muted)">Welcome emails, password resets, receipts and activation links are transactional. If they land in spam, your activation rate drops and your churn goes up. Inboxproof checks the four records that decide whether your domain is trusted, in about 30 seconds, and hands you the exact fix.</p>
+    <div style="margin-top:28px;display:flex;gap:12px;justify-content:center;flex-wrap:wrap">
+      <a class="btn btn-primary btn-lg" href="/#audit">Run a free audit</a>
+      <a class="btn btn-ghost btn-lg" href="/blog/email-deliverability-saas">How SaaS teams fix deliverability</a>
+    </div>
+  </div>
+</section>
+
+<section class="section">
+  <div class="container">
+    <div class="sec-head"><div class="kicker">Why it matters</div><h2>Transactional email is revenue, not marketing.</h2></div>
+    <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(240px,1fr));gap:16px;margin-top:24px">
+      <div style="background:var(--panel);border:1px solid var(--line);border-radius:12px;padding:20px">
+        <h3 style="font-size:17px;margin-bottom:8px">Activation depends on it</h3>
+        <p style="font-size:14.5px;color:var(--muted);margin:0">If your welcome or verification email lands in spam, the user never activates. You pay for the signup and lose the user in the same week.</p>
+      </div>
+      <div style="background:var(--panel);border:1px solid var(--line);border-radius:12px;padding:20px">
+        <h3 style="font-size:17px;margin-bottom:8px">Password resets are a support ticket</h3>
+        <p style="font-size:14.5px;color:var(--muted);margin:0">A reset email that does not arrive becomes a support ticket, a frustrated user, and a cancellation. Deliverability is a retention feature.</p>
+      </div>
+      <div style="background:var(--panel);border:1px solid var(--line);border-radius:12px;padding:20px">
+        <h3 style="font-size:17px;margin-bottom:8px">Your domain reputation is shared</h3>
+        <p style="font-size:14.5px;color:var(--muted);margin:0">One broken SPF record or a missing DMARC policy puts every email from your domain at risk, including the ones from your ESP.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section class="section">
+  <div class="container">
+    <div class="sec-head"><div class="kicker">How it works</div><h2>From broken record to fixed in one afternoon.</h2></div>
+    <div class="steps">
+      <div class="step"><div class="num">1</div><h3>Audit your domain</h3><p>Run the free audit on your domain. No account, no DNS changes. You get a 0 to 100 score and the exact record to fix in about 30 seconds.</p></div>
+      <div class="step"><div class="num">2</div><h3>Fix the record</h3><p>The audit tells you exactly which record is missing or wrong, and gives you the text to paste into your DNS. Most fixes take under ten minutes.</p></div>
+      <div class="step"><div class="num">3</div><h3>Monitor it stays fixed</h3><p>On Pro, we re-check your domain every 24 hours and email you the moment a record breaks, expires, or your ESP changes a sending IP.</p></div>
+    </div>
+  </div>
+</section>
+
+<section class="section" id="pricing">
+  <div class="container">
+    <div class="sec-head"><div class="kicker">Pricing</div><h2>One plan for the whole stack.</h2></div>
+    <div class="plans" style="grid-template-columns:1fr;max-width:440px;margin:0 auto">
+      <div class="plan hot">
+        <div class="tag">Pro</div>
+        <h3>Pro</h3>
+        <div class="price"><s style="opacity:.55;font-size:.7em;margin-right:6px">$29</s>$14.50<span style="font-size:15px;color:var(--dim)">/mo</span></div>
+        <div style="font-size:13px;color:var(--dim);margin:-6px 0 16px">Launch price, 50% off for the first year</div>
+        <ul>
+          <li>Everything in Free</li>
+          <li>Daily re-audit of up to 5 domains</li>
+          <li>Score history and trend view</li>
+          <li>Alerts when a record breaks or expires</li>
+          <li>API access</li>
+          <li>Cancel anytime</li>
+        </ul>
+        <a class="btn btn-primary" href="/#pricing">Start the Pro plan</a>
+      </div>
+    </div>
+    <p style="text-align:center;margin-top:20px;font-size:14px;color:var(--dim)">Managing client domains? <a href="/agencies" style="color:var(--acc2)">Agency is $49.50/mo</a> for up to 25 domains with white-label reports.</p>
+  </div>
+</section>
+
+<section class="section faq" id="faq">
+  <div class="container" style="max-width:760px">
+    <div class="sec-head"><div class="kicker">FAQ</div><h2>Startup questions, answered.</h2></div>
+    <details><summary>Do I need to change my DNS to run an audit?</summary><p>No. The free audit queries live DNS read-only. No account, no DNS changes, nothing to install.</p></details>
+    <details><summary>What does a broken SPF record do to my startup's email?</summary><p>If your SPF record is missing or misconfigured, mailbox providers like Gmail and Outlook treat your domain as unverified. Welcome emails, password resets and receipts can land in spam or get rejected outright.</p></details>
+    <details><summary>How often should I re-check my domain?</summary><p>Email providers change sending IPs and DNS providers rotate records. The Pro plan re-audits up to 5 domains every 24 hours and emails you the moment a record breaks.</p></details>
+    <details><summary>Is the audit really free?</summary><p>Yes. The full 7-check audit (MX, SPF, DKIM, DMARC, TLS, PTR, blocklists) is free and needs no account. Pro adds daily monitoring, score history and alerts.</p></details>
+  </div>
+</section>
+
+<div class="cta-final">
+  <div class="container" style="text-align:center">
+    <h2 style="font-size:34px;letter-spacing:-.02em">Check your domain before your next launch.</h2>
+    <p style="margin:14px auto 0;max-width:520px;font-size:17px;color:var(--muted)">Run a free audit on your domain right now. No account, no DNS changes, no sales call.</p>
+    <a class="btn btn-primary btn-lg" style="margin-top:26px" href="/#audit">Run a free audit</a>
+  </div>
+</div>
+
+<section style="padding:40px 0">
+  <div class="container">
+    <h2 style="font-size:22px;margin-bottom:16px">Related resources</h2>
+    <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(240px,1fr));gap:12px">
+      <a href="/blog/email-deliverability-saas" style="font-size:14px;color:var(--muted);text-decoration:none;border:1px solid var(--line);border-radius:8px;padding:12px 14px">Email deliverability for SaaS</a>
+      <a href="/blog/transactional-email-deliverability" style="font-size:14px;color:var(--muted);text-decoration:none;border:1px solid var(--line);border-radius:8px;padding:12px 14px">Transactional email deliverability</a>
+      <a href="/blog/spf-dkim-dmarc" style="font-size:14px;color:var(--muted);text-decoration:none;border:1px solid var(--line);border-radius:8px;padding:12px 14px">SPF, DKIM and DMARC explained</a>
+      <a href="/spf-checker" style="font-size:14px;color:var(--muted);text-decoration:none;border:1px solid var(--line);border-radius:8px;padding:12px 14px">SPF record checker</a>
+      <a href="/dmarc-checker" style="font-size:14px;color:var(--muted);text-decoration:none;border:1px solid var(--line);border-radius:8px;padding:12px 14px">DMARC record checker</a>
+      <a href="/deliverability-tools" style="font-size:14px;color:var(--muted);text-decoration:none;border:1px solid var(--line);border-radius:8px;padding:12px 14px">All deliverability tools</a>
+    </div>
+  </div>
+</section>
+
+<footer>
+  <div class="container" style="display:flex;justify-content:space-between;flex-wrap:wrap;gap:12px;font-size:13px;color:var(--dim)">
+    <div>&copy; 2026 Inboxproof &middot; <a href="/privacy" style="color:var(--muted)">Privacy</a></div>
+    <div><a href="/" style="color:var(--muted)">Home</a> &middot; <a href="/developers" style="color:var(--muted)">API</a> &middot; <a href="/compare" style="color:var(--muted)">Compare</a> &middot; <a href="/deliverability-tools" style="color:var(--muted)">All tools</a></div>
+  </div>
+</footer>
+
+</body>
+</html>
