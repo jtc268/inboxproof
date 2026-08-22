@@ -170,6 +170,10 @@ window.trackEvent=function(ev){try{var p=location.pathname||'/';var u='/api/trac
         <div class="ico">⌨️</div>
         <h3>Build a product?</h3>
         <p>Drop the same 7-check audit into your app with one REST call. Bearer auth, JSON in, JSON out. 100 audits/day on Pro, 500/day on Agency. Or run the free CLI locally.</p>
+        <div style="display:flex;align-items:center;gap:8px;background:#0a0e16;border:1px solid var(--line);border-radius:8px;padding:10px 12px;margin-top:12px;font-family:ui-monospace,SFMono-Regular,Menlo,monospace;font-size:12.5px;color:#c9d1d9">
+          <code style="flex:1;overflow:auto;white-space:nowrap">npx github:jtc268/inboxproof-cli yourdomain.com</code>
+          <button type="button" onclick="navigator.clipboard.writeText('npx github:jtc268/inboxproof-cli yourdomain.com');this.textContent='Copied';setTimeout(function(){this.textContent='Copy'},1500)" style="flex-shrink:0;background:#1f2937;color:#e5e7eb;border:1px solid var(--line);border-radius:6px;padding:4px 10px;font-size:12px;cursor:pointer">Copy</button>
+        </div>
         <a href="/developers" style="color:#6366f1;font-weight:600;font-size:14px;display:inline-block;margin-top:6px">Read the API docs →</a>
       </div>
       <div class="card" style="margin:0">
