@@ -172,6 +172,8 @@ footer .container{display:flex;justify-content:space-between;gap:16px;flex-wrap:
 .chk .t{font-weight:600;font-size:15px}
 .chk .d{color:var(--muted);font-size:13.5px;margin-top:3px}
 .chk .fix{margin-top:8px;font-size:13px;color:#93c5fd;background:rgba(59,130,246,.1);border:1px solid rgba(59,130,246,.25);border-radius:8px;padding:8px 12px;font-family:ui-monospace,Consolas,monospace;white-space:pre-wrap;word-break:break-all}
+.chk.top{border-color:rgba(248,113,113,.5);background:linear-gradient(180deg,rgba(248,113,113,.08),var(--bg2))}
+.badge{display:inline-block;margin-left:8px;font-size:11px;font-weight:800;letter-spacing:.04em;text-transform:uppercase;color:var(--bad);background:rgba(248,113,113,.12);border:1px solid rgba(248,113,113,.4);border-radius:20px;padding:2px 9px;vertical-align:middle}
 .unlock{margin-top:30px;text-align:center;background:linear-gradient(180deg,rgba(59,130,246,.12),transparent);border:1px solid rgba(59,130,246,.35);border-radius:14px;padding:24px}
 .unlock h3{font-size:18px;margin-bottom:6px}
 .unlock p{color:var(--muted);font-size:14px;margin-bottom:16px}

@@ -216,18 +216,24 @@ fetch('/api/report/' + encodeURIComponent(id))
       publisher: { '@type': 'Organization', name: BRAND, url: location.origin + '/' },
     });
     document.head.appendChild(ld);
+    const W = { dmarc: 25, mx: 20, spf: 15, dkim: 15, tls: 10, rbl: 10, ptr: 5 };
+    const topFail = a.checks.filter(c => c.status === 'fail').slice().sort((x, y) => (W[y.id] || 0) - (W[x.id] || 0))[0];
+    const topFailId = topFail ? topFail.id : null;
     $('#checks').innerHTML = a.checks.map(c => {
       const ic = c.status==='pass' ? '✓' : c.status==='warn' ? '!' : '✕';
       const fix = c.fix ? '<div class="fix">' + c.fix.replace(/</g,'&lt;') + '</div>' : '';
-      return '<div class="chk ' + c.status + '"><div class="st">' + ic + '</div><div><div class="t">' + c.name + '</div><div class="d">' + c.detail + '</div>' + fix + '</div></div>';
+      const top = c.id === topFailId ? ' top' : '';
+      const badge = c.id === topFailId ? '<span class="badge">Fix this first</span>' : '';
+      return '<div class="chk ' + c.status + top + '"><div class="st">' + ic + '</div><div><div class="t">' + c.name + badge + '</div><div class="d">' + c.detail + '</div>' + fix + '</div></div>';
     }).join('');
     const failing = a.checks.filter(c => c.status === 'fail').length;
     const warn = a.checks.filter(c => c.status === 'warn').length;
     const tc = document.getElementById('topCta');
     const bct = document.getElementById('bottomCtaTitle');
     if (failing > 0) {
+      const lead = topFail ? 'Start with ' + topFail.name + '. ' : '';
       document.getElementById('topCtaTitle').textContent = failing + ' of 7 checks are failing on ' + a.domain;
-      document.getElementById('topCtaSub').textContent = 'Fixing them is a start, but records break, a new include, a provider change, an expired DKIM key. Pro watches all 7 daily and emails you the moment one breaks, so a deliverability drop never catches you blind.';
+      document.getElementById('topCtaSub').textContent = lead + 'Fixing them is a start, but records break, a new include, a provider change, an expired DKIM key. Pro watches all 7 daily and emails you the moment one breaks, so a deliverability drop never catches you blind.';
       if (bct) bct.textContent = failing + ' check' + (failing > 1 ? 's' : '') + ' are failing on ' + a.domain + '. Lock in daily monitoring.';
     } else if (warn > 0) {
       document.getElementById('topCtaTitle').textContent = a.domain + ' is solid, with ' + warn + ' check' + (warn > 1 ? 's' : '') + ' that could get worse';
