@@ -776,6 +776,23 @@ async function handler(req, res) {
           results, allResolve, next: API_CTA,
         });
       }
+      if (u.pathname === '/api/referrals') {
+        const email = String(u.searchParams.get('email') || '').toLowerCase().trim();
+        if (!EMAIL_RE.test(email)) return sendJson(res, 400, { error: 'Valid email required' });
+        let all = leads;
+        if (REMOTE) { try { const v = await upGet('leads'); if (v) all = JSON.parse(v); } catch {} }
+        const lead = all[email];
+        if (!lead) return sendJson(res, 404, { error: 'No account found for this email' });
+        const code = lead.refCode || '';
+        const referred = Object.values(all).filter(l => l.referredBy && l.referredBy.toUpperCase() === code);
+        return sendJson(res, 200, {
+          refCode: code,
+          link: 'https://inboxproof.email/?ref=' + code,
+          referred: referred.length,
+          referredPro: referred.filter(l => l.pro).length,
+          monthsEarned: lead.referralCredits || 0,
+        });
+      }
       return sendJson(res, 404, { error: 'Not found' });
     }
     if (req.method === 'POST' && u.pathname === '/api/brand') {
@@ -814,23 +831,6 @@ async function handler(req, res) {
       lead.sourceAt = new Date().toISOString();
       await persist('leads');
       return sendJson(res, 200, { ok: true, email: lead.email });
-    }
-    if (req.method === 'GET' && u.pathname === '/api/referrals') {
-      const email = String(u.searchParams.get('email') || '').toLowerCase().trim();
-      if (!EMAIL_RE.test(email)) return sendJson(res, 400, { error: 'Valid email required' });
-      let all = leads;
-      if (REMOTE) { try { const v = await upGet('leads'); if (v) all = JSON.parse(v); } catch {} }
-      const lead = all[email];
-      if (!lead) return sendJson(res, 404, { error: 'No account found for this email' });
-      const code = lead.refCode || '';
-      const referred = Object.values(all).filter(l => l.referredBy && l.referredBy.toUpperCase() === code);
-      return sendJson(res, 200, {
-        refCode: code,
-        link: 'https://inboxproof.email/?ref=' + code,
-        referred: referred.length,
-        referredPro: referred.filter(l => l.pro).length,
-        monthsEarned: lead.referralCredits || 0,
-      });
     }
     if (req.method === 'POST' && u.pathname === '/api/audit') {
       const body = await readBody(req);
