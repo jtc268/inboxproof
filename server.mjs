@@ -659,7 +659,7 @@ async function handler(req, res) {
         return sendJson(res, 200, rep);
       }
       // Public API growth CTA: every free endpoint points back to the full audit.
-      const API_CTA = { url: 'https://inboxproof.email', hint: 'Run the full audit with monitoring and white-label reports' };
+      const API_CTA = { url: 'https://inboxproof.email?src=api', hint: 'Run the full audit with monitoring and white-label reports' };
       if (u.pathname === '/api/dmarc-check') {
         const domain = cleanDomain(u.searchParams.get('domain'));
         if (!DOMAIN_RE.test(domain)) return sendJson(res, 400, { error: 'Enter a valid domain, e.g. yourdomain.com' });
