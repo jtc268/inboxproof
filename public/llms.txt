@@ -1,0 +1,39 @@
+# Inboxproof
+
+> Free email deliverability audit. Run a real check on any domain in 30 seconds: MX, SPF, DKIM, DMARC, TLS, PTR, and IP reputation. Get a 0-100 score, the exact records to fix, and optional daily monitoring. No account, no DNS changes, nothing to install.
+
+## Key pages
+
+- https://inboxproof.email/ - Home. Run the free audit (domain in, score + fixes out).
+- https://inboxproof.email/pricing - Pro ($29/mo, daily monitoring + alerts) and Agency ($99/mo, white-label reports).
+- https://inboxproof.email/agencies - For agencies managing deliverability across many client domains.
+- https://inboxproof.email/developers - API docs, CLI, and a live playground to try the free endpoints.
+- https://inboxproof.email/lead-magnet - Free 12-point email deliverability checklist.
+- https://inboxproof.email/deliverability-tools - Best email deliverability tools, compared.
+- https://inboxproof.email/mail-tester-alternatives - Mail-Tester alternatives.
+
+## Free checkers (no email needed)
+
+- https://inboxproof.email/spam-checker - Email spam checker
+- https://inboxproof.email/dmarc-checker - DMARC checker
+- https://inboxproof.email/spf-checker - SPF checker
+- https://inboxproof.email/dkim-checker - DKIM checker
+- https://inboxproof.email/mx-checker - MX record checker
+- https://inboxproof.email/blocklist-checker - IP blocklist checker
+- https://inboxproof.email/tls-checker - TLS/STARTTLS checker
+- https://inboxproof.email/ptr-checker - Reverse DNS (PTR) checker
+- https://inboxproof.email/header-analyzer - Email header analyzer
+- https://inboxproof.email/dmarc-report-parser - DMARC report parser
+- https://inboxproof.email/cold-email-checker - Cold email deliverability checker
+- https://inboxproof.email/warm-up-calculator - Email warm-up calculator
+- https://inboxproof.email/dmarc-generator - DMARC record generator
+- https://inboxproof.email/spf-generator - SPF record generator
+
+## Free public API (no key, 20 checks/hour per IP)
+
+- GET https://inboxproof.email/api/spam-check?domain=example.com - Full spam-signal check with a 0-100 risk score and grade.
+- GET https://inboxproof.email/api/dmarc-check?domain=example.com - DMARC record lookup and policy assessment.
+- GET https://inboxproof.email/api/mx-check?domain=example.com - MX record lookup.
+- GET https://inboxproof.email/api/blocklist-check?ip=8.8.8.8 - Check an IP against major blocklists.
+
+Each endpoint returns JSON. The spam-check response includes a `next` field linking to the full free audit.
