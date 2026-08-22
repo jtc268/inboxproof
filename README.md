@@ -52,7 +52,7 @@ Zero dependencies, reads live DNS only. [Source](https://github.com/jtc268/inbox
 - [Mail-Tester alternatives](https://inboxproof.email/mail-tester-alternatives)
 - [GlockApps alternatives](https://inboxproof.email/glockapps-alternatives)
 
-Plus 97 short, practical [guides](https://inboxproof.email/blog) on
+Plus 117 short, practical [guides](https://inboxproof.email/blog) on
 SPF, DKIM, DMARC, and deliverability.
 
 ## How it works
