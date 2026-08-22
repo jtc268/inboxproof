@@ -36,6 +36,16 @@ change.
 - [For agencies](https://inboxproof.email/agencies) - monitor up to 25 client domains, white-label reports, daily alerts
 - [For developers](https://inboxproof.email/developers) - the deliverability API, one REST call, Bearer auth
 
+## CLI
+
+Run the same audit from your terminal or in CI, no account needed:
+
+```
+npx github:jtc268/inboxproof-cli example.com
+```
+
+Zero dependencies, reads live DNS only. [Source](https://github.com/jtc268/inboxproof-cli).
+
 ## Comparisons
 
 - [Best email deliverability testing tools (2026)](https://inboxproof.email/deliverability-tools)
