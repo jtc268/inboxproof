@@ -1,0 +1,144 @@
+<!doctype html>
+<html lang="en">
+<head>
+<script>(function(){try{var p=location.pathname||'/';var r=(document.referrer||'').split('/')[2]||'direct';var q=new URLSearchParams(location.search);var ref=q.get('ref')||'';if(ref){try{localStorage.setItem('ip_ref',ref);}catch(e){}}var u='/api/track?page='+encodeURIComponent(p)+'&ref='+encodeURIComponent(r)+(ref?'&team='+encodeURIComponent(ref):'');if(navigator.sendBeacon&&navigator.sendBeacon(u))return;var i=new Image();i.src=u;}catch(e){}})();</script>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Check email deliverability with a free API (no account, no key) | Inboxproof</title>
+<meta name="description" content="Four free, no-auth REST endpoints that check SPF, DKIM, DMARC, MX, TLS and IP reputation for any domain. curl examples, response shapes and rate limits.">
+<meta property="og:title" content="Check email deliverability with a free API">
+<meta property="og:description" content="Run the same SPF, DKIM, DMARC, MX, TLS and blocklist checks as the web audit from code. No signup, no API key.">
+<meta property="og:type" content="article">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="/styles.css">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' rx='8' fill='%236366f1'/%3E%3Cpath d='M8 16h13M15 10l6 6-6 6' stroke='white' stroke-width='3' fill='none' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E">
+<script type="application/ld+json">{"@context":"https://schema.org","@type":"Article","headline":"Check email deliverability with a free API (no account, no key)","description":"Four free, no-auth REST endpoints that check SPF, DKIM, DMARC, MX, TLS and IP reputation for any domain. curl examples, response shapes and rate limits.","author":{"@type":"Organization","name":"Inboxproof"},"publisher":{"@type":"Organization","name":"Inboxproof"},"datePublished":"2026-08-22","dateModified":"2026-08-22"}</script>
+<link rel="canonical" href="https://inboxproof.email/blog/email-deliverability-api">
+<meta property="og:url" content="https://inboxproof.email/blog/email-deliverability-api">
+<meta property="og:image" content="https://inboxproof.email/og.png">
+<meta property="og:image:width" content="1200">
+<meta property="og:image:height" content="630">
+<meta name="twitter:image" content="https://inboxproof.email/og.png">
+</head>
+<body>
+<nav class="nav">
+  <div class="container">
+    <a class="logo" href="/">
+      <span class="mark"><svg viewBox="0 0 24 24" fill="none"><path d="M4 12h11M11 7l5 5-5 5" stroke="#fff" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"/></svg></span>
+      Inboxproof
+    </a>
+    <div class="nav-links"><a href="/blog">All guides</a><a href="/">Run a free audit</a></div>
+  </div>
+</nav>
+
+<div class="container" style="max-width:760px;padding:60px 20px 80px">
+  <div class="kicker">Guide</div>
+  <h1 style="font-size:34px;margin:10px 0 24px">Check email deliverability with a free API</h1>
+  <div style="opacity:.85;line-height:1.75;font-size:15.5px">
+    <p>You can check whether a domain will deliver email without opening a browser or creating an account. Inboxproof exposes four free REST endpoints that run the same checks the web audit runs: MX, SPF, DKIM, DMARC, TLS, reverse DNS and IP blocklists. No API key, no signup. They are rate-limited per IP, so they are meant for development, CI and light monitoring rather than a high-volume production pipeline. Here is each endpoint, what it returns, and how to use it.</p>
+
+    <h2 style="font-size:22px;margin:34px 0 12px">The four endpoints</h2>
+    <p>All four take a single query parameter and return JSON. The base URL is <code>https://inboxproof.email</code>. The domain endpoints accept a bare domain like <code>example.com</code>; the blocklist endpoint takes an IPv4 address.</p>
+
+    <h3 style="font-size:18px;margin:24px 0 10px">1. spam-check: the full audit</h3>
+    <p>The <code>spam-check</code> endpoint runs all seven checks and returns a risk score, a 0-100 deliverability score, a letter grade and a plain-English verdict.</p>
+    <pre style="background:#0f1117;color:#e5e7eb;padding:14px;border-radius:10px;overflow-x:auto;font-size:13.5px"><code>curl "https://inboxproof.email/api/spam-check?domain=example.com"</code></pre>
+    <p>Response:</p>
+    <pre style="background:#0f1117;color:#e5e7eb;padding:14px;border-radius:10px;overflow-x:auto;font-size:13.5px"><code>{
+  "domain": "example.com",
+  "risk": 52,
+  "riskLabel": "High",
+  "deliver": 48,
+  "grade": "D",
+  "verdict": "This domain has real spam-filter risk. Fix the failing items before sending volume.",
+  "failing": [
+    { "id": "dkim", "name": "DKIM", "status": "fail", "detail": "No DKIM key found for the published selector.", "fix": "Publish a DKIM record and sign outbound mail." }
+  ]
+}</code></pre>
+    <p>The <code>failing</code> array is the part you want to automate on. Each item has an <code>id</code>, a <code>status</code>, a human-readable <code>detail</code> and a suggested <code>fix</code>. If <code>failing</code> is empty, the domain passes all seven checks.</p>
+
+    <h3 style="font-size:18px;margin:24px 0 10px">2. dmarc-check: the four authentication checks</h3>
+    <p>The <code>dmarc-check</code> endpoint runs MX, SPF, DKIM and DMARC and returns a 0-100 score. Use it when you only care about the authentication layer and want a single number.</p>
+    <pre style="background:#0f1117;color:#e5e7eb;padding:14px;border-radius:10px;overflow-x:auto;font-size:13.5px"><code>curl "https://inboxproof.email/api/dmarc-check?domain=example.com"</code></pre>
+    <p>Response:</p>
+    <pre style="background:#0f1117;color:#e5e7eb;padding:14px;border-radius:10px;overflow-x:auto;font-size:13.5px"><code>{
+  "domain": "example.com",
+  "score": 75,
+  "grade": "C",
+  "checks": [
+    { "id": "mx", "status": "pass" },
+    { "id": "spf", "status": "pass" },
+    { "id": "dkim", "status": "warn" },
+    { "id": "dmarc", "status": "pass" }
+  ]
+}</code></pre>
+
+    <h3 style="font-size:18px;margin:24px 0 10px">3. mx-check: does the domain receive mail</h3>
+    <p>The <code>mx-check</code> endpoint looks up the MX records, resolves each mail server to an IP and checks reverse DNS. It is the fastest way to confirm a domain is actually set up to receive mail.</p>
+    <pre style="background:#0f1117;color:#e5e7eb;padding:14px;border-radius:10px;overflow-x:auto;font-size:13.5px"><code>curl "https://inboxproof.email/api/mx-check?domain=example.com"</code></pre>
+    <p>Response:</p>
+    <pre style="background:#0f1117;color:#e5e7eb;padding:14px;border-radius:10px;overflow-x:auto;font-size:13.5px"><code>{
+  "domain": "example.com",
+  "hasMx": true,
+  "mxCount": 2,
+  "mx": [
+    { "exchange": "mail.example.com", "priority": 10 }
+  ],
+  "allResolve": true
+}</code></pre>
+    <p>If <code>hasMx</code> is false, the domain has no MX record and falls back to the A record. That is the most basic deliverability failure: fix it before anything else.</p>
+
+    <h3 style="font-size:18px;margin:24px 0 10px">4. blocklist-check: is an IP listed</h3>
+    <p>The <code>blocklist-check</code> endpoint tests an IPv4 address against nine major blocklists, including the Spamhaus SBL, PBL and XBL. If you omit the <code>ip</code> parameter it checks the caller's own IP, which is useful for a quick "am I listed?" check from a server.</p>
+    <pre style="background:#0f1117;color:#e5e7eb;padding:14px;border-radius:10px;overflow-x:auto;font-size:13.5px"><code>curl "https://inboxproof.email/api/blocklist-check?ip=203.0.113.7"</code></pre>
+    <p>Response:</p>
+    <pre style="background:#0f1117;color:#e5e7eb;padding:14px;border-radius:10px;overflow-x:auto;font-size:13.5px"><code>{
+  "ip": "203.0.113.7",
+  "listedCount": 0,
+  "listed": [],
+  "clean": ["Spamhaus SBL", "SpamCop", "Barracuda", "CBL", "UCEPROTECT L1", "UCEPROTECT L2", "SORBS"],
+  "results": [
+    { "label": "Spamhaus SBL", "listed": false, "code": null, "fp": false }
+  ]
+}</code></pre>
+    <p>The <code>fp</code> flag marks a result that is a known false positive (a resolver returning a non-listing code). Treat only <code>listed: true</code> as a real hit.</p>
+
+    <h2 style="font-size:22px;margin:34px 0 12px">Rate limits and how to use it responsibly</h2>
+    <p>Each endpoint is rate-limited to 20 checks per hour per IP. When you hit the limit you get a <code>429</code> with a short error. For CI and development that is plenty: a single domain audit is one request. If you are monitoring many domains, batch them and space the requests out, or move to the Pro monitoring plan, which is built for continuous checks.</p>
+
+    <h2 style="font-size:22px;margin:34px 0 12px">A pre-send validation example</h2>
+    <p>Here is a small Node example that gates a send on the domain passing the full audit. It exits non-zero if the risk is above the threshold, so it drops straight into a CI step.</p>
+    <pre style="background:#0f1117;color:#e5e7eb;padding:14px;border-radius:10px;overflow-x:auto;font-size:13.5px"><code>const domain = process.env.SENDER_DOMAIN;
+const r = await fetch(`https://inboxproof.email/api/spam-check?domain=${domain}`);
+const data = await r.json();
+
+if (data.risk > 35) {
+  const failing = data.failing.map(f => f.id).join(', ');
+  console.error(`Deliverability risk ${data.risk} (${data.riskLabel}). Failing: ${failing}`);
+  process.exit(1);
+}
+console.log(`Deliverability ${data.deliver}/100 (${data.grade}). Clear to send.`);</code></pre>
+
+    <h2 style="font-size:22px;margin:34px 0 12px">When to use the API and when to use the audit</h2>
+    <p>The API is for when you need the result in code: a CI gate, a pre-send check, a monitoring script, or a quick lookup from a terminal. The <a href="/#audit">web audit</a> is for when you want to see the results, read the fixes and share a report. They run the same checks. The full endpoint reference, including error codes and the authenticated audit API, is on the <a href="/developers">developers page</a>.</p>
+    <p style="margin-top:28px;padding:18px;background:#f4f4ff;border-radius:12px">Want this checked automatically every day? <a href="/#pricing" style="font-weight:600">Inboxproof Pro</a> monitors your domain around the clock and alerts you the moment a record breaks or an IP gets listed. <a href="/#pricing" style="font-weight:600">See pricing &rarr;</a></p>
+  </div>
+    <div class="related">
+      <h3>Related Guides</h3>
+      <ul>
+        <li><a href="/blog/how-to-check-email-deliverability">How to check email deliverability (and what the results mean)</a></li>
+        <li><a href="/blog/email-deliverability-checklist">Email deliverability checklist: 24 things to check before you send</a></li>
+        <li><a href="/blog/transactional-email-api-deliverability">Transactional email API deliverability</a></li>
+      </ul>
+    </div>
+</div>
+
+<footer>
+  <div class="container">
+    <span>&copy; 2026 Inboxproof, Inc.</span>
+    <span><a href="/blog">All guides</a> &middot; <a href="/">Home</a> &middot; <a href="/privacy">Privacy</a> &middot; <a href="https://github.com/jtc268/inboxproof" target="_blank" rel="noopener">GitHub</a></span>
+  </div>
+</footer>
+</body>
+</html>
