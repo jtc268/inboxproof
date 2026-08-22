@@ -179,7 +179,7 @@ async function upsertLead(email, domain) {
   const k = String(email).toLowerCase().trim();
   if (!leads[k]) leads[k] = { id: crypto.randomUUID(), email: k, domain: domain || null, pro: false, proSince: null, createdAt: Date.now(), lastScore: null, refCode: genRefCode() };
   if (!leads[k].refCode) leads[k].refCode = genRefCode();
-  if (domain) leads[k].domain = domain;
+  if (domain) { leads[k].domain = domain; leads[k].lastAuditAt = Date.now(); }
   await persist('leads');
   return leads[k];
 }
@@ -245,6 +245,86 @@ async function maybeSendAuditFollowup(email, domain, audit, reportId) {
     lead.lastFollowupAt = new Date().toISOString();
     await persist('leads');
   }
+}
+
+// Delayed nurture sequence for free leads who ran an audit but have not upgraded.
+// Runs inside monitorCycle (Vercel cron, ~every 5h). Two nudges after the last audit:
+// ~48h (stage 0) and ~96h (stage 1, final). Each nudge re-audits the domain so the
+// email reflects the current state, and only sends while checks are still failing or
+// warning. Skips Pro and test leads. Self-contained: does not depend on AUDIT_FOLLOWUP_EMAIL.
+function followupTable(fails, warns) {
+  const rows = [...fails, ...warns].slice(0, 8).map(c =>
+    '<tr><td style="padding:8px 10px;border-bottom:1px solid #eee;color:#1a1a2e;font-weight:600">' + c.name + '</td>' +
+    '<td style="padding:8px 10px;border-bottom:1px solid #eee;color:' + (c.status === 'fail' ? '#c0392b' : '#e67e22') + ';font-weight:600;white-space:nowrap">' + c.status + '</td>' +
+    '<td style="padding:8px 10px;border-bottom:1px solid #eee;color:#444">' + (c.fix || c.detail || '') + '</td></tr>'
+  ).join('');
+  return '<table style="width:100%;border-collapse:collapse;margin:0 0 16px"><tr><th style="text-align:left;padding:8px 10px;border-bottom:2px solid #ddd;color:#1a1a2e;font-size:13px">Check</th><th style="text-align:left;padding:8px 10px;border-bottom:2px solid #ddd;color:#1a1a2e;font-size:13px">Status</th><th style="text-align:left;padding:8px 10px;border-bottom:2px solid #ddd;color:#1a1a2e;font-size:13px">Exact fix</th></tr>' + rows + '</table>';
+}
+function followupFooter(lead, reportId) {
+  let s = '';
+  if (lead.refCode) s += '<p style="color:#888;font-size:12px;line-height:1.6;margin-top:18px">Know someone else wrestling with deliverability? Send them the free audit with your link: <a href="https://inboxproof.email/?ref=' + lead.refCode + '" style="color:#6366f1;font-weight:600">inboxproof.email/?ref=' + lead.refCode + '</a>. When they upgrade to Pro, you get a free month of Pro.</p>';
+  const tail = reportId ? ' <a href="https://inboxproof.email/r/' + reportId + '" style="color:#888">View your full report</a>.' : '.';
+  s += '<p style="color:#888;font-size:12px;line-height:1.5;margin-top:24px">InboxProof &middot; free email deliverability audit. You are receiving this because you ran a free audit on ' + lead.domain + '.' + tail + '</p>';
+  return s;
+}
+async function leadFollowupCycle() {
+  const now = Date.now();
+  const DAY = 86400e3;
+  const free = Object.values(leads).filter(l => !l.pro && l.domain && !l.test && l.lastAuditAt && (l.followupStage || 0) < 2);
+  let sent = 0;
+  for (const lead of free) {
+    if (sent >= 10) break;
+    const stage = lead.followupStage || 0;
+    const days = (now - lead.lastAuditAt) / DAY;
+    const due = (stage === 0 && days >= 2) || (stage === 1 && days >= 6);
+    if (!due) continue;
+    let a;
+    try { a = await auditDomain(lead.domain); } catch { continue; }
+    const fails = a.checks.filter(c => c.status === 'fail');
+    const warns = a.checks.filter(c => c.status === 'warn');
+    if (!fails.length && !warns.length) {
+      lead.followupStage = 2; // healthy now; stop the sequence
+      await persist('leads');
+      continue;
+    }
+    const reportId = a.reportId || (lead.reportIds && lead.reportIds.length ? lead.reportIds[lead.reportIds.length - 1] : '');
+    let subject, html;
+    if (stage === 0) {
+      subject = 'We re-checked ' + lead.domain + '. ' + fails.length + ' check' + (fails.length > 1 ? 's' : '') + ' still failing';
+      html = '<div style="font-family:Arial,Helvetica,sans-serif;max-width:580px;margin:0 auto">' +
+        '<h2 style="color:#1a1a2e;margin:0 0 10px;font-size:20px">' + lead.domain + ' still scored ' + a.score + '/100 (' + a.grade + ')</h2>' +
+        '<p style="color:#444;line-height:1.6;margin:0 0 14px">We re-ran the free audit on <b>' + lead.domain + '</b> today. ' +
+        '<b>' + fails.length + ' check' + (fails.length > 1 ? 's' : '') + '</b> are still failing' +
+        (warns.length ? ' and <b>' + warns.length + '</b> ' + (warns.length > 1 ? 'are' : 'is') + ' warning' : '') +
+        '. These are the same issues keeping your email out of the inbox:</p>' +
+        followupTable(fails, warns) +
+        '<p style="color:#444;line-height:1.6;margin:0 0 14px">The fixes above are free to do yourself. If you would rather just know the moment any of them breaks or a new one appears, Pro re-checks ' + lead.domain + ' daily and emails you only when something changes.</p>' +
+        '<a href="https://inboxproof.email/pro" style="display:inline-block;background:#1a1a2e;color:#fff;padding:12px 26px;border-radius:6px;text-decoration:none;font-weight:600;font-size:15px">Start Pro monitoring</a>' +
+        followupFooter(lead, reportId) +
+        '</div>';
+    } else {
+      subject = 'Last check on ' + lead.domain + ' before we stop emailing';
+      html = '<div style="font-family:Arial,Helvetica,sans-serif;max-width:580px;margin:0 auto">' +
+        '<h2 style="color:#1a1a2e;margin:0 0 10px;font-size:20px">Last check on ' + lead.domain + '</h2>' +
+        '<p style="color:#444;line-height:1.6;margin:0 0 14px">This is the last email we will send about <b>' + lead.domain + '</b>. We re-checked it today and ' + fails.length + ' check' + (fails.length > 1 ? 's' : '') + ' are still failing.</p>' +
+        followupTable(fails, warns) +
+        '<p style="color:#444;line-height:1.6;margin:0 0 14px">If you have already fixed these, run a fresh free audit to confirm. If not, the steps above are the exact fixes. Pro monitors ' + lead.domain + ' daily so you do not have to keep checking by hand.</p>' +
+        '<a href="https://inboxproof.email/pro" style="display:inline-block;background:#1a1a2e;color:#fff;padding:12px 26px;border-radius:6px;text-decoration:none;font-weight:600;font-size:15px">Start Pro monitoring</a>' +
+        followupFooter(lead, reportId) +
+        '</div>';
+    }
+    const ok = await sendAlertEmail(lead.email, subject, html);
+    if (ok) {
+      lead.followupStage = stage + 1;
+      lead.lastFollowupAt = new Date().toISOString();
+      await persist('leads');
+      await recordEvent('followup_stage' + (stage + 1), '/followup');
+      sent++;
+      console.log('[followup] stage ' + (stage + 1) + ' sent to', lead.email, lead.domain, a.score);
+    }
+    await new Promise(r => setTimeout(r, 1500));
+  }
+  return sent;
 }
 
 // "Email me my report": deliver the full audit to the lead's inbox. Best-effort;
@@ -1124,11 +1204,13 @@ async function monitorCycle() {
   }
   lastMonitorRun = now;
   if (REMOTE) { try { await upSet('monitor:lastRun', String(now)); } catch {} }
-  return pro.length;
+  let followups = 0;
+  try { followups = await leadFollowupCycle(); } catch (e) { console.log('[followup] cycle error', e.message); }
+  return pro.length + followups;
 }
 
 export default handler;
-export { auditDomain };
+export { auditDomain, leadFollowupCycle };
 
 const IS_VERCEL = !!process.env.VERCEL;
 if (!IS_VERCEL && !process.env.NO_LISTEN) {
