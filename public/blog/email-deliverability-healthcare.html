@@ -1,0 +1,65 @@
+<!doctype html>
+<html lang="en">
+<head>
+<script>(function(){try{var p=location.pathname||"/";var r=(document.referrer||"").split("/")[2]||"direct";var u="/api/track?page="+encodeURIComponent(p)+"&ref="+encodeURIComponent(r);if(navigator.sendBeacon&&navigator.sendBeacon(u))return;var i=new Image();i.src=u;}catch(e){}})();</script>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Email deliverability for healthcare organizations - Inboxproof</title>
+<meta name="description" content="How healthcare organizations keep patient, provider and billing email out of spam: SPF, DKIM, DMARC, volume and list hygiene.">
+<meta property="og:title" content="Email deliverability for healthcare organizations">
+<meta property="og:description" content="How healthcare organizations keep patient, provider and billing email out of spam: SPF, DKIM, DMARC, volume and list hygiene.">
+<meta property="og:type" content="article">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="/styles.css">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' rx='8' fill='%236366f1'/%3E%3Cpath d='M8 16h13M15 10l6 6-6 6' stroke='white' stroke-width='3' fill='none' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E">
+<script type="application/ld+json">
+{"@context":"https://schema.org","@type":"Article","headline":"Email deliverability for healthcare organizations","description":"How healthcare organizations keep patient, provider and billing email out of spam: SPF, DKIM, DMARC, volume and list hygiene.","author":{"@type":"Organization","name":"Inboxproof"},"publisher":{"@type":"Organization","name":"Inboxproof"}}
+</script>
+</head>
+<body>
+<nav class="nav">
+  <div class="container">
+    <a class="logo" href="/">
+      <span class="mark"><svg viewBox="0 0 24 24" fill="none"><path d="M4 12h11M11 7l5 5-5 5" stroke="#fff" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"/></svg></span>
+      Inboxproof
+    </a>
+    <div class="nav-links"><a href="/blog">All guides</a><a href="/">Run a free audit</a></div>
+  </div>
+</nav>
+
+<div class="container" style="max-width:760px;padding:60px 20px 80px">
+  <div class="kicker">By industry</div>
+  <h1 style="font-size:34px;margin:10px 0 24px">Email deliverability for healthcare organizations</h1>
+  <div style="opacity:.85;line-height:1.75;font-size:15.5px">
+<p>Healthcare email has a specific failure profile: high volume of transactional mail (appointment reminders, billing statements, lab results), a large set of third-party senders (EHR vendors, scheduling tools, patient portals), and a compliance environment where an email that lands in spam is a missed appointment or an unpaid bill. The good news is that most of it is fixed with the same four records every other industry needs.</p>
+<h2>Map every sender first</h2>
+<p>The most common healthcare deliverability problem is not a broken record, it is an unlisted sender. An EHR system, a telehealth platform, a billing processor, a lab network, and a patient portal each send from their own domain or subdomain. If any of them sends from your domain without being in your SPF record, receivers treat the mail as unauthenticated. Start by listing every system that sends as your domain, then make sure each one is covered by SPF and signing with DKIM.</p>
+<h2>The four records</h2>
+<p>SPF: one record, under the 10-lookup limit, listing every service that sends for you. DKIM: a key per sending service, with the selector documented so a key rotation does not silently break signing. DMARC: start at p=none with reporting, review the aggregate reports for a month, then move to p=quarantine. Patient-facing domains are spoofed often, and a p=none policy means the spoofing goes unchallenged. MX: confirm the mail exchangers for any domain that also receives mail are reachable.</p>
+<h2>Volume and list hygiene</h2>
+<p>Patient reminders are the one category where volume is legitimate, but it still has to be earned. Keep the list current: purge patients who have moved, closed, or asked to stop. A reminder list full of dead addresses produces hard bounces, and a high bounce rate is one of the fastest ways to get a whole domain throttled. Segment the reminders so a patient who opted out of marketing still gets the clinical mail they need, and keep the two streams on separate lists.</p>
+<h2>Watch the third parties</h2>
+<p>The vendor that sends your lab results is the one you cannot control, which is why the DMARC aggregate reports matter: they show you every domain that claims to be yours, including the ones you forgot about. Run a free audit on the sending domains you do control, and ask each vendor for their DKIM selector so you can verify it resolves. When a new vendor goes live, add them to SPF before they send, not after the first week of spam complaints.</p>
+<div style="margin:32px 0;padding:20px;border-radius:12px;background:#eef2ff">
+<p style="margin:0 0 12px;font-weight:600">The fastest way to see where you stand is to run the checks now.</p>
+<p style="margin:0 0 14px;opacity:.85">Run a <a href="/#audit">free audit of your sending domain</a>. It checks SPF, DKIM, DMARC, MX, TLS and IP reputation in about 30 seconds, no account needed.</p>
+<a class="btn btn-primary" href="/#audit">Check my domain free</a>
+</div>
+    <div style="margin:36px 0;padding:18px;border-radius:12px;background:rgba(99,102,241,.06)">
+      <div style="font-weight:700;font-size:15px;margin-bottom:10px">Related guides</div>
+      <div style="opacity:.8;font-size:14px;line-height:2">
+        <a href="/blog/email-deliverability-checklist">The email deliverability checklist</a><br><a href="/blog/spf-dkim-dmarc">SPF, DKIM, DMARC: the three records that matter</a><br><a href="/blog/email-list-cleaning">Email list cleaning without losing real subscribers</a><br><a href="/blog/email-compliance">Email compliance: the rules that affect deliverability</a>
+      </div>
+    </div>
+  </div>
+</div>
+
+<footer>
+  <div class="container">
+    <span>&copy; 2026 Inboxproof, Inc.</span>
+    <span><a href="/blog">All guides</a> &middot; <a href="/">Home</a> &middot; <a href="/privacy">Privacy</a> &middot; <a href="https://github.com/jtc268/inboxproof" target="_blank" rel="noopener">GitHub</a></span>
+  </div>
+</footer>
+</body>
+</html>

@@ -1,0 +1,65 @@
+<!doctype html>
+<html lang="en">
+<head>
+<script>(function(){try{var p=location.pathname||"/";var r=(document.referrer||"").split("/")[2]||"direct";var u="/api/track?page="+encodeURIComponent(p)+"&ref="+encodeURIComponent(r);if(navigator.sendBeacon&&navigator.sendBeacon(u))return;var i=new Image();i.src=u;}catch(e){}})();</script>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Email deliverability for real estate businesses - Inboxproof</title>
+<meta name="description" content="How real estate teams keep listing alerts, lead follow-up and transaction email in the inbox: SPF, DKIM, DMARC, and list hygiene.">
+<meta property="og:title" content="Email deliverability for real estate businesses">
+<meta property="og:description" content="How real estate teams keep listing alerts, lead follow-up and transaction email in the inbox: SPF, DKIM, DMARC, and list hygiene.">
+<meta property="og:type" content="article">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="/styles.css">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' rx='8' fill='%236366f1'/%3E%3Cpath d='M8 16h13M15 10l6 6-6 6' stroke='white' stroke-width='3' fill='none' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E">
+<script type="application/ld+json">
+{"@context":"https://schema.org","@type":"Article","headline":"Email deliverability for real estate businesses","description":"How real estate teams keep listing alerts, lead follow-up and transaction email in the inbox: SPF, DKIM, DMARC, and list hygiene.","author":{"@type":"Organization","name":"Inboxproof"},"publisher":{"@type":"Organization","name":"Inboxproof"}}
+</script>
+</head>
+<body>
+<nav class="nav">
+  <div class="container">
+    <a class="logo" href="/">
+      <span class="mark"><svg viewBox="0 0 24 24" fill="none"><path d="M4 12h11M11 7l5 5-5 5" stroke="#fff" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"/></svg></span>
+      Inboxproof
+    </a>
+    <div class="nav-links"><a href="/blog">All guides</a><a href="/">Run a free audit</a></div>
+  </div>
+</nav>
+
+<div class="container" style="max-width:760px;padding:60px 20px 80px">
+  <div class="kicker">By industry</div>
+  <h1 style="font-size:34px;margin:10px 0 24px">Email deliverability for real estate businesses</h1>
+  <div style="opacity:.85;line-height:1.75;font-size:15.5px">
+<p>Real estate email lives or dies on speed: a listing alert that lands in spam is a lead that went to the agent next door, and a transaction email that bounces is a closing at risk. Most real estate teams send from a CRM or an IDX platform, which means the deliverability problem is usually not their own domain records but the records of the platform they rent.</p>
+<h2>Know who actually sends</h2>
+<p>If your team sends through a CRM, the mail goes out from the CRM's domain, not yours, and the authentication that matters is the CRM's SPF and DKIM, plus the DKIM signature that ties the mail to your brand. Check both: the CRM's sending domain should have a valid SPF record, and your branded mail should carry a DKIM signature that resolves. If the CRM sends from a shared domain you do not control, ask for the sending options that let you use your own domain, and set up SPF, DKIM and DMARC on it.</p>
+<h2>Listing alerts are a volume problem</h2>
+<p>Buyer alerts go out to a lot of inboxes at once, and a single bad batch can get your sending reputation dinged. Keep the alert list clean: remove addresses that hard-bounced, and give every alert a working unsubscribe. A spike in complaints from stale addresses is the fastest way to get a real estate domain throttled by Gmail and Microsoft, and it takes weeks to recover.</p>
+<h2>Transaction mail needs its own attention</h2>
+<p>Escrow notices, showing confirmations and closing documents are the mail you cannot afford to lose. Send them from a domain with a clean reputation, authenticate them properly, and monitor bounces. If a closing document lands in spam, the cost is not a missed click, it is a delayed transaction. A daily check of the sending domain is cheap insurance for the highest-stakes mail you send.</p>
+<h2>The quick wins</h2>
+<p>Run a free audit on your main domain and on any domain your CRM sends from. Confirm SPF is valid and under the lookup limit, DKIM resolves for the selector in use, and DMARC exists with at least p=none and a reporting address. Fix the two or three things that fail, clean the alert list, and re-check in a week. Most teams see the bounce rate drop within a few days of the list clean alone.</p>
+<div style="margin:32px 0;padding:20px;border-radius:12px;background:#eef2ff">
+<p style="margin:0 0 12px;font-weight:600">The fastest way to see where you stand is to run the checks now.</p>
+<p style="margin:0 0 14px;opacity:.85">Run a <a href="/#audit">free audit of your sending domain</a>. It checks SPF, DKIM, DMARC, MX, TLS and IP reputation in about 30 seconds, no account needed.</p>
+<a class="btn btn-primary" href="/#audit">Check my domain free</a>
+</div>
+    <div style="margin:36px 0;padding:18px;border-radius:12px;background:rgba(99,102,241,.06)">
+      <div style="font-weight:700;font-size:15px;margin-bottom:10px">Related guides</div>
+      <div style="opacity:.8;font-size:14px;line-height:2">
+        <a href="/blog/email-deliverability-ecommerce">Email deliverability for e-commerce</a><br><a href="/blog/email-list-cleaning">Email list cleaning without losing real subscribers</a><br><a href="/blog/spf-dkim-dmarc">SPF, DKIM, DMARC: the three records that matter</a><br><a href="/blog/email-deliverability-checklist">The email deliverability checklist</a>
+      </div>
+    </div>
+  </div>
+</div>
+
+<footer>
+  <div class="container">
+    <span>&copy; 2026 Inboxproof, Inc.</span>
+    <span><a href="/blog">All guides</a> &middot; <a href="/">Home</a> &middot; <a href="/privacy">Privacy</a> &middot; <a href="https://github.com/jtc268/inboxproof" target="_blank" rel="noopener">GitHub</a></span>
+  </div>
+</footer>
+</body>
+</html>
