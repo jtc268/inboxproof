@@ -233,6 +233,29 @@ async function maybeSendAuditFollowup(email, domain, audit, reportId) {
   }
 }
 
+// "Email me my report": deliver the full audit to the lead's inbox. Best-effort;
+// lead capture (upsertLead) is the primary value and always happens first.
+async function sendReportEmail(email, domain, audit, reportId) {
+  const fails = audit.checks.filter(c => c.status === 'fail');
+  const rows = audit.checks.map(c =>
+    '<tr><td style="padding:8px 10px;border-bottom:1px solid #eee;color:#1a1a2e;font-weight:600">' + c.name + '</td>' +
+    '<td style="padding:8px 10px;border-bottom:1px solid #eee;color:' + (c.status === 'fail' ? '#c0392b' : c.status === 'warn' ? '#e67e22' : '#27ae60') + ';font-weight:600;white-space:nowrap">' + c.status + '</td>' +
+    '<td style="padding:8px 10px;border-bottom:1px solid #eee;color:#444">' + (c.fix || c.detail || '') + '</td></tr>'
+  ).join('');
+  const html =
+    '<div style="font-family:Arial,Helvetica,sans-serif;max-width:580px;margin:0 auto">' +
+    '<h2 style="color:#1a1a2e;margin:0 0 10px;font-size:20px">' + domain + ' deliverability report: ' + audit.score + '/100 (' + audit.grade + ')</h2>' +
+    '<p style="color:#444;line-height:1.6;margin:0 0 14px">Here is the full audit of <b>' + domain + '</b> you just ran. ' +
+    (fails.length ? 'You have <b>' + fails.length + ' failing check' + (fails.length > 1 ? 's' : '') + '</b> to fix first.' : 'All checks are passing.') + '</p>' +
+    '<table style="width:100%;border-collapse:collapse;margin:0 0 16px"><tr><th style="text-align:left;padding:8px 10px;border-bottom:2px solid #ddd;color:#1a1a2e;font-size:13px">Check</th><th style="text-align:left;padding:8px 10px;border-bottom:2px solid #ddd;color:#1a1a2e;font-size:13px">Status</th><th style="text-align:left;padding:8px 10px;border-bottom:2px solid #ddd;color:#1a1a2e;font-size:13px">Detail / fix</th></tr>' +
+    rows + '</table>' +
+    '<p style="color:#444;line-height:1.6;margin:0 0 14px">Records change. Want us to watch ' + domain + ' daily and email you the moment one breaks?</p>' +
+    '<a href="https://inboxproof.email/pro" style="display:inline-block;background:#1a1a2e;color:#fff;padding:12px 26px;border-radius:6px;text-decoration:none;font-weight:600;font-size:15px">Start Pro monitoring</a>' +
+    '<p style="color:#888;font-size:12px;line-height:1.5;margin-top:24px">InboxProof &middot; free email deliverability audit. <a href="https://inboxproof.email/r/' + reportId + '" style="color:#888">View your full report online</a>.</p>' +
+    '</div>';
+  return await sendAlertEmail(email, 'Your ' + domain + ' deliverability report', html);
+}
+
 /* ---------------- validation ---------------- */
 const DOMAIN_RE = /^(?:[a-z0-9](?:[a-z0-9-]{0,61}[a-z0-9])?\.)+[a-z]{2,63}$/i;
 const EMAIL_RE = /^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/;
@@ -817,6 +840,7 @@ async function handler(req, res) {
       if (!leads[email].reportIds.includes(reportId)) leads[email].reportIds.push(reportId);
       if (leads[email].reportIds.length > 50) leads[email].reportIds = leads[email].reportIds.slice(-50);
       await persist('leads');
+      sendReportEmail(email, domain || rep.domain || '', rep, reportId).catch(() => {});
       return sendJson(res, 200, { ok: true });
     }
     if (req.method === 'POST' && u.pathname === '/api/tls-check') {

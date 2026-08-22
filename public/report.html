@@ -53,6 +53,14 @@
         <button id="shareLi" style="padding:8px 12px;border-radius:9px;border:1px solid rgba(255,255,255,.18);background:rgba(255,255,255,.06);color:inherit;font-size:13px;cursor:pointer" title="Share on LinkedIn">LinkedIn</button>
         <button id="shareTeam" style="padding:8px 12px;border-radius:9px;border:1px solid rgba(52,211,153,.4);background:rgba(52,211,153,.12);color:inherit;font-size:13px;cursor:pointer" title="Share with your team">Share with team</button>
       </div>
+      <div id="saveRow" style="margin-top:14px;padding:14px 16px;border:1px solid rgba(255,255,255,.1);border-radius:10px;background:rgba(255,255,255,.03)">
+        <div style="font-size:13px;opacity:.85;margin-bottom:9px">Keep this report. We'll email you a copy of your <b id="saveDomain"></b> audit, with the exact fixes to apply first.</div>
+        <form id="saveForm" style="display:flex;gap:8px;flex-wrap:wrap">
+          <input id="saveEmail" type="email" required placeholder="you@yourdomain.com" style="flex:1;min-width:180px;padding:10px 14px;border-radius:10px;border:1px solid rgba(255,255,255,.15);background:rgba(255,255,255,.05);color:inherit;font-size:14px">
+          <button class="btn btn-primary" id="saveBtn" type="submit">Email me my report</button>
+        </form>
+        <div id="saveMsg" style="font-size:12px;margin-top:8px;opacity:.7"></div>
+      </div>
     </div>
   </div>
   <div id="ownCta" style="margin-bottom:24px;padding:18px 22px;border:1px solid rgba(52,211,153,.35);border-radius:14px;background:linear-gradient(180deg,rgba(52,211,153,.12),transparent);display:flex;gap:14px;align-items:center;flex-wrap:wrap">
@@ -96,7 +104,7 @@ const id = location.pathname.split('/').pop();
 const $ = s => document.querySelector(s);
 let report = null;
 function trackEvent(ev){ try{ var u='/api/track?page='+encodeURIComponent(location.pathname||'/')+'&event='+encodeURIComponent(ev); if(navigator.sendBeacon&&navigator.sendBeacon(u))return; var i=new Image(); i.src=u; }catch(e){} }
-(function(){ try { var e = sessionStorage.getItem('ip_email'); if (!e) return; var a = document.getElementById('pro-email'); var b = document.getElementById('top-pro-email'); if (a && !a.value) a.value = e; if (b && !b.value) b.value = e; } catch (err) {} })();
+(function(){ try { var e = sessionStorage.getItem('ip_email'); if (!e) return; var a = document.getElementById('pro-email'); var b = document.getElementById('top-pro-email'); var c = document.getElementById('saveEmail'); if (a && !a.value) a.value = e; if (b && !b.value) b.value = e; if (c && !c.value) c.value = e; } catch (err) {} })();
 function scoreColor(s){ return s>=90 ? '#34d399' : s>=70 ? '#a3e635' : s>=50 ? '#fbbf24' : '#f87171'; }
 function gradeOf(s){ return s>=90 ? ['A','Inbox-ready'] : s>=70 ? ['B','Good'] : s>=50 ? ['C','At risk'] : ['D','Failing']; }
 function applyWhiteLabel(brand) {
@@ -118,7 +126,7 @@ function applyWhiteLabel(brand) {
     const nl = nav.querySelector('.nav-links');
     if (nl) nl.style.display = 'none';
   }
-  ['topCta','wlProBottom','wlMore','ownCta'].forEach(id => { const el = document.getElementById(id); if (el) el.style.display = 'none'; });
+  ['topCta','saveRow','wlProBottom','wlMore','ownCta'].forEach(id => { const el = document.getElementById(id); if (el) el.style.display = 'none'; });
   const footer = document.getElementById('wlFooter');
   if (footer) footer.innerHTML = 'Audited by <b>' + brand.name + '</b> · live DNS checks';
 }
@@ -141,6 +149,7 @@ fetch('/api/report/' + encodeURIComponent(id))
     $('#meta').textContent = 'Audited ' + new Date(a.at).toLocaleString() + ' · 7 live DNS checks';
     report = a;
     $('#proDomain').textContent = a.domain;
+    $('#saveDomain').textContent = a.domain;
     const shareText = a.domain + ' scored ' + s + '/100 (' + gl + ') on 7 live deliverability checks. See the full report: ';
     const shareUrl = location.href;
     $('#shareX').addEventListener('click', () => {
@@ -269,6 +278,27 @@ async function startCheckout(emailInput, btn, errEl) {
 }
 $('#pro-form').addEventListener('submit', e => { e.preventDefault(); startCheckout($('#pro-email'), $('#pro-buy'), $('#pro-err')); });
 $('#top-pro-form').addEventListener('submit', e => { e.preventDefault(); startCheckout($('#top-pro-email'), $('#top-pro-buy'), document.getElementById('top-pro-err')); });
+$('#saveForm').addEventListener('submit', async e => {
+  e.preventDefault();
+  const email = $('#saveEmail').value.trim().toLowerCase();
+  const msg = $('#saveMsg');
+  const btn = $('#saveBtn');
+  if (!report) { msg.textContent = 'Report is still loading, try again in a second.'; return; }
+  if (!/^[^@\s]+@[^@\s]+\.[^@\s]+$/.test(email)) { msg.textContent = 'Enter a valid email.'; return; }
+  btn.disabled = true; btn.textContent = 'Sending…';
+  try {
+    const r = await fetch('/api/attach', {method:'POST', headers:{'Content-Type':'application/json'}, body: JSON.stringify({email, reportId: id, domain: report.domain})});
+    const j = await r.json();
+    if (!r.ok) throw new Error(j.error || 'Could not email your report');
+    trackEvent('lead_captured');
+    msg.textContent = 'Done. Your ' + report.domain + ' report is on its way to ' + email + '.';
+    btn.textContent = 'Sent';
+    try { sessionStorage.setItem('ip_email', email); } catch (_) {}
+  } catch (ex) {
+    btn.disabled = false; btn.textContent = 'Email me my report';
+    msg.textContent = ex.message;
+  }
+});
 $('#shareBtn').addEventListener('click', async () => {
   trackEvent('share_copy');
   const url = location.href;
