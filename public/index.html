@@ -468,6 +468,15 @@ const $ = s => document.querySelector(s);
 const form = $('#auditForm'), err = $('#auditErr');
 let last = null;
 
+// Pre-fill the domain from ?domain= (used by the CLI "Full audit" link) so a developer who just ran the CLI lands with the domain already typed.
+try{
+  const qd = new URLSearchParams(location.search).get('domain');
+  if(qd){
+    const d = qd.trim().toLowerCase().replace(/^https?:\/\//,'').replace(/\/.*$/,'');
+    if(/^[a-z0-9.-]+\.[a-z]{2,}$/i.test(d)) $('#inDomain').value = d;
+  }
+}catch(e){}
+
 function askEmail(){
   return new Promise(resolve => {
     const modal = $('#emailModal'), input = $('#modalEmail'), emErr = $('#modalErr');
