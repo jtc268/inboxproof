@@ -104,6 +104,21 @@
       </table>
     </div>
 
+    <div class="sec-head" style="margin-bottom:18px">
+      <h2 style="font-size:24px">Free public endpoints</h2>
+    </div>
+    <div style="background:var(--panel);border:1px solid var(--line);border-radius:12px;padding:18px 20px;margin-bottom:26px">
+      <p style="font-size:14px;color:var(--muted);margin-bottom:12px">Four check endpoints are open with no API key, rate-limited to 20 calls/hour per IP. Good for quick lookups, scripts, and prototyping.</p>
+      <table style="width:100%;border-collapse:collapse;font-size:14px">
+        <tr><td style="padding:8px 0;color:var(--dim);width:230px;vertical-align:top"><code>GET /api/spam-check?domain={d}</code></td><td>Full 7-check audit with a spam-risk verdict and the failing items to fix.</td></tr>
+        <tr><td style="padding:8px 0;color:var(--dim);vertical-align:top"><code>GET /api/dmarc-check?domain={d}</code></td><td>MX, SPF, DKIM, DMARC checks with a 0-100 score.</td></tr>
+        <tr><td style="padding:8px 0;color:var(--dim);vertical-align:top"><code>GET /api/mx-check?domain={d}</code></td><td>MX records and whether each mail server resolves.</td></tr>
+        <tr><td style="padding:8px 0;color:var(--dim);vertical-align:top"><code>GET /api/blocklist-check?ip={ip}</code></td><td>Checks an IP against 9 blocklists (defaults to your IP).</td></tr>
+      </table>
+      <pre style="background:#0a0e16;border:1px solid var(--line);border-radius:8px;padding:14px;font-size:13px;overflow:auto;margin:14px 0 0">curl "https://inboxproof.email/api/spam-check?domain=yourdomain.com"</pre>
+      <div style="font-size:13px;color:var(--muted);margin-top:10px">No auth, no account. For high volume or daily monitoring, use the <a href="/pro" style="color:#6366f1;font-weight:600">Pro API</a> above.</div>
+    </div>
+
     <div style="margin-bottom:26px">
       <div style="font-size:12px;letter-spacing:.06em;text-transform:uppercase;color:var(--dim);margin-bottom:12px">Related</div>
       <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:10px">
