@@ -16,6 +16,16 @@
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="/styles.css">
 <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' rx='8' fill='%236366f1'/%3E%3Cpath d='M8 16h13M15 10l6 6-6 6' stroke='white' stroke-width='3' fill='none' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E">
+<style>
+.pg-tab{background:transparent;border:1px solid var(--line);color:var(--muted);border-radius:8px;padding:8px 14px;font-size:13px;font-weight:600;cursor:pointer;font-family:inherit}
+.pg-tab:hover{border-color:#6366f1;color:var(--text)}
+.pg-tab.pg-active{background:#6366f1;color:#fff;border-color:#6366f1}
+.pg-input{flex:1;min-width:200px;background:#0a0e16;border:1px solid var(--line);border-radius:8px;padding:10px 12px;color:var(--text);font-size:14px;font-family:inherit}
+.pg-input:focus{outline:none;border-color:#6366f1}
+.pg-pre{background:#0a0e16;border:1px solid var(--line);border-radius:8px;padding:14px;font-size:13px;overflow:auto;margin:0;max-height:320px;white-space:pre-wrap;word-break:break-word}
+.pg-copy{background:transparent;border:1px solid var(--line);color:var(--muted);border-radius:6px;padding:5px 12px;font-size:12px;font-weight:600;cursor:pointer;font-family:inherit}
+.pg-copy:hover{border-color:#6366f1;color:var(--text)}
+</style>
 </head>
 <body>
 <nav class="nav">
@@ -39,6 +49,27 @@
     <h1 style="font-size:40px;line-height:1.1;margin-bottom:14px">The deliverability API</h1>
     <p style="font-size:18px;color:var(--muted);margin-bottom:8px">One REST call returns a full 7-check email deliverability audit for any domain: MX, SPF, DKIM, DMARC, TLS, reverse-DNS, and blocklists, scored the same way the free audit and Pro monitoring are.</p>
     <p style="font-size:14.5px;color:var(--dim);margin-bottom:26px">No SDK to install. Bearer auth, JSON in, JSON out. 100 audits/day on Pro, 500/day on Agency.</p>
+
+    <div style="background:var(--panel);border:1px solid var(--line);border-radius:12px;padding:18px 20px;margin-bottom:26px">
+      <div style="font-size:12px;letter-spacing:.06em;text-transform:uppercase;color:var(--dim);margin-bottom:10px">Try it live</div>
+      <p style="font-size:14px;color:var(--muted);margin-bottom:14px">No account, no API key. Pick a check, enter a domain, and see the real JSON the API returns, plus the exact call to drop into your code.</p>
+      <div style="display:flex;flex-wrap:wrap;gap:8px;margin-bottom:12px">
+        <button class="pg-tab pg-active" data-endpoint="spam-check" data-param="domain" data-default="example.com">Spam check</button>
+        <button class="pg-tab" data-endpoint="dmarc-check" data-param="domain" data-default="example.com">DMARC</button>
+        <button class="pg-tab" data-endpoint="mx-check" data-param="domain" data-default="example.com">MX</button>
+        <button class="pg-tab" data-endpoint="blocklist-check" data-param="ip" data-default="">Blocklist (IP)</button>
+      </div>
+      <div style="display:flex;gap:8px;margin-bottom:14px">
+        <input id="pg-input" class="pg-input" type="text" placeholder="yourdomain.com" value="example.com">
+        <button id="pg-run" class="btn btn-primary" style="white-space:nowrap">Run check</button>
+      </div>
+      <pre id="pg-out" class="pg-pre">Pick a check and press Run to see the live response.</pre>
+      <div style="margin-top:14px">
+        <div style="font-size:12px;color:var(--dim);margin-bottom:6px">Use it in your code</div>
+        <pre id="pg-code" class="pg-pre" style="max-height:none">curl "https://inboxproof.email/api/spam-check?domain=example.com"</pre>
+        <button id="pg-copy" class="pg-copy" style="margin-top:8px">Copy</button>
+      </div>
+    </div>
 
     <div style="background:var(--panel);border:1px solid var(--line);border-radius:12px;padding:18px 20px;margin-bottom:26px">
       <div style="font-size:12px;letter-spacing:.06em;text-transform:uppercase;color:var(--dim);margin-bottom:10px">Try it</div>
@@ -141,7 +172,77 @@
 </div>
 
 <script>
-// Add /developers to the sitemap-agnostic nav is not needed; static page.
+(function () {
+  var tabs = Array.prototype.slice.call(document.querySelectorAll('.pg-tab'));
+  var input = document.getElementById('pg-input');
+  var out = document.getElementById('pg-out');
+  var codeEl = document.getElementById('pg-code');
+  var runBtn = document.getElementById('pg-run');
+  var copyBtn = document.getElementById('pg-copy');
+  var cur = { endpoint: 'spam-check', param: 'domain' };
+
+  function trackEvent(name) {
+    try {
+      var u = '/api/track?event=' + encodeURIComponent(name) + '&page=' + encodeURIComponent(location.pathname);
+      if (navigator.sendBeacon && navigator.sendBeacon(u)) return;
+      var i = new Image(); i.src = u;
+    } catch (e) {}
+  }
+
+  function updateCode() {
+    var val = input.value.trim() || (cur.param === 'ip' ? 'YOUR_IP' : 'yourdomain.com');
+    codeEl.textContent = 'curl "https://inboxproof.email/api/' + cur.endpoint + '?' + cur.param + '=' + encodeURIComponent(val) + '"';
+  }
+
+  tabs.forEach(function (t) {
+    t.addEventListener('click', function () {
+      tabs.forEach(function (x) { x.classList.remove('pg-active'); });
+      t.classList.add('pg-active');
+      cur = { endpoint: t.dataset.endpoint, param: t.dataset.param };
+      input.placeholder = cur.param === 'ip' ? 'e.g. 8.8.8.8' : 'yourdomain.com';
+      out.style.color = 'var(--muted)';
+      out.textContent = 'Pick a check and press Run to see the live response.';
+      updateCode();
+    });
+  });
+
+  input.addEventListener('input', updateCode);
+
+  function run() {
+    var val = input.value.trim();
+    if (!val) { out.style.color = '#fbbf24'; out.textContent = 'Enter a ' + (cur.param === 'ip' ? 'IP address' : 'domain') + ' first.'; return; }
+    runBtn.disabled = true; runBtn.textContent = 'Running\u2026';
+    out.style.color = 'var(--muted)'; out.textContent = 'Running ' + cur.endpoint + '\u2026';
+    var url = '/api/' + cur.endpoint + '?' + cur.param + '=' + encodeURIComponent(val);
+    fetch(url)
+      .then(function (r) { return r.json().then(function (j) { return { ok: r.ok, j: j }; }); })
+      .then(function (res) {
+        out.style.color = res.ok ? '#34d399' : '#f87171';
+        out.textContent = JSON.stringify(res.j, null, 2);
+        if (res.ok) trackEvent('pg_run_' + cur.endpoint);
+      })
+      .catch(function (e) {
+        out.style.color = '#f87171'; out.textContent = 'Request failed: ' + e.message;
+      })
+      .then(function () { runBtn.disabled = false; runBtn.textContent = 'Run check'; });
+  }
+  runBtn.addEventListener('click', run);
+  input.addEventListener('keydown', function (e) { if (e.key === 'Enter') run(); });
+
+  copyBtn.addEventListener('click', function () {
+    var text = codeEl.textContent;
+    function done() {
+      var old = copyBtn.textContent; copyBtn.textContent = 'Copied';
+      trackEvent('pg_copy');
+      setTimeout(function () { copyBtn.textContent = old; }, 1500);
+    }
+    if (navigator.clipboard && navigator.clipboard.writeText) {
+      navigator.clipboard.writeText(text).then(done, done);
+    } else { done(); }
+  });
+
+  updateCode();
+})();
 </script>
 </body>
 </html>
