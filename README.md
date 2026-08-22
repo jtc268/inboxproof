@@ -31,6 +31,11 @@ change.
 - [TLS / STARTTLS checker](https://inboxproof.email/tls-checker)
 - [Reverse DNS (PTR) checker](https://inboxproof.email/ptr-checker)
 
+## For teams
+
+- [For agencies](https://inboxproof.email/agencies) - monitor up to 25 client domains, white-label reports, daily alerts
+- [For developers](https://inboxproof.email/developers) - the deliverability API, one REST call, Bearer auth
+
 ## Comparisons
 
 - [Best email deliverability testing tools (2026)](https://inboxproof.email/deliverability-tools)
