@@ -1,0 +1,94 @@
+<!doctype html>
+<html lang="en">
+<head>
+<script>(function(){try{var p=location.pathname||"/";var r=(document.referrer||"").split("/")[2]||"direct";var u="/api/track?page="+encodeURIComponent(p)+"&ref="+encodeURIComponent(r);if(navigator.sendBeacon&&navigator.sendBeacon(u))return;var i=new Image();i.src=u;}catch(e){}})();</script>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>BIMI: how to get your logo in the inbox | Inboxproof</title>
+<meta name="description" content="BIMI puts your logo next to your email in the inbox. Here is what it actually takes, the DMARC prerequisite that blocks most brands, and the exact record to add.">
+<meta property="og:title" content="BIMI: how to get your logo in the inbox">
+<meta property="og:description" content="What BIMI is, the DMARC prerequisite that blocks most brands, and the exact record to add.">
+<meta property="og:type" content="article">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="/styles.css">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' rx='8' fill='%236366f1'/%3E%3Cpath d='M8 16h13M15 10l6 6-6 6' stroke='white' stroke-width='3' fill='none' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E">
+<script type="application/ld+json">{"@context":"https://schema.org","@type":"Article","headline":"BIMI: how to get your logo in the inbox","description":"What BIMI is, the DMARC prerequisite that blocks most brands, and the exact record to add.","author":{"@type":"Organization","name":"Inboxproof"},"publisher":{"@type":"Organization","name":"Inboxproof"},"datePublished":"2026-08-22","dateModified":"2026-08-22"}</script>
+<link rel="canonical" href="https://inboxproof.email/blog/bimi">
+<meta property="og:url" content="https://inboxproof.email/blog/bimi">
+<meta property="og:image" content="https://inboxproof.email/og.png">
+<meta property="og:image:width" content="1200">
+<meta property="og:image:height" content="630">
+<meta name="twitter:image" content="https://inboxproof.email/og.png">
+</head>
+<body>
+<nav class="nav">
+  <div class="container">
+    <a class="logo" href="/">
+      <span class="mark"><svg viewBox="0 0 24 24" fill="none"><path d="M4 12h11M11 7l5 5-5 5" stroke="#fff" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"/></svg></span>
+      Inboxproof
+    </a>
+    <div class="nav-links"><a href="/blog">All guides</a><a href="/">Run a free audit</a></div>
+  </div>
+</nav>
+
+<div class="container" style="max-width:760px;padding:60px 20px 80px">
+  <div class="kicker">Guide</div>
+  <h1 style="font-size:34px;margin:10px 0 24px">BIMI: how to get your logo in the inbox</h1>
+  <div style="opacity:.85;line-height:1.75;font-size:15.5px">
+    <p>BIMI (Brand Indicators for Message Identification) is a DNS TXT record that tells email clients to display your logo next to your emails in the inbox. It is a brand trust feature, not a deliverability fix. When it works, your recipients see your logo before they even open the message, which makes your mail instantly recognizable and harder to pass off as a phishing attempt.</p>
+    <p>Here is the part that catches most brands off guard: BIMI has a hard prerequisite. Your domain must pass DMARC with a policy of <code>p=quarantine</code> or <code>p=reject</code>. If your DMARC is <code>p=none</code>, or your DKIM is broken, or your SPF is failing, BIMI will not display. A lot of brands that try BIMI get stuck on exactly this. They add the BIMI record, nothing shows up, and they have no idea why. The reason is upstream of the BIMI record, in the authentication stack.</p>
+
+    <h2 style="font-size:22px;margin:34px 0 12px">Why BIMI matters</h2>
+    <p>The inbox is a crowded, untrusted place. A logo next to your name does three things. It makes your mail recognizable at a glance, so recipients stop treating your transactional mail like a stranger. It reduces successful phishing, because an attacker who spoofs your domain but cannot produce your logo (or a valid Verified Mark Certificate) will not get the logo displayed. And it is becoming a baseline expectation in enterprise inboxes. Outlook, Gmail and Apple Mail all support BIMI, and the brands that show up with a logo are the ones recipients learn to trust.</p>
+    <p>For agencies and MSPs, BIMI is also a client-facing win. A client whose domain shows its logo in the inbox is a client who can point to a visible, verifiable improvement. That is a concrete deliverable, not a "we improved your deliverability" claim.</p>
+
+    <h2 style="font-size:22px;margin:34px 0 12px">The prerequisite that blocks most brands</h2>
+    <p>BIMI will not render unless your domain passes DMARC with an enforcing policy. This is not a soft recommendation. It is a hard gate. The receiving mail system checks your DMARC record, and if the policy is <code>p=none</code>, the BIMI logo is not shown, regardless of whether the BIMI record itself is correct.</p>
+    <p>So before you touch BIMI, you need three things in place:</p>
+    <ul style="margin:16px 0;padding-left:20px">
+      <li style="margin:8px 0"><b>DMARC at p=quarantine or p=reject.</b> This is the gate. If you are at p=none, you are not eligible yet. Moving from p=none to p=quarantine is usually safe if your SPF and DKIM are already passing, because the policy only affects mail that fails authentication.</li>
+      <li style="margin:8px 0"><b>DKIM signing.</b> Your mail has to be signed with a valid DKIM key. If your ESP is not signing, or the selector is wrong, BIMI will not work.</li>
+      <li style="margin:8px 0"><b>SPF that passes.</b> Your sending IPs have to be in your SPF record. If your SPF is failing or over the 10-lookup limit, BIMI will not work.</li>
+    </ul>
+    <p>The free audit checks all three in about 30 seconds and tells you the exact record to fix if one is missing. That is the fastest way to find out whether you are actually BIMI-ready.</p>
+
+    <h2 style="font-size:22px;margin:34px 0 12px">The logo requirements</h2>
+    <p>The logo has to meet a few specific constraints, and these are where a lot of rollouts stall:</p>
+    <ul style="margin:16px 0;padding-left:20px">
+      <li style="margin:8px 0"><b>Format:</b> SVG only. Raster formats (PNG, JPG) are not accepted.</li>
+      <li style="margin:8px 0"><b>Size:</b> 300 by 300 pixels, and the file must be under 30 KB.</li>
+      <li style="margin:8px 0"><b>Trademark:</b> if the logo is trademarked, you need a Verified Mark Certificate (VMC) from a certificate authority. The VMC proves you own the trademark. If the logo is not trademarked, you can use it without a VMC, but you lose the verification badge.</li>
+    </ul>
+    <p>The VMC is the part that surprises people. It is not free, it takes a few days to issue, and it requires proof of trademark ownership. If you are rolling out BIMI for a client, budget for it.</p>
+
+    <h2 style="font-size:22px;margin:34px 0 12px">The BIMI record</h2>
+    <p>Once your DMARC, DKIM and SPF are passing, the BIMI record itself is simple. It lives at <code>default._bimi.yourdomain.com</code>:</p>
+    <p style="margin:16px 0"><code style="opacity:.8;display:block;background:rgba(255,255,255,.04);border:1px solid rgba(255,255,255,.08);border-radius:10px;padding:14px 16px;font-size:13px;white-space:pre-wrap;word-break:break-all">v=BIMI1; l=https://yourdomain.com/logo.svg</code></p>
+    <p>With a VMC, the record references the certificate:</p>
+    <p style="margin:16px 0"><code style="opacity:.8;display:block;background:rgba(255,255,255,.04);border:1px solid rgba(255,255,255,.08);border-radius:10px;padding:14px 16px;font-size:13px;white-space:pre-wrap;word-break:break-all">v=BIMI1; l=vmc:https://yourdomain.com/logo.svg; aa=https://yourdomain.com/certificate.crt</code></p>
+    <p>The <code>l</code> tag points to your logo. The <code>aa</code> tag points to your VMC. Both must be served over HTTPS.</p>
+
+    <h2 style="font-size:22px;margin:34px 0 12px">How to check if you are BIMI-ready</h2>
+    <p>Run the free audit first. It checks SPF, DKIM, DMARC, MX, TLS and PTR in about 30 seconds, and shows the exact record to add if one is missing. If your DMARC is at p=none, that is your first fix. If your DKIM selector is wrong, that is your second. Only after those pass do you add the BIMI record.</p>
+    <p>If you are managing this for a client or a portfolio of domains, the Pro plan monitors every domain around the clock and alerts you the moment a record breaks or an IP gets listed, so a BIMI rollout does not silently stop working because a DKIM key rotated.</p>
+
+    <p style="opacity:.6;font-size:13px;margin-top:28px">Related: <a href="/blog/dmarc">What is DMARC</a> · <a href="/blog/dmarc-policies">p=none vs quarantine vs reject</a> · <a href="/blog/spf-dkim-dmarc">SPF vs DKIM vs DMARC</a></p>
+
+    <div style="margin:40px 0;padding:24px;background:rgba(99,102,241,.08);border:1px solid rgba(99,102,241,.2);border-radius:14px">
+      <h3 style="font-size:17px;margin:0 0 8px">Check if you are BIMI-ready in 30 seconds</h3>
+      <p style="font-size:14px;margin-bottom:16px">The free audit checks SPF, DKIM, DMARC, MX, TLS and more, and shows the exact record to add if one is missing. No account needed.</p>
+      <a class="btn btn-primary" href="/#audit">Run the free audit</a>
+    </div>
+    <p style="margin-top:28px;padding:18px;background:#f4f4ff;border-radius:12px">Want this checked automatically every day? <a href="/#pricing" style="font-weight:600">Inboxproof Pro</a> monitors your domain around the clock and alerts you the moment a record breaks or an IP gets listed. <a href="/#pricing" style="font-weight:600">See pricing →</a></p>
+  </div>
+</div>
+
+<footer>
+  <div class="container">
+    <span>© 2026 Inboxproof, Inc.</span>
+    <span><a href="/blog">All guides</a> · <a href="/">Home</a> · <a href="/privacy">Privacy</a> · <a href="https://github.com/jtc268/inboxproof" target="_blank" rel="noopener">GitHub</a></span>
+  </div>
+</footer>
+</body>
+</html>
