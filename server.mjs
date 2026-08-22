@@ -237,6 +237,7 @@ async function maybeSendAuditFollowup(email, domain, audit, reportId) {
     rows + '</table>' +
     '<p style="color:#444;line-height:1.6;margin:0 0 14px">Want us to watch ' + domain + ' daily and email you the moment any of these breaks or a new issue appears?</p>' +
     '<a href="https://inboxproof.email/pro" style="display:inline-block;background:#1a1a2e;color:#fff;padding:12px 26px;border-radius:6px;text-decoration:none;font-weight:600;font-size:15px">Start Pro monitoring</a>' +
+    (lead.refCode ? '<p style="color:#888;font-size:12px;line-height:1.6;margin-top:18px">Know someone else wrestling with deliverability? Send them the free audit with your link: <a href="https://inboxproof.email/?ref=' + lead.refCode + '" style="color:#6366f1;font-weight:600">inboxproof.email/?ref=' + lead.refCode + '</a>. When they upgrade to Pro, you get a free month of Pro.</p>' : '') +
     '<p style="color:#888;font-size:12px;line-height:1.5;margin-top:24px">InboxProof &middot; free email deliverability audit. You are receiving this because you ran a free audit on ' + domain + '. <a href="https://inboxproof.email/r/' + reportId + '" style="color:#888">View your full report</a>.</p>' +
     '</div>';
   const ok = await sendAlertEmail(email, domain + ' email health: ' + audit.score + '/100 (' + audit.grade + ')', html);
@@ -264,6 +265,7 @@ async function sendReportEmail(email, domain, audit, reportId) {
     rows + '</table>' +
     '<p style="color:#444;line-height:1.6;margin:0 0 14px">Records change. Want us to watch ' + domain + ' daily and email you the moment one breaks?</p>' +
     '<a href="https://inboxproof.email/pro" style="display:inline-block;background:#1a1a2e;color:#fff;padding:12px 26px;border-radius:6px;text-decoration:none;font-weight:600;font-size:15px">Start Pro monitoring</a>' +
+    ((leads[email] && leads[email].refCode) ? '<p style="color:#888;font-size:12px;line-height:1.6;margin-top:18px">Know someone else wrestling with deliverability? Send them the free audit with your link: <a href="https://inboxproof.email/?ref=' + leads[email].refCode + '" style="color:#6366f1;font-weight:600">inboxproof.email/?ref=' + leads[email].refCode + '</a>. When they upgrade to Pro, you get a free month of Pro.</p>' : '') +
     '<p style="color:#888;font-size:12px;line-height:1.5;margin-top:24px">InboxProof &middot; free email deliverability audit. <a href="https://inboxproof.email/r/' + reportId + '" style="color:#888">View your full report online</a>.</p>' +
     '</div>';
   return await sendAlertEmail(email, 'Your ' + domain + ' deliverability report', html);
