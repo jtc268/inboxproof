@@ -1,0 +1,84 @@
+<!doctype html>
+<html lang="en">
+<head>
+<script>(function(){try{var p=location.pathname||'/';var r=(document.referrer||'').split('/')[2]||'direct';var q=new URLSearchParams(location.search);var ref=q.get('ref')||'';if(ref){try{localStorage.setItem('ip_ref',ref);}catch(e){}}var u='/api/track?page='+encodeURIComponent(p)+'&ref='+encodeURIComponent(r)+(ref?'&team='+encodeURIComponent(ref):'');if(navigator.sendBeacon&&navigator.sendBeacon(u))return;var i=new Image();i.src=u;}catch(e){}})();</script>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Email deliverability for nonprofits: keep donor emails in the inbox | Inboxproof</title>
+<meta name="description" content="Donor appeals, event invites and volunteer emails land in spam when your domain is not authenticated. Here is how a nonprofit fixes MX, SPF, DKIM and DMARC on a small budget, and how to keep it fixed.">
+<meta property="og:title" content="Email deliverability for nonprofits: keep donor emails in the inbox">
+<meta property="og:description" content="The deliverability fixes that keep nonprofit donor, event and volunteer email out of the spam folder, on a small budget.">
+<meta property="og:type" content="article">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="/styles.css">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' rx='8' fill='%236366f1'/%3E%3Cpath d='M8 16h13M15 10l6 6-6 6' stroke='white' stroke-width='3' fill='none' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E">
+<script type="application/ld+json">{"@context":"https://schema.org","@type":"Article","headline":"Email deliverability for nonprofits: keep donor emails in the inbox","description":"The deliverability fixes that keep nonprofit donor, event and volunteer email out of the spam folder, on a small budget.","author":{"@type":"Organization","name":"Inboxproof"},"publisher":{"@type":"Organization","name":"Inboxproof"},"datePublished":"2026-08-22","dateModified":"2026-08-22"}</script>
+<link rel="canonical" href="https://inboxproof.email/blog/email-deliverability-nonprofits">
+<meta property="og:url" content="https://inboxproof.email/blog/email-deliverability-nonprofits">
+<meta property="og:image" content="https://inboxproof.email/og.png">
+<meta property="og:image:width" content="1200">
+<meta property="og:image:height" content="630">
+<meta name="twitter:image" content="https://inboxproof.email/og.png">
+</head>
+<body>
+<nav class="nav">
+  <div class="container">
+    <a class="logo" href="/">
+      <span class="mark"><svg viewBox="0 0 24 24" fill="none"><path d="M4 12h11M11 7l5 5-5 5" stroke="#fff" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"/></svg></span>
+      Inboxproof
+    </a>
+    <div class="nav-links"><a href="/blog">All guides</a><a href="/">Run a free audit</a></div>
+  </div>
+</nav>
+
+<div class="container" style="max-width:760px;padding:60px 20px 80px">
+  <div class="kicker">Guide</div>
+  <h1 style="font-size:34px;margin:10px 0 24px">Email deliverability for nonprofits: keep donor emails in the inbox</h1>
+  <div style="opacity:.85;line-height:1.75;font-size:15.5px">
+    <p>For a nonprofit, email is not a marketing channel, it is the operation. The donor appeal, the event invite, the volunteer shift reminder, the grant thank-you. If your domain is not authenticated, that email goes to the spam folder or gets rejected outright, and you lose the donation, the attendee, or the volunteer before you ever know it happened. The good news: the fixes are cheap, they take an afternoon, and most of them are free. Here is the exact list.</p>
+
+    <h2 style="font-size:22px;margin:34px 0 12px">1. Why nonprofit email breaks</h2>
+    <p>Nonprofits hit deliverability problems for a few specific reasons. First, most run their email through a tool they did not set up the domain for: Mailchimp, Constant Contact, or a free Gmail and Yahoo account for the whole team. The tool sends from your domain, but your domain's DNS does not say that tool is allowed to. Second, the list is large and the sending is bursty: a 4,000-person donor list that gets one big blast a month looks like spam behavior to a mailbox provider if the domain is not authenticated. Third, there is usually no one on staff who owns DNS, so a record that was set up three years ago quietly stops working when the ESP changes or the key rotates. The result is the same every time: the email lands in spam, open rates drop, and nobody connects the two until a donor asks why they never saw the appeal.</p>
+
+    <h2 style="font-size:22px;margin:34px 0 12px">2. The five checks your domain needs</h2>
+    <p>Every domain that sends email needs the same five records in place. Run them in this order, and fix the failures before the next send:</p>
+    <p style="margin:0 0 14px">1. <b>MX</b> points to a real mail server. Without it, replies to your appeal bounce and the domain looks abandoned.</p>
+    <p style="margin:0 0 14px">2. <b>SPF</b> lists every tool that sends for you and ends in <code>-all</code>. If you send through Mailchimp and also from a staff Gmail, both need to be in the record. A missing <code>-all</code> is the most common silent failure.</p>
+    <p style="margin:0 0 14px">3. <b>DKIM</b> signs the mail on the same domain as the From header. Most ESPs hand you the exact record to add; the failure is adding it and then not confirming it is actually signing.</p>
+    <p style="margin:0 0 14px">4. <b>DMARC</b> is present, usually starting at <code>p=none</code> with a reporting address, then tightened over time. It tells receivers what to do with mail that fails SPF or DKIM.</p>
+    <p style="margin:0 0 14px">5. <b>TLS/STARTTLS</b> is available on the sending path. Plain-text SMTP is a spam signal, and it is the check most nonprofits never think to run.</p>
+    <p>The <a href="/">free audit</a> runs all five in seconds and shows you the exact record to add or fix, in plain language. For a single domain that is usually enough to get back to inbox-ready.</p>
+
+    <h2 style="font-size:22px;margin:34px 0 12px">3. The common nonprofit setups, and what to do</h2>
+    <p><b>Sending through Mailchimp, Constant Contact, or a similar ESP.</b> The ESP's help center gives you the SPF include and the DKIM record. Add both to your domain's DNS, confirm DKIM is signing, and set a DMARC record at <code>p=none</code> pointing to a report you will actually read. This is the setup that fixes the most nonprofit spam problems, and it is entirely free.</p>
+    <p><b>Using a free Gmail or Yahoo for the whole team.</b> This is the weakest setup. A free mailbox sending a 4,000-person blast is a strong spam signal, and you have no SPF or DKIM control over the sending domain. The fix is to move the sending to a real ESP on your own domain and authenticate it the way above. Keep the free mailbox for reading, not for the blast.</p>
+    <p><b>Sending from your own domain on a small server or a self-hosted setup.</b> Same five checks, but you own the whole path. Confirm the PTR (reverse DNS) on your sending IP matches the server hostname, because a missing PTR is a classic rejection reason that the free audit flags.</p>
+
+    <h2 style="font-size:22px;margin:34px 0 12px">4. The two failures that look fine but are not</h2>
+    <p>Two problems pass a casual look and still cost you deliverability. The first is the <a href="/blog/spf-lookup-limit">SPF lookup limit</a>: if your SPF record chains more than ten DNS lookups, receivers must reject it, and many nonprofit records quietly exceed that after a few years of adding tools. The second is SPF ending in <code>~all</code> instead of <code>-all</code>. Softfail means spoofed mail is not firmly rejected, and mailbox providers treat the domain as less trustworthy. Both are one-line DNS fixes, and both are exactly what the audit points at.</p>
+
+    <h2 style="font-size:22px;margin:34px 0 12px">5. Keep it fixed, not just fixed once</h2>
+    <p>The records above get you inbox-ready today. The failure mode for a nonprofit is that nobody owns the DNS, so a record breaks in six months and the next appeal quietly underperforms. The cheap version of the fix is a monthly check: run the free audit on your sending domain, confirm the five checks still pass, and fix anything that changed. The automatic version is <a href="/#pricing">Inboxproof Pro</a>, which re-runs the full check on your domain every day and emails you the moment a record breaks, an IP gets blocklisted, or a new issue appears, so the fix happens on the day it happens instead of at the next donor appeal.</p>
+
+    <h2 style="font-size:22px;margin:34px 0 12px">Start with one domain</h2>
+    <p>Run the free audit on your sending domain now and see the five-check score and the exact record to fix first: <a href="/">free email deliverability audit</a>. For the nonprofit-specific view of what breaks and why, see <a href="/nonprofits">Inboxproof for nonprofits</a>.</p>
+  </div>
+    <div class="related">
+      <h3>Related Guides</h3>
+      <ul>
+        <li><a href="/blog/email-deliverability-by-audience">Email deliverability by audience: what changes for each kind of sender</a></li>
+        <li><a href="/blog/email-deliverability-checklist">The email deliverability checklist: every check, in order</a></li>
+        <li><a href="/blog/spf-lookup-limit">The SPF 10-lookup limit and how to stay under it</a></li>
+      </ul>
+    </div>
+</div>
+
+<footer>
+  <div class="container">
+    <span>© 2026 Inboxproof, Inc.</span>
+    <span><a href="/blog">All guides</a> · <a href="/">Home</a> · <a href="/privacy">Privacy</a> · <a href="https://github.com/jtc268/inboxproof" target="_blank" rel="noopener">GitHub</a></span>
+  </div>
+</footer>
+</body>
+</html>
