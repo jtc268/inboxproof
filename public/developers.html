@@ -64,6 +64,7 @@
         <button id="pg-run" class="btn btn-primary" style="white-space:nowrap">Run check</button>
       </div>
       <pre id="pg-out" class="pg-pre">Pick a check and press Run to see the live response.</pre>
+      <a id="pg-full" style="display:none;color:#6366f1;font-weight:600;font-size:14px;margin-top:10px;text-decoration:none">Run the full free audit on this domain →</a>
       <div style="margin-top:14px">
         <div style="font-size:12px;color:var(--dim);margin-bottom:6px">Use it in your code</div>
         <pre id="pg-code" class="pg-pre" style="max-height:none">curl "https://inboxproof.email/api/spam-check?domain=example.com"</pre>
@@ -179,6 +180,7 @@
   var codeEl = document.getElementById('pg-code');
   var runBtn = document.getElementById('pg-run');
   var copyBtn = document.getElementById('pg-copy');
+  var fullLink = document.getElementById('pg-full');
   var cur = { endpoint: 'spam-check', param: 'domain' };
 
   function trackEvent(name) {
@@ -202,6 +204,7 @@
       input.placeholder = cur.param === 'ip' ? 'e.g. 8.8.8.8' : 'yourdomain.com';
       out.style.color = 'var(--muted)';
       out.textContent = 'Pick a check and press Run to see the live response.';
+      fullLink.style.display = 'none';
       updateCode();
     });
   });
@@ -219,6 +222,13 @@
       .then(function (res) {
         out.style.color = res.ok ? '#34d399' : '#f87171';
         out.textContent = JSON.stringify(res.j, null, 2);
+        if (res.ok && cur.param === 'domain') {
+          fullLink.href = '/?domain=' + encodeURIComponent(val) + '&src=api';
+          fullLink.textContent = 'Run the full free audit on ' + val + ' \u2192';
+          fullLink.style.display = 'inline';
+        } else {
+          fullLink.style.display = 'none';
+        }
         if (res.ok) trackEvent('pg_run_' + cur.endpoint);
       })
       .catch(function (e) {
