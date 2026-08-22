@@ -1131,6 +1131,10 @@ async function handler(req, res) {
       if (!REMOTE) saveJson(REPORTS_F, reports);
       return sendJson(res, 200, { ok: true, existed: !!lead, reportsDeleted: ids.length });
     }
+    if (req.method === 'GET' && u.pathname === '/pricing') {
+      res.writeHead(301, { Location: '/#pricing' });
+      return res.end();
+    }
     // static
     if (req.method === 'GET') {
       let rel = u.pathname === '/' ? 'index.html' : u.pathname;
