@@ -436,8 +436,8 @@ window.trackEvent=function(ev){try{var p=location.pathname||'/';var u='/api/trac
         <div id="capErr" style="margin-top:8px;font-size:13px;color:#f87171"></div>
       </div>
       <div class="unlock" id="unlock">
-        <h3>Unlock continuous monitoring</h3>
-        <p>Your audit is saved to <b id="unlockEmail"></b>. Get Pro and we'll re-run this audit daily and email you the moment anything breaks.</p>
+        <h3 id="unlockH">Unlock continuous monitoring</h3>
+        <p>Your audit is saved to <b id="unlockEmail"></b>. <span id="unlockMsg">Get Pro and we'll re-run this audit daily and email you the moment anything breaks.</span></p>
         <div style="display:flex;gap:16px;justify-content:center;flex-wrap:wrap;margin-bottom:18px;font-size:13.5px;color:var(--muted)">
           <span>✓ Daily re-audit (5 domains)</span>
           <span>✓ Score history &amp; trend</span>
@@ -506,6 +506,20 @@ function render(a){
     return `<div class="chk ${c.status}"><div class="st">${ic}</div><div><div class="t">${c.name}</div><div class="d">${c.detail}</div>${fix}</div></div>`;
   }).join('');
   $('#unlockEmail').textContent = a.email || 'your inbox';
+  const failN = a.checks.filter(c => c.status === 'fail').length;
+  const warnN = a.checks.filter(c => c.status === 'warn').length;
+  let uMsg;
+  if (failN > 0) {
+    $('#unlockH').textContent = 'Fix these, then keep them fixed';
+    uMsg = a.domain + ' has ' + failN + ' failing check' + (failN > 1 ? 's' : '') + '. Get Pro and we\'ll re-run this audit daily and email you the moment anything breaks, so a deliverability drop never catches you blind.';
+  } else if (warnN > 0) {
+    $('#unlockH').textContent = 'Keep ' + a.domain + ' solid';
+    uMsg = a.domain + ' is in good shape, with ' + warnN + ' check' + (warnN > 1 ? 's' : '') + ' that could get worse. Get Pro and we\'ll monitor all 7 daily and email you the instant one changes.';
+  } else {
+    $('#unlockH').textContent = 'Keep ' + a.domain + ' inbox-ready';
+    uMsg = 'Every check passed. Get Pro and we\'ll monitor all 7 daily and email you the moment anything changes, so a silent break never costs you deliverability.';
+  }
+  $('#unlockMsg').textContent = uMsg;
   if (a.reportId) {
     const link = location.origin + '/r/' + a.reportId;
     const sl = $('#shareLink');
