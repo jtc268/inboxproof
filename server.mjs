@@ -224,7 +224,7 @@ async function maybeSendAuditFollowup(email, domain, audit, reportId) {
     rows + '</table>' +
     '<p style="color:#444;line-height:1.6;margin:0 0 14px">Want us to watch ' + domain + ' daily and email you the moment any of these breaks or a new issue appears?</p>' +
     '<a href="https://inboxproof.email/pro" style="display:inline-block;background:#1a1a2e;color:#fff;padding:12px 26px;border-radius:6px;text-decoration:none;font-weight:600;font-size:15px">Start Pro monitoring</a>' +
-    '<p style="color:#888;font-size:12px;line-height:1.5;margin-top:24px">InboxProof &middot; free email deliverability audit. You are receiving this because you ran a free audit on ' + domain + '. <a href="https://inboxproof.email/report/' + reportId + '" style="color:#888">View your full report</a>.</p>' +
+    '<p style="color:#888;font-size:12px;line-height:1.5;margin-top:24px">InboxProof &middot; free email deliverability audit. You are receiving this because you ran a free audit on ' + domain + '. <a href="https://inboxproof.email/r/' + reportId + '" style="color:#888">View your full report</a>.</p>' +
     '</div>';
   const ok = await sendAlertEmail(email, domain + ' email health: ' + audit.score + '/100 (' + audit.grade + ')', html);
   if (ok) {
