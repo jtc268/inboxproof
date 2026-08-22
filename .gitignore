@@ -49,6 +49,7 @@ Thumbs.db
 node_modules/
 
 awesome-cli-apps-fork/
+awesome-lists/
 add-sitemap.mjs
 check-entries.mjs
 check-index.mjs
