@@ -1,0 +1,76 @@
+﻿<!doctype html>
+<html lang="en">
+<head>
+<script>(function(){try{var p=location.pathname||"/";var r=(document.referrer||"").split("/")[2]||"direct";var u="/api/track?page="+encodeURIComponent(p)+"&ref="+encodeURIComponent(r);if(navigator.sendBeacon&&navigator.sendBeacon(u))return;var i=new Image();i.src=u;}catch(e){}})();</script>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Can you use Mailgun for cold email? Risky, and here is the minimum setup | Inboxproof</title>
+<meta name="description" content="Mailgun is more permissive than Postmark but its shared IPs and terms still make cold email risky. The minimum viable setup if you do it anyway.">
+<meta property="og:title" content="Can you use Mailgun for cold email? Risky, and here is the minimum setup">
+<meta property="og:description" content="Mailgun is more permissive than Postmark but its shared IPs and terms still make cold email risky. The minimum viable setup if you do it anyway.">
+<meta property="og:type" content="article">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="/styles.css">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' rx='8' fill='%236366f1'/%3E%3Cpath d='M8 16h13M15 10l6 6-6 6' stroke='white' stroke-width='3' fill='none' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E">
+<script type="application/ld+json">
+{"@context":"https://schema.org","@type":"Article","headline":"Can you use Mailgun for cold email? Risky, and here is the minimum setup","description":"Mailgun is more permissive than Postmark but its shared IPs and terms still make cold email risky. The minimum viable setup if you do it anyway.","author":{"@type":"Organization","name":"Inboxproof"},"publisher":{"@type":"Organization","name":"Inboxproof"}}
+</script>
+<link rel="canonical" href="https://inboxproof.email/blog/mailgun-for-cold-email">
+<meta property="og:url" content="https://inboxproof.email/blog/mailgun-for-cold-email">
+<meta property="og:image" content="https://inboxproof.email/og.png">
+<meta property="og:image:width" content="1200">
+<meta property="og:image:height" content="630">
+<meta name="twitter:image" content="https://inboxproof.email/og.png">
+</head>
+<body>
+<nav class="nav">
+  <div class="container">
+    <a class="logo" href="/">
+      <span class="mark"><svg viewBox="0 0 24 24" fill="none"><path d="M4 12h11M11 7l5 5-5 5" stroke="#fff" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"/></svg></span>
+      Inboxproof
+    </a>
+    <div class="nav-links"><a href="/blog">All guides</a><a href="/">Run a free audit</a></div>
+  </div>
+</nav>
+
+<div class="container" style="max-width:760px;padding:60px 20px 80px">
+  <div class="kicker">Cold email</div>
+  <h1 style="font-size:34px;margin:10px 0 24px">Can you use Mailgun for cold email? Risky, and here is the minimum setup</h1>
+  <div style="opacity:.85;line-height:1.75;font-size:15.5px">
+<p>Mailgun is the most permissive of the major transactional providers when it comes to cold email, which is why people ask. It is still a bad default, and if you do it anyway there is a minimum setup that keeps the damage contained.</p>
+<h2 style="font-size:22px;margin:34px 0 12px">Why it is risky</h2>
+<p><strong>The shared IP pool.</strong> Mailgun's default sending comes from shared IPs with a long history of mixed mail. Cold outreach from a well-known shared pool gets filtered at a high rate, and you share that reputation with every other customer on the IP.</p>
+<p><strong>The terms.</strong> Mailgun's acceptable use policy restricts unsolicited bulk email. Cold email at volume sits in the grey zone that providers enforce when it starts affecting their reputation. Accounts get throttled or suspended, usually without much warning.</p>
+<p><strong>Your brand domain.</strong> Sending cold mail from your main domain means a bad reputation on the sending side can drag your transactional mail into spam with it.</p>
+<h2 style="font-size:22px;margin:34px 0 12px">The minimum viable setup</h2>
+<p>If you use Mailgun for cold email anyway, do all of the following. Skip one and the failure mode gets worse.</p>
+<p><strong>Dedicated sending domain.</strong> A cheap second domain used for nothing else. Never your brand domain, never a subdomain of it.</p>
+<p><strong>Dedicated IP.</strong> Not the shared pool. A dedicated IP means your cold-email reputation is yours alone, and it means a warmup is mandatory: two to four weeks, starting at 10 to 20 emails a day, ramping slowly.</p>
+<p><strong>Clean DNS on the sending domain.</strong> SPF authorizing only Mailgun on that domain, DKIM signing, DMARC in place. No stale includes from old providers.</p>
+<p><strong>Plain text, one link, a real physical address.</strong> Cold mail that looks like marketing gets treated like marketing, and complaints are what sink a dedicated IP.</p>
+<p><strong>Watch complaints and bounces daily.</strong> A dedicated IP has no neighbors to hide behind. A complaint spike is a stop signal, not a tuning problem.</p>
+<h2 style="font-size:22px;margin:34px 0 12px">The better option</h2>
+<p>A cold-email tool built for outreach handles the warmup, the rotation, and the deliverability monitoring for you, and its terms cover the use case. Mailgun is a sending API, not an outreach platform, and the gap is exactly where cold email campaigns die.</p>
+<div style="margin:32px 0;padding:20px;border-radius:12px;background:#eef2ff">
+<p style="margin:0 0 12px;font-weight:600">Whichever provider you pick, the setup on your domain decides the outcome.</p>
+<p style="margin:0 0 14px;opacity:.85">Run a <a href="/#audit">free audit of your sending domain</a>. It checks SPF, DKIM, DMARC, MX, TLS and IP reputation in about 30 seconds, no account needed.</p>
+<a class="btn btn-primary" href="/#audit">Check my domain free</a>
+</div>
+    <div style="margin:36px 0;padding:18px;border-radius:12px;background:rgba(99,102,241,.06)">
+      <div style="font-weight:700;font-size:15px;margin-bottom:10px">Related guides</div>
+      <div style="opacity:.8;font-size:14px;line-height:2">
+        <a href="/blog/cold-email-domains">Cold email domains: how many, how to rotate</a><br><a href="/blog/cold-email-tools">Best cold email tools</a><br><a href="/blog/mailgun-deliverability">Mailgun deliverability: why emails go to spam</a><br><a href="/blog/cold-email-warm-up">Cold email warmup: how to ramp a new sending domain</a>
+      </div>
+    </div>
+  </div>
+</div>
+
+<footer>
+  <div class="container">
+    <span>&copy; 2026 Inboxproof, Inc.</span>
+    <span><a href="/blog">All guides</a> &middot; <a href="/">Home</a> &middot; <a href="/privacy">Privacy</a> &middot; <a href="https://github.com/jtc268/inboxproof" target="_blank" rel="noopener">GitHub</a></span>
+  </div>
+</footer>
+</body>
+</html>

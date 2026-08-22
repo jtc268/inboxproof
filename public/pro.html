@@ -1,9 +1,10 @@
 <!doctype html>
 <html lang="en">
 <head>
+<script>(function(){try{var p=location.pathname||"/";var r=(document.referrer||"").split("/")[2]||"direct";var u="/api/track?page="+encodeURIComponent(p)+"&ref="+encodeURIComponent(r);if(navigator.sendBeacon&&navigator.sendBeacon(u))return;var i=new Image();i.src=u;}catch(e){}})();</script>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
-<title>Inboxproof — Dashboard</title>
+<title>Inboxproof | Dashboard</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="/styles.css">
@@ -63,7 +64,7 @@ function renderStatus(lead, history){
     '<div style="display:flex;gap:14px;flex-wrap:wrap;margin-bottom:14px">'+
       '<div style="flex:1;min-width:200px;background:var(--panel);border:1px solid var(--line);border-radius:12px;padding:16px 20px">'+
         '<div style="font-size:12px;letter-spacing:.06em;text-transform:uppercase;color:var(--dim);margin-bottom:6px">Monitoring</div>'+
-        '<div style="font-size:16px;font-weight:700">'+(isPro ? ('<span style="color:#34d399">● Active</span> · daily checks · since '+since) : '<span style="color:#fbbf24">○ Not active</span> — Pro adds daily monitoring & alerts')+'</div>'+
+        '<div style="font-size:16px;font-weight:700">'+(isPro ? ('<span style="color:#34d399">● Active</span> · daily checks · since '+since) : '<span style="color:#fbbf24">○ Not active</span>. Pro adds daily monitoring & alerts')+'</div>'+
       '</div>'+
       '<div style="flex:1;min-width:200px;background:var(--panel);border:1px solid var(--line);border-radius:12px;padding:16px 20px">'+
         '<div style="font-size:12px;letter-spacing:.06em;text-transform:uppercase;color:var(--dim);margin-bottom:6px">Last check · '+new Date(last.at).toLocaleString()+'</div>'+
@@ -79,6 +80,56 @@ function renderStatus(lead, history){
       '<div style="font-size:12px;letter-spacing:.06em;text-transform:uppercase;color:var(--dim);margin-bottom:10px">Score trend</div>'+
       '<div style="display:flex;align-items:flex-end;gap:5px;height:52px">'+bars+'</div>'+
     '</div>';
+  if(isPro){
+    const domains = (lead.domains && lead.domains.length) ? lead.domains : (lead.domain ? [lead.domain] : []);
+    const scores = lead.domainScores || {};
+    const limit = (lead.plan === 'agency' ? 25 : 5);
+    const domainRows = domains.map(d => {
+      const s = scores[d];
+      const scoreTxt = s ? '<span style="color:'+color(s.score)+'">'+s.score+'/100</span> · checked '+new Date(s.at).toLocaleDateString() : '<span style="opacity:.5">not checked yet</span>';
+      return '<div style="display:flex;align-items:center;gap:10px;padding:8px 0;border-bottom:1px solid var(--line)">'+
+        '<div style="flex:1;font-weight:600">'+d+'</div>'+
+        '<div style="font-size:13px">'+scoreTxt+'</div>'+
+        '<button data-rm="'+d+'" class="btn btn-ghost btn-sm" style="padding:4px 10px;color:#f87171">Remove</button>'+
+      '</div>';
+    }).join('');
+    box.innerHTML +=
+      '<div style="background:var(--panel);border:1px solid var(--line);border-radius:12px;padding:16px 20px;margin-top:14px">'+
+        '<div style="font-size:12px;letter-spacing:.06em;text-transform:uppercase;color:var(--dim);margin-bottom:10px">Monitored domains · '+domains.length+'/'+limit+'</div>'+
+        '<div id="domlist">'+(domainRows || '<div style="font-size:13px;color:var(--muted)">No domains yet. Add one below.</div>')+'</div>'+
+        '<div style="display:flex;gap:8px;flex-wrap:wrap;margin-top:12px">'+
+          '<input id="domadd" placeholder="Add a domain to monitor, e.g. client.com" style="padding:9px 12px;border-radius:9px;border:1px solid var(--line);background:#0a0e16;color:inherit;font-size:13px;min-width:220px">'+
+          '<button id="domaddbtn" class="btn btn-primary btn-sm" style="padding:9px 14px">Add domain</button>'+
+        '</div>'+
+        '<div id="dommsg" style="font-size:12.5px;min-height:16px;margin-top:8px;opacity:.85"></div>'+
+      '</div>';
+    const addBtn = $('#domaddbtn');
+    if(addBtn) addBtn.onclick = async () => {
+      const msg = $('#dommsg');
+      const d = $('#domadd').value.trim();
+      if(!d){ msg.style.color='#f87171'; msg.textContent='Enter a domain first.'; return; }
+      msg.style.color='var(--muted)'; msg.textContent='Adding…';
+      try {
+        const r = await fetch('/api/domains', { method:'POST', headers:{'Content-Type':'application/json'}, body: JSON.stringify({ email, action:'add', domain:d }) });
+        const j = await r.json();
+        if(!r.ok) throw new Error(j.error || 'Could not add domain');
+        msg.style.color='#34d399'; msg.textContent='Added '+j.domains[j.domains.length-1]+'. It will be checked on the next daily run.';
+        load();
+      } catch(e){ msg.style.color='#f87171'; msg.textContent=e.message; }
+    };
+    box.querySelectorAll('[data-rm]').forEach(b => {
+      b.onclick = async () => {
+        const d = b.getAttribute('data-rm');
+        if(!confirm('Stop monitoring '+d+'?')) return;
+        try {
+          const r = await fetch('/api/domains', { method:'POST', headers:{'Content-Type':'application/json'}, body: JSON.stringify({ email, action:'remove', domain:d }) });
+          const j = await r.json();
+          if(!r.ok) throw new Error(j.error || 'Could not remove domain');
+          load();
+        } catch(e){ alert(e.message); }
+      };
+    });
+  }
   if(isPro && lead.apiKey){
     box.innerHTML +=
       '<div style="background:var(--panel);border:1px solid var(--line);border-radius:12px;padding:16px 20px;margin-top:14px">'+
@@ -142,7 +193,7 @@ function renderStatus(lead, history){
 async function load(){
   if(!email){
     $('#title').textContent = 'No account selected';
-    $('#sub').textContent = 'Run a free audit on the homepage — your history will appear here.';
+    $('#sub').textContent = 'Run a free audit on the homepage, your history will appear here.';
     return;
   }
   try{
@@ -152,7 +203,8 @@ async function load(){
     $('#title').textContent = email;
     const isPro = j.lead.pro;
     const planLabel = isPro ? (j.lead.plan === 'agency' ? 'Agency plan active · ' : 'Pro plan active · ') : 'Free plan · ';
-    $('#sub').textContent = planLabel + (j.lead.domain ? 'primary domain: ' + j.lead.domain : 'no domain yet');
+    const doms = (j.lead.domains && j.lead.domains.length) ? j.lead.domains : (j.lead.domain ? [j.lead.domain] : []);
+    $('#sub').textContent = planLabel + (doms.length ? doms.length + ' domain' + (doms.length > 1 ? 's' : '') + ' monitored' : 'no domain yet');
     const p = $('#plan');
     p.textContent = isPro ? (j.lead.plan === 'agency' ? 'AGENCY' : 'PRO') : 'FREE';
     p.className = 'pill ' + (isPro ? 'pro' : 'free');

@@ -1,9 +1,10 @@
 <!doctype html>
 <html lang="en">
 <head>
+<script>(function(){try{var p=location.pathname||"/";var r=(document.referrer||"").split("/")[2]||"direct";var u="/api/track?page="+encodeURIComponent(p)+"&ref="+encodeURIComponent(r);if(navigator.sendBeacon&&navigator.sendBeacon(u))return;var i=new Image();i.src=u;}catch(e){}})();</script>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
-<title>Privacy — Inboxproof</title>
+<title>Privacy | Inboxproof</title>
 <meta name="description" content="What Inboxproof stores, why, and how to delete it.">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
@@ -25,8 +26,8 @@
   <div class="kicker">Privacy</div>
   <h1 style="font-size:34px;margin:10px 0 24px">What we store, and why</h1>
   <div style="opacity:.85;line-height:1.7;font-size:15px">
-    <p><b>What we collect.</b> When you run an audit we store your domain, the email address you enter, your audit history (score, checks, timestamps), and — if you start Pro — your billing plan. Payment details are handled by Stripe; we never see or store card numbers.</p>
-    <p><b>What we do not do.</b> We do not sell or share your data, we do not send marketing emails, and we do not use your address for anything other than saving your audit history and delivering Pro monitoring alerts. Public report links (<code>/r/…</code>) contain only the audit results for a domain — no email addresses.</p>
+    <p><b>What we collect.</b> When you run an audit we store your domain, the email address you enter, your audit history (score, checks, timestamps), and, if you start Pro, your billing plan. Payment details are handled by Stripe; we never see or store card numbers.</p>
+    <p><b>What we do not do.</b> We do not sell or share your data, we do not send marketing emails, and we do not use your address for anything other than saving your audit history and delivering Pro monitoring alerts. Public report links (<code>/r/…</code>) contain only the audit results for a domain, no email addresses.</p>
     <p><b>Retention.</b> Your data stays until you ask us to remove it. You can delete everything tied to your email address at any time:</p>
     <p style="margin:18px 0"><code style="opacity:.8">POST /api/delete  {"email": "you@yourdomain.com"}</code></p>
     <p>or by emailing the support address shown on the site. Deletion removes your lead record, audit history, and monitoring data. Stripe keeps payment records as required for billing and tax purposes.</p>

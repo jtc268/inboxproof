@@ -1,9 +1,10 @@
-<!doctype html>
+﻿<!doctype html>
 <html lang="en">
 <head>
+<script>(function(){try{var p=location.pathname||"/";var r=(document.referrer||"").split("/")[2]||"direct";var u="/api/track?page="+encodeURIComponent(p)+"&ref="+encodeURIComponent(r);if(navigator.sendBeacon&&navigator.sendBeacon(u))return;var i=new Image();i.src=u;}catch(e){}})();</script>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
-<title>How to Read Email Headers: SPF, DKIM and DMARC Results Explained — Inboxproof</title>
+<title>How to Read Email Headers: SPF, DKIM and DMARC Results Explained | Inboxproof</title>
 <meta name="description" content="Learn to read raw email headers: where the SPF, DKIM and DMARC results live, what each value means, and how to tell a legitimate email from a spoof in under a minute.">
 <meta property="og:title" content="How to Read Email Headers: SPF, DKIM and DMARC Results Explained">
 <meta property="og:description" content="Where the SPF, DKIM and DMARC results live in raw headers, what each value means, and how to spot a spoof in under a minute.">
@@ -15,6 +16,12 @@
 <script type="application/ld+json">
 {"@context":"https://schema.org","@type":"Article","headline":"How to Read Email Headers: SPF, DKIM and DMARC Results Explained","description":"Where the SPF, DKIM and DMARC results live in raw headers, what each value means, and how to spot a spoof in under a minute.","author":{"@type":"Organization","name":"Inboxproof"},"publisher":{"@type":"Organization","name":"Inboxproof"}}
 </script>
+<link rel="canonical" href="https://inboxproof.email/blog/how-to-read-email-headers">
+<meta property="og:url" content="https://inboxproof.email/blog/how-to-read-email-headers">
+<meta property="og:image" content="https://inboxproof.email/og.png">
+<meta property="og:image:width" content="1200">
+<meta property="og:image:height" content="630">
+<meta name="twitter:image" content="https://inboxproof.email/og.png">
 </head>
 <body>
 <nav class="nav">
@@ -45,10 +52,10 @@
   <h2>SPF: did the sending IP have permission?</h2>
   <p><code>spf=pass</code> means the IP that delivered the message is listed in your SPF record. <code>spf=fail</code> means it is not. The value after <code>smtp.mailfrom=</code> is the domain whose SPF was checked, which is usually the envelope sender, not the visible From address. Common variants:</p>
   <ul style="line-height:1.9">
-    <li><b>pass</b> — the IP is authorized. Good.</li>
-    <li><b>fail</b> — not authorized. The receiving server should reject or filter the message.</li>
-    <li><b>softfail</b> — not authorized, but the record says "be gentle." Often a sign of a misconfigured SPF with a <code>~all</code> mechanism.</li>
-    <li><b>permerror / temperror</b> — the SPF lookup itself broke (too many DNS lookups, malformed record). The mail is treated as unverified.</li>
+    <li><b>pass</b>: the IP is authorized. Good.</li>
+    <li><b>fail</b>: not authorized. The receiving server should reject or filter the message.</li>
+    <li><b>softfail</b>: not authorized, but the record says "be gentle." Often a sign of a misconfigured SPF with a <code>~all</code> mechanism.</li>
+    <li><b>permerror / temperror</b>: the SPF lookup itself broke (too many DNS lookups, malformed record). The mail is treated as unverified.</li>
   </ul>
 
   <h2>DKIM: was the message signed, and does the signature verify?</h2>
@@ -61,9 +68,9 @@
   <h2>DMARC: the verdict that ties it together</h2>
   <p>DMARC requires alignment: the SPF or DKIM domain must match the From header. <code>dmarc=pass</code> means at least one aligned check passed and the domain has a DMARC record. The <code>action=</code> value tells you what the policy would do with unaligned mail:</p>
   <ul style="line-height:1.9">
-    <li><b>action=none</b> — report only. The domain wants to see what is happening but is not yet filtering.</li>
-    <li><b>action=quarantine</b> — unaligned mail goes to spam.</li>
-    <li><b>action=reject</b> — unaligned mail is refused outright.</li>
+    <li><b>action=none</b>: report only. The domain wants to see what is happening but is not yet filtering.</li>
+    <li><b>action=quarantine</b>: unaligned mail goes to spam.</li>
+    <li><b>action=reject</b>: unaligned mail is refused outright.</li>
   </ul>
   <p>If you see <code>dmarc=fail</code> on an email that claims to be from your domain, treat it as spoofed until proven otherwise. That is exactly the situation DMARC exists to make unambiguous.</p>
 

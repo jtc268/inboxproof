@@ -1,11 +1,12 @@
 <!doctype html>
 <html lang="en">
 <head>
+<script>(function(){try{var p=location.pathname||"/";var r=(document.referrer||"").split("/")[2]||"direct";var u="/api/track?page="+encodeURIComponent(p)+"&ref="+encodeURIComponent(r);if(navigator.sendBeacon&&navigator.sendBeacon(u))return;var i=new Image();i.src=u;}catch(e){}})();</script>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
-<title>Free DMARC Checker — Test Your Domain's Email Authentication</title>
+<title>Free DMARC Checker | Test Your Domain's Email Authentication</title>
 <meta name="description" content="Check your domain's SPF, DKIM, DMARC and MX records in seconds. Free, no signup. See exactly which authentication records are missing and how to fix them.">
-<meta property="og:title" content="Free DMARC Checker — Inboxproof">
+<meta property="og:title" content="Free DMARC Checker | Inboxproof">
 <meta property="og:description" content="Check your domain's SPF, DKIM, DMARC and MX records in seconds. Free, no signup.">
 <meta property="og:type" content="website">
 <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -132,12 +133,12 @@ form.addEventListener('submit', async e => {
     lastDomain = j.domain;
     leadEl.style.display = 'block';
     document.getElementById('score-num').textContent = j.score;
-    document.getElementById('score-grade').textContent = 'Grade ' + j.grade + ' — ' + j.domain;
+    document.getElementById('score-grade').textContent = 'Grade ' + j.grade + ': ' + j.domain;
     document.getElementById('score-note').textContent =
       j.score >= 90 ? 'Your email authentication is in good shape.' :
       j.score >= 70 ? 'Solid, but a few records could be stronger.' :
-      j.score >= 50 ? 'Important gaps — your domain is easier to spoof than it should be.' :
-      'Major gaps — unauthorized senders can likely use your domain.';
+      j.score >= 50 ? 'Important gaps, your domain is easier to spoof than it should be.' :
+      'Major gaps, unauthorized senders can likely use your domain.';
     checksEl.innerHTML = j.checks.map(c => {
       const s = STATUS[c.status] || STATUS.fail;
       const fix = c.fix ? '<div style="margin-top:10px;padding:10px 12px;background:#f4f4f5;border-radius:8px;font-size:13px;white-space:pre-wrap;opacity:.85"><strong>How to fix:</strong> ' + c.fix.replace(/</g, '&lt;') + '</div>' : '';

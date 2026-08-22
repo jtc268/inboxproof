@@ -1,6 +1,7 @@
-<!doctype html>
+﻿<!doctype html>
 <html lang="en">
 <head>
+<script>(function(){try{var p=location.pathname||"/";var r=(document.referrer||"").split("/")[2]||"direct";var u="/api/track?page="+encodeURIComponent(p)+"&ref="+encodeURIComponent(r);if(navigator.sendBeacon&&navigator.sendBeacon(u))return;var i=new Image();i.src=u;}catch(e){}})();</script>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
 <title>SPF 10-Lookup Limit: Why Your SPF Record Is Failing | InboxProof</title>
@@ -16,6 +17,11 @@
 <script type="application/ld+json">
 {"@context":"https://schema.org","@type":"Article","headline":"SPF 10-Lookup Limit: Why Your SPF Record Is Failing","description":"Why SPF records are limited to 10 DNS lookups, how to count them, and how to fix a 'too many DNS lookups' permerror by flattening and consolidating your includes.","author":{"@type":"Organization","name":"InboxProof"},"publisher":{"@type":"Organization","name":"InboxProof"}}
 </script>
+<meta property="og:url" content="https://inboxproof.email/blog/spf-lookup-limit">
+<meta property="og:image" content="https://inboxproof.email/og.png">
+<meta property="og:image:width" content="1200">
+<meta property="og:image:height" content="630">
+<meta name="twitter:image" content="https://inboxproof.email/og.png">
 </head>
 <body>
 <nav class="nav">
@@ -31,7 +37,7 @@
 <div class="container" style="max-width:760px;padding:60px 20px 80px">
   <div class="kicker">SPF</div>
   <h1 style="font-size:34px;margin:10px 0 12px">The SPF 10-lookup limit: why your SPF record is failing and how to fix it</h1>
-  <p style="opacity:.8;font-size:16px;margin-bottom:36px">SPF has a hard rule: a record may require at most <strong>10 DNS lookups</strong> to evaluate. Cross that line and the record becomes a <code>permerror</code> — and Gmail, Microsoft and others treat a permerror as a failed SPF check, which quietly pushes your mail toward the spam folder. Here is how to count your lookups and fix the problem.</p>
+  <p style="opacity:.8;font-size:16px;margin-bottom:36px">SPF has a hard rule: a record may require at most <strong>10 DNS lookups</strong> to evaluate. Cross that line and the record becomes a <code>permerror</code>, and Gmail, Microsoft and others treat a permerror as a failed SPF check, which quietly pushes your mail toward the spam folder. Here is how to count your lookups and fix the problem.</p>
 
   <div class="card" style="margin-bottom:28px;background:#eef2ff;border-color:#c7d2fe">
     <h3 style="margin-top:0">Count your SPF lookups in seconds</h3>
@@ -45,13 +51,13 @@
     <li><strong>include:</strong> pulls in another domain's SPF record (and every lookup <em>inside</em> that record counts too).</li>
     <li><strong>a</strong> / <strong>a:</strong> resolves an A record.</li>
     <li><strong>mx</strong> / <strong>mx:</strong> resolves MX records.</li>
-    <li><strong>ptr</strong> / <strong>ptr:</strong> resolves a PTR record (deprecated — avoid it).</li>
+    <li><strong>ptr</strong> / <strong>ptr:</strong> resolves a PTR record (deprecated. Avoid it).</li>
     <li><strong>exists:</strong> runs an existence DNS query.</li>
   </ul>
   <p>These cost <strong>nothing</strong>: <code>ip4:</code>, <code>ip6:</code>, <code>all</code>, <code>redirect</code> (when it short-circuits), <code>exp</code>, and the <code>-</code>/<code>~</code>/<code>?</code> qualifiers. The classic mistake is stacking five or six <code>include:</code> directives for every ESP you have ever used, each of which drags in its own lookups.</p>
 
   <h2 style="font-size:24px;margin:36px 0 12px">Why the limit exists</h2>
-  <p>The 10-lookup cap is a DNS abuse and DoS protection. Without it, a malicious or careless SPF record could force every receiving mail server on the internet to perform unbounded DNS queries for a single message. The limit keeps SPF evaluation fast and bounded. It is not optional — receiving servers enforce it.</p>
+  <p>The 10-lookup cap is a DNS abuse and DoS protection. Without it, a malicious or careless SPF record could force every receiving mail server on the internet to perform unbounded DNS queries for a single message. The limit keeps SPF evaluation fast and bounded. It is not optional. Receiving servers enforce it.</p>
 
   <h2 style="font-size:24px;margin:36px 0 12px">How to count your lookups</h2>
   <p>Start at your domain's SPF record and walk it left to right:</p>
@@ -65,7 +71,7 @@
 include:esp-three.com include:esp-four.com
 include:marketing.com include:crm.com
 a mx -all</pre>
-  <p>That is 6 top-level includes plus every lookup nested inside each of them — almost certainly over 10.</p>
+  <p>That is 6 top-level includes plus every lookup nested inside each of them, almost certainly over 10.</p>
 
   <h2 style="font-size:24px;margin:36px 0 12px">How to fix it</h2>
   <p>The goal is to get your total under 10 while keeping every legitimate sender authorized.</p>

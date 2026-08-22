@@ -1,0 +1,76 @@
+﻿<!doctype html>
+<html lang="en">
+<head>
+<script>(function(){try{var p=location.pathname||"/";var r=(document.referrer||"").split("/")[2]||"direct";var u="/api/track?page="+encodeURIComponent(p)+"&ref="+encodeURIComponent(r);if(navigator.sendBeacon&&navigator.sendBeacon(u))return;var i=new Image();i.src=u;}catch(e){}})();</script>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Mailgun alternatives: when the shared-IP workhorse stops fitting | Inboxproof</title>
+<meta name="description" content="Mailgun is cheap and flexible, but shared-IP reputation and the lack of marketing focus are real limits. Here are the alternatives and the safe migration path.">
+<meta property="og:title" content="Mailgun alternatives: when the shared-IP workhorse stops fitting">
+<meta property="og:description" content="Mailgun is cheap and flexible, but shared-IP reputation and the lack of marketing focus are real limits. Here are the alternatives and the safe migration path.">
+<meta property="og:type" content="article">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="/styles.css">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' rx='8' fill='%236366f1'/%3E%3Cpath d='M8 16h13M15 10l6 6-6 6' stroke='white' stroke-width='3' fill='none' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E">
+<script type="application/ld+json">
+{"@context":"https://schema.org","@type":"Article","headline":"Mailgun alternatives: when the shared-IP workhorse stops fitting","description":"Mailgun is cheap and flexible, but shared-IP reputation and the lack of marketing focus are real limits. Here are the alternatives and the safe migration path.","author":{"@type":"Organization","name":"Inboxproof"},"publisher":{"@type":"Organization","name":"Inboxproof"}}
+</script>
+<link rel="canonical" href="https://inboxproof.email/blog/mailgun-alternatives">
+<meta property="og:url" content="https://inboxproof.email/blog/mailgun-alternatives">
+<meta property="og:image" content="https://inboxproof.email/og.png">
+<meta property="og:image:width" content="1200">
+<meta property="og:image:height" content="630">
+<meta name="twitter:image" content="https://inboxproof.email/og.png">
+</head>
+<body>
+<nav class="nav">
+  <div class="container">
+    <a class="logo" href="/">
+      <span class="mark"><svg viewBox="0 0 24 24" fill="none"><path d="M4 12h11M11 7l5 5-5 5" stroke="#fff" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"/></svg></span>
+      Inboxproof
+    </a>
+    <div class="nav-links"><a href="/blog">All guides</a><a href="/">Run a free audit</a></div>
+  </div>
+</nav>
+
+<div class="container" style="max-width:760px;padding:60px 20px 80px">
+  <div class="kicker">Alternatives</div>
+  <h1 style="font-size:34px;margin:10px 0 24px">Mailgun alternatives: when the shared-IP workhorse stops fitting</h1>
+  <div style="opacity:.85;line-height:1.75;font-size:15.5px">
+<p>Mailgun is the value pick of the major email providers: cheap at volume, flexible, API and SMTP, dedicated IPs available. The reasons to leave are usually one of three: shared-IP reputation problems that dedicated IPs would not solve cheaply, a need for marketing campaigns that Mailgun only half-serves, or a desire for a transactional-only provider with a cleaner reputation model.</p>
+<h2 style="font-size:22px;margin:34px 0 12px">The alternatives, by use case</h2>
+<p><strong>SendGrid</strong> is the alternative if you want the fuller marketing platform: campaigns, templates, segmentation, and a bigger ecosystem. Same shared-IP model, more marketing surface, and a free tier.</p>
+<p><strong>Postmark</strong> is the alternative if you send transactional mail only and want the most conservative reputation model in the market. No marketing, no shared bulk sending, streams to isolate mail types. It costs more per email.</p>
+<p><strong>Resend</strong> is the alternative if you want the cleanest developer experience for transactional mail: a small API, a React SDK, sensible defaults. Newer provider, shared infrastructure by default.</p>
+<p><strong>Amazon SES</strong> is the alternative if cost at scale is the whole decision. Cheapest per email, rawest tooling, and you own more of the reputation work.</p>
+<h2 style="font-size:22px;margin:34px 0 12px">The honest caveat</h2>
+<p>If you are leaving Mailgun because of a deliverability problem, audit your own domain first. Shared-IP reputation is a real thing, but a broken SPF include, a missing DKIM selector, or an unmonitored DMARC record will follow you to any provider. A free 30-second audit tells you which case you are in before you start a migration.</p>
+<h2 style="font-size:22px;margin:34px 0 12px">The migration checklist</h2>
+<p><strong>1. Add the new provider to your domain first.</strong> Its SPF include and DKIM selectors go alongside Mailgun's. SPF is a list, so both can be valid during the move.</p>
+<p><strong>2. Verify and ramp.</strong> Confirm the new provider sends correctly, then ramp volume. A dedicated IP needs a warmup; a shared pool needs sane volume from day one.</p>
+<p><strong>3. Cut over the sending.</strong> Point your application at the new API and keep Mailgun's records for a rollback window.</p>
+<p><strong>4. Remove Mailgun from SPF.</strong> After the cutover is stable, drop the Mailgun include so your SPF only authorizes providers you actually use.</p>
+<p><strong>5. Watch bounces and DMARC reports for two weeks.</strong> A spike is a configuration problem on your side.</p>
+<div style="margin:32px 0;padding:20px;border-radius:12px;background:#eef2ff">
+<p style="margin:0 0 12px;font-weight:600">Whichever provider you pick, the setup on your domain decides the outcome.</p>
+<p style="margin:0 0 14px;opacity:.85">Run a <a href="/#audit">free audit of your sending domain</a>. It checks SPF, DKIM, DMARC, MX, TLS and IP reputation in about 30 seconds, no account needed.</p>
+<a class="btn btn-primary" href="/#audit">Check my domain free</a>
+</div>
+    <div style="margin:36px 0;padding:18px;border-radius:12px;background:rgba(99,102,241,.06)">
+      <div style="font-weight:700;font-size:15px;margin-bottom:10px">Related guides</div>
+      <div style="opacity:.8;font-size:14px;line-height:2">
+        <a href="/blog/mailgun-deliverability">Mailgun deliverability: why emails go to spam</a><br><a href="/blog/postmark-alternatives">Postmark alternatives</a><br><a href="/spf-checker">SPF checker: find the 10-lookup and -all issues</a><br><a href="/blog/email-deliverability-checklist">Email deliverability checklist</a>
+      </div>
+    </div>
+  </div>
+</div>
+
+<footer>
+  <div class="container">
+    <span>&copy; 2026 Inboxproof, Inc.</span>
+    <span><a href="/blog">All guides</a> &middot; <a href="/">Home</a> &middot; <a href="/privacy">Privacy</a> &middot; <a href="https://github.com/jtc268/inboxproof" target="_blank" rel="noopener">GitHub</a></span>
+  </div>
+</footer>
+</body>
+</html>

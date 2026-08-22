@@ -1,0 +1,78 @@
+<!doctype html>
+<html lang="en">
+<head>
+<script>(function(){try{var p=location.pathname||"/";var r=(document.referrer||"").split("/")[2]||"direct";var u="/api/track?page="+encodeURIComponent(p)+"&ref="+encodeURIComponent(r);if(navigator.sendBeacon&&navigator.sendBeacon(u))return;var i=new Image();i.src=u;}catch(e){}})();</script>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Email Deliverability for HubSpot: SPF, DKIM, DMARC for HubSpot CRM | Inboxproof</title>
+<meta property="og:url" content="https://inboxproof.email/blog/email-deliverability-hubspot">
+<meta name="description" content="How to fix email deliverability for HubSpot: the exact DNS records, platform gotchas, and monitoring setup you need to keep your HubSpot emails out of spam.">
+<meta property="og:title" content="Email Deliverability for HubSpot: SPF, DKIM, DMARC for HubSpot CRM">
+<meta property="og:description" content="How to fix email deliverability for HubSpot: the exact DNS records, platform gotchas, and monitoring setup you need.">
+<meta property="og:type" content="article">
+<link rel="stylesheet" href="/styles.css">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' rx='8' fill='%236366f1'/%3E%3Cpath d='M8 16h13M15 10l6 6-6 6' stroke='white' stroke-width='3' fill='none' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E">
+<script type="application/ld+json">
+{"@context":"https://schema.org","@type":"Article","headline":"Email Deliverability for HubSpot: SPF, DKIM, DMARC for HubSpot CRM","description":"How to fix email deliverability for HubSpot: the exact DNS records, platform gotchas, and monitoring setup you need.","author":{"@type":"Organization","name":"Inboxproof"},"publisher":{"@type":"Organization","name":"Inboxproof"}}
+</script>
+<link rel="canonical" href="https://inboxproof.email/blog/email-deliverability-hubspot">
+<meta property="og:image" content="https://inboxproof.email/og.png">
+<meta property="og:image:width" content="1200">
+<meta property="og:image:height" content="630">
+<meta name="twitter:image" content="https://inboxproof.email/og.png">
+</head>
+<body>
+<nav class="nav">
+  <div class="container">
+    <a class="logo" href="/"><span class="mark"><svg viewBox="0 0 24 24" fill="none"><path d="M4 12h11M11 7l5 5-5 5" stroke="#fff" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"/></svg></span> Inboxproof</a>
+    <div class="nav-links"><a href="/">Run a free audit</a></div>
+  </div>
+</nav>
+<div class="container" style="max-width:760px;padding:56px 20px 80px">
+  <div class="kicker">Guide</div>
+  <h1>Email deliverability for HubSpot: keep your CRM emails out of spam</h1>
+  <p style="opacity:.75;font-size:14px">Updated for 2026 · 5 min read</p>
+
+  <p>HubSpot is a powerful CRM, but it is also a common source of deliverability problems. If your HubSpot emails are landing in spam, the issue is almost never the copy. It is the DNS records and sender reputation behind your sending domain. This guide covers the specific deliverability setup a HubSpot user needs.</p>
+
+  <h2>The six DNS records your domain must have</h2>
+  <p>Every sending domain needs six records. HubSpot handles some of these for you, but you still need to verify they are actually published and not conflicting.</p>
+  <ol>
+    <li><strong>MX</strong>: a valid MX record so the domain is not treated as a throwaway. The <a href="/mx-checker">MX checker</a> confirms it resolves.</li>
+    <li><strong>SPF</strong>: a TXT record listing the servers allowed to send for the domain. HubSpot adds its own SPF include. If you also have a hand-written SPF, you can exceed the 10-DNS-lookup limit and break authentication. Use the <a href="/spf-checker">SPF checker</a> to see your effective record and catch that.</li>
+    <li><strong>DKIM</strong>: a signature proving the message came from you. HubSpot has its own DKIM selector. If you send through more than one provider you need one DKIM record per provider. The <a href="/dkim-checker">DKIM checker</a> finds your live key and flags weak (1024-bit) or missing keys.</li>
+    <li><strong>DMARC</strong>: the policy that tells receivers what to do with unauthenticated mail. Start at <code>p=none</code>, read the reports, then move to <code>p=quarantine</code> and finally <code>p=reject</code>. The <a href="/dmarc-checker">DMARC checker</a> shows your current policy and the <a href="/dmarc-report-parser">DMARC report parser</a> turns the XML reports into a list of who is actually sending as you.</li>
+    <li><strong>Reverse DNS (PTR)</strong>: the IP that sends your mail should resolve back to a hostname that matches your sending domain. The <a href="/ptr-checker">PTR checker</a> confirms it.</li>
+    <li><strong>TLS</strong>: a valid TLS certificate on the mail server. An expired or misconfigured certificate is a quiet killer. The <a href="/tls-checker">TLS checker</a> confirms it.</li>
+  </ol>
+
+  <h2>HubSpot-specific gotchas</h2>
+  <ul>
+    <li><strong>Shared vs dedicated IP.</strong> HubSpot lets you use a shared IP or a dedicated IP. On a shared IP, other senders can drag your reputation down. If you are sending high volume, a dedicated IP is worth the cost.</li>
+    <li><strong>Warm-up is not automatic.</strong> HubSpot does not warm up your sending domain for you. If you are new to HubSpot or you just switched domains, you need to ramp volume over 2 to 4 weeks. The <a href="/warm-up-calculator">warm-up calculator</a> gives you a daily send schedule.</li>
+    <li><strong>Multiple sending domains.</strong> If you send from multiple domains (e.g. your main domain and a subdomain for campaigns), each domain needs its own SPF, DKIM, and DMARC records. The <a href="/blog/email-deliverability-checklist">deliverability checklist</a> covers the full setup.</li>
+    <li><strong>HubSpot's SPF include.</strong> HubSpot adds <code>include:hubspot.com</code> to your SPF record. If you have other sending services, make sure your SPF record does not exceed the 10-DNS-lookup limit. The <a href="/spf-checker">SPF checker</a> catches this.</li>
+  </ul>
+
+  <h2>Monitoring: the part most teams skip</h2>
+  <p>Deliverability is a state, not a setup. Records rot, IPs get listed, and providers change their rules. The teams that stay in the inbox are the ones watching. The <a href="/blog/email-deliverability-monitoring">monitoring guide</a> covers the full setup.</p>
+
+  <p>Run the <a href="/">free audit</a> against your HubSpot sending domain and it checks SPF, DKIM, DMARC, MX, TLS and IP reputation in about 30 seconds, then tells you exactly which of the above is broken.</p>
+
+  <div style="margin:36px 0;padding:24px;background:#eef2ff;border-radius:12px;text-align:center">
+    <p style="font-size:16px;margin:0 0 14px"><strong>Check your HubSpot domain free, no signup.</strong> SPF, DKIM, DMARC, TLS and IP reputation in ~30 seconds.</p>
+    <a class="btn" href="/">Run a free audit</a>
+  </div>
+
+  <p style="font-size:14px;opacity:.75;margin-top:28px">Related: <a href="/blog/email-deliverability-shopify">Shopify</a> · <a href="/blog/email-deliverability-wordpress">WordPress</a> · <a href="/blog/email-deliverability-woocommerce">WooCommerce</a> · <a href="/blog/email-deliverability-squarespace">Squarespace</a> · <a href="/blog/email-deliverability-wix">Wix</a> · <a href="/blog/email-deliverability-checklist">deliverability checklist</a> · <a href="/blog">all guides</a></p>
+
+  <p style="font-size:14px;opacity:.8;margin-top:24px">Need continuous monitoring of your HubSpot sending domain? <a href="/#pricing">Inboxproof Pro</a> re-checks your records daily and emails you the moment authentication or reputation breaks.</p>
+</div>
+<footer>
+  <div class="container">
+    <span>© 2026 Inboxproof, Inc.</span>
+    <span><a href="/">Home</a> · <a href="/privacy">Privacy</a> · <a href="https://github.com/jtc268/inboxproof" target="_blank" rel="noopener">GitHub</a></span>
+  </div>
+</footer>
+</body>
+</html>

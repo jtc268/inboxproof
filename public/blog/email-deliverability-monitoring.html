@@ -1,0 +1,112 @@
+﻿<!doctype html>
+<html lang="en">
+<head>
+<script>(function(){try{var p=location.pathname||"/";var r=(document.referrer||"").split("/")[2]||"direct";var u="/api/track?page="+encodeURIComponent(p)+"&ref="+encodeURIComponent(r);if(navigator.sendBeacon&&navigator.sendBeacon(u))return;var i=new Image();i.src=u;}catch(e){}})();</script>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Email deliverability monitoring: catch broken records before campaigns die | Inboxproof</title>
+<meta name="description" content="A one-time SPF/DKIM/DMARC check is not enough. Here is how to monitor every sending domain daily so a rotated key, a missing SPF include, or a tightened DMARC policy gets caught before your next campaign dies in the spam folder.">
+<meta property="og:title" content="Email deliverability monitoring: catch broken records before campaigns die">
+<meta property="og:description" content="How to monitor every sending domain daily: what to check, how often, and what to do when an alert fires.">
+<meta property="og:type" content="article">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="/styles.css">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' rx='8' fill='%236366f1'/%3E%3Cpath d='M8 16h13M15 10l6 6-6 6' stroke='white' stroke-width='3' fill='none' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E">
+<script type="application/ld+json">
+{"@context":"https://schema.org","@type":"Article","headline":"Email deliverability monitoring: catch broken records before campaigns die","description":"How to monitor every sending domain daily: what to check, how often, and what to do when an alert fires.","author":{"@type":"Organization","name":"Inboxproof"},"publisher":{"@type":"Organization","name":"Inboxproof"}}
+</script>
+<link rel="canonical" href="https://inboxproof.email/blog/email-deliverability-monitoring">
+<meta property="og:url" content="https://inboxproof.email/blog/email-deliverability-monitoring">
+<meta property="og:image" content="https://inboxproof.email/og.png">
+<meta property="og:image:width" content="1200">
+<meta property="og:image:height" content="630">
+<meta name="twitter:image" content="https://inboxproof.email/og.png">
+</head>
+<body>
+<nav class="nav">
+  <div class="container">
+    <a class="logo" href="/">
+      <span class="mark"><svg viewBox="0 0 24 24" fill="none"><path d="M4 12h11M11 7l5 5-5 5" stroke="#fff" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"/></svg></span>
+      Inboxproof
+    </a>
+    <div class="nav-links"><a href="/blog">All guides</a><a href="/">Run a free audit</a></div>
+  </div>
+</nav>
+
+<div class="container" style="max-width:760px;padding:60px 20px 80px">
+  <div class="kicker">Guide</div>
+  <h1 style="font-size:34px;margin:10px 0 24px">Email deliverability monitoring: catch broken records before campaigns die</h1>
+  <div style="opacity:.85;line-height:1.75;font-size:15.5px">
+    <p>A one-time SPF, DKIM, and DMARC check is not enough. The records that made your domain inbox-ready in January will not still be inbox-ready in March. DKIM keys rotate. ESPs change their include chains. DMARC policies get tightened by a well-meaning IT admin. A single broken record can quietly push every outbound email into the spam folder for weeks, and the first sign is usually a client or prospect saying "your emails stopped landing."</p>
+
+    <p>Deliverability monitoring is the practice of re-checking those records on a schedule and alerting the moment one breaks. This guide covers what to monitor, how often, and what to do when an alert fires.</p>
+
+    <h2 style="font-size:22px;margin:34px 0 12px">1. What actually breaks</h2>
+    <p>Most deliverability incidents trace back to one of five things:</p>
+    <ul style="margin:12px 0 12px 20px;line-height:1.75">
+      <li><strong>SPF include lost.</strong> The domain switches ESPs or adds a second sending tool, and the old include is removed without adding the new one. SPF now fails for the new sender.</li>
+      <li><strong>DKIM key rotation.</strong> The ESP rotates its DKIM key. The old key stops signing. If the new selector is not published in DNS, every message fails DKIM.</li>
+      <li><strong>DMARC policy tightened.</strong> An admin moves from <code>p=none</code> to <code>p=reject</code> without confirming that all legitimate senders are aligned. Suddenly, mail from a third-party tool that was passing now gets rejected.</li>
+      <li><strong>Reverse DNS (PTR) mismatch.</strong> The sending IP changes, and the PTR record is not updated to match. Gmail and Microsoft both penalize this.</li>
+      <li><strong>Blacklisting.</strong> The sending IP or domain lands on a blocklist because of a spike in bounces or a shared-IP neighbor. This is the one that does not show up in DNS records at all.</li>
+    </ul>
+    <p>The first four are DNS problems. A monitoring tool that re-resolves the records daily will catch them within 24 hours. The fifth requires checking blocklists, which is a separate check but belongs in the same daily loop.</p>
+
+    <h2 style="font-size:22px;margin:34px 0 12px">2. How often to check</h2>
+    <p>Daily is the floor. Here is the reasoning:</p>
+    <ul style="margin:12px 0 12px 20px;line-height:1.75">
+      <li><strong>Daily</strong> catches DNS record changes within 24 hours. This is the minimum for any domain that sends more than a few hundred emails a day.</li>
+      <li><strong>Every 6 hours</strong> is what you want for a domain that is mid-campaign. If a DKIM key rotates at 2am, you want to know before the 9am send, not the next morning.</li>
+      <li><strong>Real-time on send</strong> is what the ESP itself does. It is not a substitute for monitoring the DNS records, because the ESP only sees what it sends, not what a third-party tool on the same domain is doing.</li>
+    </ul>
+    <p>For most agencies and developers, daily monitoring of every sending domain is the right default. If a domain is about to send a large campaign, bump it to every 6 hours for the duration.</p>
+
+    <h2 style="font-size:22px;margin:34px 0 12px">3. What to check on each pass</h2>
+    <p>Each monitoring pass should resolve and validate the same seven checks a one-time audit runs:</p>
+    <ol style="margin:12px 0 12px 20px;line-height:1.75">
+      <li><strong>MX records</strong> exist and point to a live mail server.</li>
+      <li><strong>SPF</strong> is present, has a valid <code>all</code> mechanism, and stays under the 10-lookup limit.</li>
+      <li><strong>DKIM</strong> is published for every selector the ESP actually signs with.</li>
+      <li><strong>DMARC</strong> is present, has a valid policy, and the SPF/DKIM alignment matches the From domain.</li>
+      <li><strong>PTR</strong> (reverse DNS) matches the sending IP.</li>
+      <li><strong>STARTTLS</strong> is available on the MX port 25 connection.</li>
+      <li><strong>Blocklists</strong> do not contain the sending IP or domain.</li>
+    </ol>
+    <p>The output of each pass is a score (0 to 100) and a list of failing checks. The score tells you the overall health. The failing checks tell you exactly what to fix. A monitoring tool that gives you both is worth more than one that gives you only a score.</p>
+
+    <h2 style="font-size:22px;margin:34px 0 12px">4. What to do when an alert fires</h2>
+    <p>An alert is only useful if it leads to a fix. The workflow:</p>
+    <ol style="margin:12px 0 12px 20px;line-height:1.75">
+      <li><strong>Read the failing check.</strong> The alert should name the exact record and the exact problem. "SPF missing include for mailer.example.com" is actionable. "SPF error" is not.</li>
+      <li><strong>Fix the record.</strong> For SPF and DKIM, this means updating the DNS TXT record at the domain registrar or DNS provider. For DMARC, it means adjusting the <code>_dmarc</code> TXT record. For PTR, it means asking the hosting provider to update the reverse DNS.</li>
+      <li><strong>Re-check.</strong> Run the audit again on the affected domain. Confirm the failing check now passes and the score is back up.</li>
+      <li><strong>Notify the stakeholder.</strong> If the domain belongs to a client, send them a short note with the before and after scores. This is the moment that turns a deliverability incident into a reason the client stays.</li>
+    </ol>
+    <p>The whole loop, from alert to fix to confirmation, should take under an hour for a DNS record change. The monitoring tool should make the first step (reading the failing check) instant, so the time goes into the fix, not into diagnosis.</p>
+
+    <h2 style="font-size:22px;margin:34px 0 12px">5. The agency use case: many domains, one dashboard</h2>
+    <p>An agency runs cold email for many clients on many domains. Monitoring one domain is a script. Monitoring twenty is a system. The system needs:</p>
+    <ul style="margin:12px 0 12px 20px;line-height:1.75">
+      <li><strong>Per-domain scores</strong> so you can see which client domains are healthy and which are at risk.</li>
+      <li><strong>Alerts</strong> so you are not manually re-checking twenty domains every morning.</li>
+      <li><strong>Branded reports</strong> so the client sees your name on the deliverability report, not a tool's. This is what justifies the retainer.</li>
+      <li><strong>A history</strong> so you can show the client a trend line: "your domain has been 95+ for six weeks, and here is the one day it dipped and what we fixed."</li>
+    </ul>
+    <p>The <a href="/email-deliverability-for-agencies">deliverability stack for agencies</a> covers the full workflow. This page covers the monitoring layer.</p>
+
+    <h2 style="font-size:22px;margin:34px 0 12px">Start with one domain</h2>
+    <p>Run a free check on one of your sending domains right now and see the seven-check score and the exact fixes: <a href="/cold-email-checker">cold email deliverability checker</a>. When you are ready to monitor the whole book daily and get alerted the moment a record breaks, that is what the <a href="/#pricing">Pro and Agency tiers</a> are for.</p>
+
+    <p style="opacity:.6;font-size:13px;margin-top:28px">Related: <a href="/blog/email-deliverability-for-developers">Deliverability for developers</a> · <a href="/blog/email-deliverability-audit-tool">What an audit tool checks</a> · <a href="/blog/dmarc-report-monitoring">How to monitor DMARC reports</a> · <a href="/blog/is-my-domain-blacklisted">Is my domain blacklisted?</a> · <a href="/blog/deliverability-score">What is a good deliverability score?</a></p>
+  </div>
+</div>
+
+<footer>
+  <div class="container">
+    <span>&copy; 2026 Inboxproof, Inc.</span>
+    <span><a href="/blog">All guides</a> &middot; <a href="/">Home</a> &middot; <a href="/privacy">Privacy</a> &middot; <a href="https://github.com/jtc268/inboxproof" target="_blank" rel="noopener">GitHub</a></span>
+  </div>
+</footer>
+</body>
+</html>

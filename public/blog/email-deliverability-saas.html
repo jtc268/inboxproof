@@ -1,0 +1,177 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Email Deliverability for SaaS: Keep Your Users Receiving Password Resets | Inboxproof</title>
+  <meta name="description" content="Your SaaS sends transactional and notification email through a provider. When deliverability breaks, your users miss password resets and onboarding emails. Here's how to catch it before your users do.">
+  <link rel="canonical" href="https://inboxproof.email/blog/email-deliverability-saas">
+  <meta property="og:title" content="Email Deliverability for SaaS: Keep Your Users Receiving Password Resets | Inboxproof">
+  <meta property="og:description" content="Your SaaS sends transactional and notification email through a provider. When deliverability breaks, your users miss password resets and onboarding emails. Here's how to catch it before your users do.">
+  <meta property="og:type" content="article">
+  <meta property="og:url" content="https://inboxproof.email/blog/email-deliverability-saas">
+  <meta property="og:site_name" content="Inboxproof">
+  <meta property="og:locale" content="en_US">
+  <meta name="twitter:card" content="summary_large_image">
+  <meta name="twitter:title" content="Email Deliverability for SaaS: Keep Your Users Receiving Password Resets | Inboxproof">
+  <meta name="twitter:description" content="Your SaaS sends transactional and notification email through a provider. When deliverability breaks, your users miss password resets and onboarding emails. Here's how to catch it before your users do.">
+  <link rel="icon" href="/favicon.ico">
+  <style>
+    :root { --ink:#18181b; --dim:#52525b; --line:#e4e4e7; --bg:#ffffff; --soft:#f4f4f5; --accent:#4f46e5; --accent-soft:#eef2ff; }
+    * { box-sizing:border-box; }
+    body { margin:0; font-family:system-ui,-apple-system,'Segoe UI',Roboto,sans-serif; color:var(--ink); background:var(--bg); line-height:1.65; font-size:16px; }
+    .wrap { max-width:760px; margin:0 auto; padding:48px 24px 80px; }
+    .nav { display:flex; align-items:center; justify-content:space-between; margin-bottom:40px; }
+    .nav a { font-weight:700; text-decoration:none; color:var(--ink); font-size:18px; }
+    .nav .tools { font-size:14px; color:var(--dim); text-decoration:none; }
+    .nav .tools:hover { color:var(--accent); }
+    .kicker { font-size:13px; font-weight:600; color:var(--accent); text-transform:uppercase; letter-spacing:.04em; margin-bottom:12px; }
+    h1 { font-size:32px; line-height:1.2; margin:0 0 16px; }
+    .lede { font-size:18px; color:var(--dim); margin:0 0 32px; }
+    h2 { font-size:22px; margin:40px 0 12px; }
+    h3 { font-size:17px; margin:24px 0 8px; }
+    p { margin:0 0 16px; }
+    ul, ol { margin:0 0 16px; padding-left:24px; }
+    li { margin-bottom:8px; }
+    code { background:var(--soft); padding:2px 6px; border-radius:4px; font-size:14px; }
+    .cta { background:var(--accent-soft); border:1px solid #c7d2fe; border-radius:12px; padding:24px; margin:40px 0; text-align:center; }
+    .cta h3 { margin:0 0 8px; font-size:18px; }
+    .cta p { margin:0 0 16px; font-size:15px; color:var(--dim); }
+    .btn { display:inline-block; background:var(--accent); color:#fff; text-decoration:none; padding:12px 24px; border-radius:8px; font-weight:600; font-size:15px; }
+    .btn:hover { background:#4338ca; }
+    .footer { margin-top:60px; padding-top:24px; border-top:1px solid var(--line); font-size:14px; color:var(--dim); }
+    .footer a { color:var(--accent); text-decoration:none; }
+    .related { margin-top:40px; padding-top:24px; border-top:1px solid var(--line); }
+    .related h3 { font-size:16px; margin:0 0 12px; }
+    .related ul { list-style:none; padding:0; margin:0; }
+    .related li { margin-bottom:8px; }
+    .related a { color:var(--accent); text-decoration:none; font-size:15px; }
+    .related a:hover { text-decoration:underline; }
+  </style>
+<meta property="og:image" content="https://inboxproof.email/og.png">
+<meta property="og:image:width" content="1200">
+<meta property="og:image:height" content="630">
+<meta name="twitter:image" content="https://inboxproof.email/og.png">
+<script type="application/ld+json">{"@context":"https://schema.org","@type":"Article","headline":"Email Deliverability for SaaS: Keep Your Users Receiving Password Resets","description":"Your SaaS sends transactional and notification email through a provider. When deliverability breaks, your users miss password resets and onboarding emails. Here's how to catch it before your users do.","author":{"@type":"Organization","name":"Inboxproof"},"publisher":{"@type":"Organization","name":"Inboxproof"},"mainEntityOfPage":"https://inboxproof.email/blog/email-deliverability-saas"}</script>
+</head>
+<body>
+  <div class="wrap">
+    <div class="nav">
+      <a href="/">Inboxproof</a>
+      <a class="tools" href="/#tools">All tools</a>
+    </div>
+
+    <div class="kicker">SaaS Deliverability Guide</div>
+    <h1>Email Deliverability for SaaS: Keep Your Users Receiving Password Resets</h1>
+    <p class="lede">Your SaaS sends transactional and notification email through a provider. When deliverability breaks, your users miss password resets and onboarding emails. Here's how to catch it before your users do.</p>
+
+    <p>You built a SaaS product. You're sending password resets, onboarding emails, and transactional notifications through SendGrid, Postmark, Mailgun, or Amazon SES. You're not doing cold email. You're not doing marketing blasts. You're sending the emails that matter: the ones your users need to log in, get started, and use your product.</p>
+
+    <p>And then one day, a user emails support and says "I never got my password reset link." Or your onboarding conversion drops 15% and you can't figure out why. Or your users start complaining that they're not getting your product notifications.</p>
+
+    <p>This is the SaaS deliverability problem, and it's different from the cold email or marketing deliverability problem in important ways. Let me walk you through what's different, what to check, and how to catch it before your users do.</p>
+
+    <h2>Why SaaS deliverability is different</h2>
+
+    <p>When you send cold email or marketing email, the cost of a deliverability failure is a lower open rate. You lose a lead, maybe a sale. It's a revenue problem.</p>
+
+    <p>When you send transactional email and it fails, the cost is a user who can't log in, can't complete onboarding, or doesn't get a critical notification. They can't use your product. They churn. They leave a bad review. They tell their friends your product is broken.</p>
+
+    <p>This is a retention problem, and it's much more expensive than a revenue problem. A user who can't get their password reset is a user who's leaving. A user who misses their onboarding email is a user who never activates.</p>
+
+    <p>Here's the thing: most SaaS teams don't monitor their deliverability. They assume their ESP is handling it. They assume if the API returns a 200, the email went out. And that's true: the email went out. But "went out" and "delivered" are different things.</p>
+
+    <h2>The provider problem</h2>
+
+    <p>Here's the specific problem SaaS teams face: you're sending through a provider, and the provider can change things without telling you.</p>
+
+    <p>SendGrid rotates their IP pools. Postmark changes their signing keys. Mailgun updates their DNS records. Amazon SES changes their sending infrastructure. Any of these changes can break your deliverability overnight, and you won't know until a user complains.</p>
+
+    <p>The provider's API will still return a 200. The email will still "send." But it might land in spam, or it might get rejected by the receiving server. Your logs will say "delivered" because the provider's server accepted it. But the user's inbox says otherwise.</p>
+
+    <p>This is the gap between "sent" and "delivered," and it's the gap that monitoring closes.</p>
+
+    <h2>What to check (and how often)</h2>
+
+    <p>Here's the checklist for SaaS deliverability, in the order you should check it:</p>
+
+    <h3>1. Your sending domain's SPF record</h3>
+    <p>Your sending domain (the domain in your <code>From</code> header, e.g. <code>yourproduct.com</code>) needs an SPF record that includes your ESP's IP ranges. If you're sending from <code>mail.yourproduct.com</code>, that subdomain needs its own SPF record.</p>
+    <p><strong>How to check:</strong> Run <code>dig TXT yourproduct.com</code> and look for a record that starts with <code>v=spf1</code>. Make sure it includes your ESP (e.g. <code>include:sendgrid.net</code> for SendGrid).</p>
+    <p><strong>How often:</strong> Once, when you set it up. Then again if you change ESPs or add a new sending domain.</p>
+
+    <h3>2. Your DKIM signature</h3>
+    <p>Your ESP signs your emails with DKIM. The public key lives in your DNS. If the key rotates (and it will, eventually), your old signature becomes invalid and your emails fail authentication.</p>
+    <p><strong>How to check:</strong> Run <code>dig TXT selector._domainkey.yourproduct.com</code> (replace <code>selector</code> with your ESP's selector). Make sure the record exists and matches what your ESP is using.</p>
+    <p><strong>How often:</strong> Monthly. DKIM keys can expire or rotate, and you won't know until your emails start failing.</p>
+
+    <h3>3. Your DMARC policy</h3>
+    <p>DMARC tells receiving servers what to do when an email fails SPF or DKIM. If your policy is <code>p=none</code>, you're not enforcing anything. If it's <code>p=reject</code>, you're telling receivers to reject any email that fails authentication.</p>
+    <p><strong>How to check:</strong> Run <code>dig TXT _dmarc.yourproduct.com</code>. Look for a record that starts with <code>v=DMARC1</code>. Check the <code>p=</code> value.</p>
+    <p><strong>How often:</strong> Once, when you set it up. Then again if you change your policy.</p>
+
+    <h3>4. Your ESP's IP reputation</h3>
+    <p>Your ESP sends from a pool of IPs. If another customer on that IP was spamming, your reputation suffers. This is the shared IP problem.</p>
+    <p><strong>How to check:</strong> Use our <a href="/blocklist-checker">Blocklist Checker</a> to check your ESP's IP ranges. Also check your domain's reputation on Spamhaus.</p>
+    <p><strong>How often:</strong> Weekly. IP reputation can change fast, especially if you're on a shared IP pool.</p>
+
+    <h3>5. Your bounce and complaint rates</h3>
+    <p>Hard bounces (the recipient doesn't exist) and spam complaints (the user marked your email as spam) are the two metrics that matter most for transactional email. If your bounce rate is above 2% or your complaint rate is above 0.1%, you're in trouble.</p>
+    <p><strong>How to check:</strong> Your ESP's dashboard shows these rates. But the ESP's data is only as good as their tracking. Cross-check with your own logs: how many emails did you send, how many bounced, how many complaints did you get?</p>
+    <p><strong>How often:</strong> Daily. Bounce rates can spike if you're sending to a list with stale addresses.</p>
+
+    <h3>6. Your TLS configuration</h3>
+    <p>TLS encrypts email in transit. While it's not a hard requirement for delivery, many ISPs use it as a signal of legitimacy. If your ESP's IP doesn't support TLS, or uses an outdated protocol, receiving servers may flag your email.</p>
+    <p><strong>How to check:</strong> Use our <a href="/tls-checker">TLS Checker</a> to check your ESP's mail server. Look for TLS 1.2 or higher and a valid certificate.</p>
+    <p><strong>How often:</strong> Monthly. TLS certificates expire, and if your ESP's cert expires, your emails may start failing.</p>
+
+    <div class="cta">
+      <h3>Run a free deliverability audit on your sending domain</h3>
+      <p>Check all 6 of these at once. No account needed. Get a score, the exact records to fix, and daily monitoring.</p>
+      <a class="btn" href="/#audit">Run my free audit</a>
+    </div>
+
+    <h2>How to monitor (without building a team)</h2>
+
+    <p>You don't need a dedicated deliverability engineer. You need a system that checks these 6 things daily and alerts you when something breaks. Here's the minimum viable monitoring setup:</p>
+
+    <ol>
+      <li><strong>Daily SPF/DKIM/DMARC check:</strong> Run a DNS lookup on your sending domain every morning. If the records are missing or changed, alert your team.</li>
+      <li><strong>Weekly IP reputation check:</strong> Check your ESP's IP ranges against blocklists. If your IP is listed, alert your team and contact your ESP.</li>
+      <li><strong>Daily bounce/complaint rate check:</strong> Pull your ESP's bounce and complaint rates. If they spike above threshold, alert your team.</li>
+      <li><strong>Monthly TLS check:</strong> Check your ESP's mail server for TLS 1.2+ and a valid certificate. If the cert is expiring in 7 days, alert your team.</li>
+    </ol>
+
+    <p>Most SaaS teams don't have this. They find out about deliverability problems from support tickets, not from monitoring. And by the time a user complains, they've already had a bad experience.</p>
+
+    <h2>The fix: daily monitoring</h2>
+
+    <p>The cheapest way to catch deliverability problems before your users do is to run a daily check on your sending domain. Not a monthly audit. Not a quarterly review. A daily check that looks at SPF, DKIM, DMARC, IP reputation, and TLS, and alerts you when something changes.</p>
+
+    <p>That's what Inboxproof does. Run a free audit on your sending domain, get a score, and set up daily monitoring. When something breaks, you get an alert before your users do.</p>
+
+    <div class="cta">
+      <h3>Start monitoring your SaaS deliverability</h3>
+      <p>Free audit. No account needed. Daily monitoring for Pro.</p>
+      <a class="btn" href="/#audit">Run my free audit</a>
+    </div>
+
+    <div class="related">
+      <h3>Related guides</h3>
+      <ul>
+        <li><a href="/blog/email-deliverability-by-platform">Email deliverability by platform</a></li>
+        <li><a href="/blog/transactional-email-deliverability">Transactional email deliverability: the 5 things that matter</a></li>
+        <li><a href="/blog/email-deliverability-for-developers">Email deliverability for developers: make sure your product's email actually lands</a></li>
+        <li><a href="/blog/email-deliverability-monitoring">Email deliverability monitoring: what to track and how often</a></li>
+        <li><a href="/blog/dkim-signature-failing">Why your DKIM signature is failing (and how to fix it)</a></li>
+        <li><a href="/blog/spf-record-guide">SPF record guide: what it is and how to set it up</a></li>
+      </ul>
+    </div>
+
+    <div class="footer">
+      <p><a href="/">Inboxproof</a> | <a href="/blog">All guides</a> | <a href="/developers">API &amp; CLI</a></p>
+      <p>Run a free audit on any domain: <a href="/#audit">inboxproof.email</a></p>
+    </div>
+  </div>
+</body>
+</html>

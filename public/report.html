@@ -48,28 +48,37 @@
       <div id="meta" style="opacity:.65;margin-top:4px"></div>
       <div style="display:flex;gap:8px;margin-top:12px;flex-wrap:wrap">
         <button id="shareBtn" style="padding:8px 14px;border-radius:9px;border:1px solid rgba(255,255,255,.18);background:rgba(255,255,255,.06);color:inherit;font-size:13px;cursor:pointer">Copy link</button>
+        <button id="shareCard" style="padding:8px 14px;border-radius:9px;border:1px solid rgba(99,102,241,.4);background:rgba(99,102,241,.12);color:inherit;font-size:13px;cursor:pointer" title="Download a shareable score card image">Share score card</button>
         <button id="shareX" style="padding:8px 12px;border-radius:9px;border:1px solid rgba(255,255,255,.18);background:rgba(255,255,255,.06);color:inherit;font-size:13px;cursor:pointer" title="Post to X">Post on X</button>
         <button id="shareLi" style="padding:8px 12px;border-radius:9px;border:1px solid rgba(255,255,255,.18);background:rgba(255,255,255,.06);color:inherit;font-size:13px;cursor:pointer" title="Share on LinkedIn">LinkedIn</button>
+        <button id="shareTeam" style="padding:8px 12px;border-radius:9px;border:1px solid rgba(52,211,153,.4);background:rgba(52,211,153,.12);color:inherit;font-size:13px;cursor:pointer" title="Share with your team">Share with team</button>
       </div>
     </div>
+  </div>
+  <div id="ownCta" style="margin-bottom:24px;padding:18px 22px;border:1px solid rgba(52,211,153,.35);border-radius:14px;background:linear-gradient(180deg,rgba(52,211,153,.12),transparent);display:flex;gap:14px;align-items:center;flex-wrap:wrap">
+    <div style="flex:1;min-width:220px">
+      <div style="font-weight:700;font-size:16px">Curious how your own domain scores?</div>
+      <div style="opacity:.75;font-size:13px;margin-top:3px">Run a free audit on your domain. No signup, no card, 7 live checks in seconds.</div>
+    </div>
+    <a href="/" class="btn btn-primary" style="white-space:nowrap">Run a free audit</a>
   </div>
   <div id="topCta" style="display:none;margin-bottom:28px;padding:22px 24px;border:1px solid rgba(99,102,241,.4);border-radius:14px;background:linear-gradient(180deg,rgba(99,102,241,.16),transparent)">
     <div style="font-weight:700;font-size:17px;margin-bottom:6px" id="topCtaTitle"></div>
     <div style="opacity:.8;font-size:14px;margin-bottom:14px" id="topCtaSub"></div>
     <form id="top-pro-form" style="display:flex;gap:8px;flex-wrap:wrap;justify-content:center">
       <input id="top-pro-email" type="email" required placeholder="you@yourdomain.com" style="padding:10px 14px;border-radius:10px;border:1px solid rgba(255,255,255,.15);background:rgba(255,255,255,.05);color:inherit;font-size:14px;min-width:220px">
-      <button class="btn btn-primary" id="top-pro-buy" type="submit">Start Pro — $29/mo</button>
+      <button class="btn btn-primary" id="top-pro-buy" type="submit">Start Pro: $14.50/mo</button>
     </form>
     <div id="top-pro-err" style="opacity:.75;font-size:13px;min-height:16px;margin-top:8px"></div>
     <div style="opacity:.6;font-size:12px;margin-top:6px">Daily monitoring · alerts on any change · cancel anytime</div>
   </div>
   <div id="checks"></div>
   <div id="wlProBottom" style="margin-top:36px;padding:26px;border:1px solid rgba(99,102,241,.35);border-radius:14px;text-align:center;background:linear-gradient(180deg,rgba(99,102,241,.12),transparent)">
-    <div style="font-weight:700;font-size:18px;margin-bottom:6px">Want this checked daily, with alerts when a record breaks?</div>
-    <div style="opacity:.75;font-size:14px;margin-bottom:16px">Inboxproof Pro monitors <b id="proDomain">your domain</b> and tells you the moment deliverability changes. $29/mo, cancel anytime.</div>
+    <div style="font-weight:700;font-size:18px;margin-bottom:6px" id="bottomCtaTitle">Want this checked daily, with alerts when a record breaks?</div>
+    <div style="opacity:.75;font-size:14px;margin-bottom:16px">Inboxproof Pro monitors <b id="proDomain">your domain</b> and tells you the moment deliverability changes. $14.50/mo launch price, cancel anytime.</div>
     <form id="pro-form" style="display:flex;gap:8px;flex-wrap:wrap;justify-content:center;margin-bottom:12px">
       <input id="pro-email" type="email" required placeholder="you@yourdomain.com" style="padding:10px 14px;border-radius:10px;border:1px solid rgba(255,255,255,.15);background:rgba(255,255,255,.05);color:inherit;font-size:14px;min-width:220px">
-      <button class="btn btn-primary" id="pro-buy" type="submit">Start Pro — $29/mo</button>
+      <button class="btn btn-primary" id="pro-buy" type="submit">Start Pro: $14.50/mo</button>
     </form>
     <div id="pro-err" style="opacity:.7;font-size:13px;min-height:16px"></div>
     <a href="/#pricing" style="opacity:.65;font-size:13px">Compare plans</a>
@@ -77,6 +86,7 @@
   <div id="wlMore" style="margin-top:28px;padding:20px;border:1px solid rgba(255,255,255,.1);border-radius:14px;text-align:center">
     <div style="font-weight:600;font-size:14px;margin-bottom:10px;opacity:.85">More free checks, no signup</div>
     <div style="opacity:.6;font-size:13px;line-height:2"><a href="/mx-checker">MX record checker</a> · <a href="/spf-checker">SPF checker</a> · <a href="/dkim-checker">DKIM checker</a> · <a href="/dmarc-checker">DMARC checker</a> · <a href="/blocklist-checker">IP blocklist checker</a> · <a href="/dmarc-generator">DMARC record generator</a> · <a href="/header-analyzer">Email header analyzer</a> · <a href="/dmarc-report-parser">DMARC report parser</a></div>
+    <div style="opacity:.6;font-size:13px;line-height:2;margin-top:10px">Why is this happening? <a href="/blog/why-email-goes-to-spam">Why email goes to spam</a> · <a href="/blog/cold-email-infrastructure">Cold email infrastructure</a> · <a href="/blog/transactional-email-api-deliverability">Transactional email deliverability</a></div>
   </div>
   <p id="wlFooter" style="text-align:center;opacity:.4;font-size:12px;margin-top:28px">Audited by <a href="/" style="opacity:.8">Inboxproof</a> · live DNS checks · <a href="/privacy" style="opacity:.8">privacy</a></p>
 </div>
@@ -85,6 +95,7 @@
 const id = location.pathname.split('/').pop();
 const $ = s => document.querySelector(s);
 let report = null;
+(function(){ try { var e = sessionStorage.getItem('ip_email'); if (!e) return; var a = document.getElementById('pro-email'); var b = document.getElementById('top-pro-email'); if (a && !a.value) a.value = e; if (b && !b.value) b.value = e; } catch (err) {} })();
 function scoreColor(s){ return s>=90 ? '#34d399' : s>=70 ? '#a3e635' : s>=50 ? '#fbbf24' : '#f87171'; }
 function gradeOf(s){ return s>=90 ? ['A','Inbox-ready'] : s>=70 ? ['B','Good'] : s>=50 ? ['C','At risk'] : ['D','Failing']; }
 function applyWhiteLabel(brand) {
@@ -106,7 +117,7 @@ function applyWhiteLabel(brand) {
     const nl = nav.querySelector('.nav-links');
     if (nl) nl.style.display = 'none';
   }
-  ['topCta','wlProBottom','wlMore'].forEach(id => { const el = document.getElementById(id); if (el) el.style.display = 'none'; });
+  ['topCta','wlProBottom','wlMore','ownCta'].forEach(id => { const el = document.getElementById(id); if (el) el.style.display = 'none'; });
   const footer = document.getElementById('wlFooter');
   if (footer) footer.innerHTML = 'Audited by <b>' + brand.name + '</b> · live DNS checks';
 }
@@ -116,7 +127,7 @@ fetch('/api/report/' + encodeURIComponent(id))
   .then(a => {
     const s = a.score, col = scoreColor(s), [g, gl] = gradeOf(s);
     const BRAND = (a.brand && a.brand.name) ? a.brand.name : 'Inboxproof';
-    document.title = a.domain + ' — ' + s + '/100 deliverability · ' + BRAND + ' report';
+    document.title = a.domain + ': ' + s + '/100 deliverability · ' + BRAND + ' report';
     const md = document.querySelector('meta[name="description"]');
     md.content = a.domain + ' scored ' + s + '/100 (' + gl + ') on ' + a.checks.filter(c=>c.status==='pass').length + ' of 7 deliverability checks. Full report by ' + BRAND + '.';
     $('#h1').innerHTML = a.domain + ' scored <span class="grad">' + s + '/100</span>';
@@ -136,13 +147,64 @@ fetch('/api/report/' + encodeURIComponent(id))
     $('#shareLi').addEventListener('click', () => {
       window.open('https://www.linkedin.com/sharing/share-offsite/?url=' + encodeURIComponent(shareUrl), '_blank', 'noopener,width=600,height=540');
     });
+    $('#shareCard').addEventListener('click', () => {
+      const W = 1080, H = 1080;
+      const c = document.createElement('canvas');
+      c.width = W; c.height = H;
+      const ctx = c.getContext('2d');
+      // background
+      const bg = ctx.createLinearGradient(0, 0, 0, H);
+      bg.addColorStop(0, '#0b0d14'); bg.addColorStop(1, '#12151f');
+      ctx.fillStyle = bg; ctx.fillRect(0, 0, W, H);
+      // accent bar
+      ctx.fillStyle = col; ctx.fillRect(0, 0, 8, H);
+      // brand
+      ctx.fillStyle = 'rgba(255,255,255,.55)'; ctx.font = '600 28px Inter, sans-serif';
+      ctx.fillText('Inboxproof', 64, 80);
+      // domain
+      ctx.fillStyle = '#fff'; ctx.font = '800 64px Inter, sans-serif';
+      const dText = a.domain.length > 18 ? a.domain.slice(0, 18) + '…' : a.domain;
+      ctx.fillText(dText, 64, 180);
+      // score
+      ctx.fillStyle = col; ctx.font = '800 220px Inter, sans-serif';
+      ctx.fillText(String(s), 64, 460);
+      ctx.fillStyle = 'rgba(255,255,255,.4)'; ctx.font = '600 48px Inter, sans-serif';
+      ctx.fillText('/100', 64 + ctx.measureText(String(s)).width + 20, 460);
+      // grade
+      ctx.fillStyle = col; ctx.font = '700 44px Inter, sans-serif';
+      ctx.fillText(g + ' · ' + gl, 64, 560);
+      // checks summary
+      const pass = a.checks.filter(x => x.status === 'pass').length;
+      const fail = a.checks.filter(x => x.status === 'fail').length;
+      const warn = a.checks.filter(x => x.status === 'warn').length;
+      ctx.fillStyle = 'rgba(255,255,255,.65)'; ctx.font = '500 30px Inter, sans-serif';
+      ctx.fillText(pass + ' passed · ' + warn + ' warnings · ' + fail + ' failing', 64, 640);
+      // divider
+      ctx.fillStyle = 'rgba(255,255,255,.1)'; ctx.fillRect(64, 700, W - 128, 2);
+      // CTA
+      ctx.fillStyle = '#fff'; ctx.font = '700 36px Inter, sans-serif';
+      ctx.fillText('Run your free audit', 64, 780);
+      ctx.fillStyle = 'rgba(255,255,255,.5)'; ctx.font = '500 28px Inter, sans-serif';
+      ctx.fillText('inboxproof.email', 64, 830);
+      // footer
+      ctx.fillStyle = 'rgba(255,255,255,.3)'; ctx.font = '400 24px Inter, sans-serif';
+      ctx.fillText('Audited ' + new Date(a.at).toLocaleDateString() + ' · 7 live DNS checks', 64, H - 60);
+      // download
+      c.toBlob(b => {
+        const url = URL.createObjectURL(b);
+        const a2 = document.createElement('a');
+        a2.href = url; a2.download = a.domain + '-score-' + s + '.png';
+        document.body.appendChild(a2); a2.click(); a2.remove();
+        setTimeout(() => URL.revokeObjectURL(url), 1000);
+      }, 'image/png');
+    });
     if (a.brand && a.brand.name) applyWhiteLabel(a.brand);
     const ld = document.createElement('script');
     ld.type = 'application/ld+json';
     ld.textContent = JSON.stringify({
       '@context': 'https://schema.org',
       '@type': 'WebPage',
-      name: a.domain + ' deliverability audit — ' + s + '/100',
+      name: a.domain + ' deliverability audit: ' + s + '/100',
       description: a.domain + ' scored ' + s + '/100 (' + gl + ') on 7 live deliverability checks.',
       url: location.href,
       datePublished: new Date(a.at).toISOString(),
@@ -157,15 +219,19 @@ fetch('/api/report/' + encodeURIComponent(id))
     const failing = a.checks.filter(c => c.status === 'fail').length;
     const warn = a.checks.filter(c => c.status === 'warn').length;
     const tc = document.getElementById('topCta');
+    const bct = document.getElementById('bottomCtaTitle');
     if (failing > 0) {
       document.getElementById('topCtaTitle').textContent = failing + ' of 7 checks are failing on ' + a.domain;
-      document.getElementById('topCtaSub').textContent = 'Fixing them is a start, but records break — a new include, a provider change, an expired DKIM key. Pro watches all 7 daily and emails you the moment one breaks, so a deliverability drop never catches you blind.';
+      document.getElementById('topCtaSub').textContent = 'Fixing them is a start, but records break, a new include, a provider change, an expired DKIM key. Pro watches all 7 daily and emails you the moment one breaks, so a deliverability drop never catches you blind.';
+      if (bct) bct.textContent = failing + ' check' + (failing > 1 ? 's' : '') + ' are failing on ' + a.domain + '. Lock in daily monitoring.';
     } else if (warn > 0) {
       document.getElementById('topCtaTitle').textContent = a.domain + ' is solid, with ' + warn + ' check' + (warn > 1 ? 's' : '') + ' that could get worse';
       document.getElementById('topCtaSub').textContent = 'Pro keeps it that way: daily monitoring of all 7 checks with alerts the instant a record changes or breaks.';
+      if (bct) bct.textContent = 'Keep ' + a.domain + ' solid. Daily monitoring catches the next break.';
     } else {
       document.getElementById('topCtaTitle').textContent = a.domain + ' is inbox-ready';
       document.getElementById('topCtaSub').textContent = 'Keep it that way. Pro monitors all 7 checks daily and alerts you the moment anything changes, so a silent break never costs you deliverability.';
+      if (bct) bct.textContent = 'Keep it that way. Monitor all 7 checks daily.';
     }
     tc.style.display = 'block';
   })
@@ -185,7 +251,7 @@ async function startCheckout(emailInput, btn, errEl) {
     if (!r.ok) throw new Error(j.error || 'Could not start checkout');
     location.href = j.url;
   } catch (ex) {
-    btn.disabled = false; btn.textContent = 'Start Pro — $29/mo';
+    btn.disabled = false; btn.textContent = 'Start Pro: $14.50/mo';
     errEl.textContent = ex.message;
   }
 }
@@ -203,7 +269,26 @@ $('#shareBtn').addEventListener('click', async () => {
   }
   const b = $('#shareBtn');
   const old = b.textContent;
-  b.textContent = 'Copied — share the link';
+  b.textContent = 'Copied, share the link';
+  setTimeout(() => { b.textContent = old; }, 2200);
+});
+$('#shareTeam').addEventListener('click', async () => {
+  let refCode = '';
+  try { refCode = sessionStorage.getItem('ip_refcode') || ''; } catch (e) {}
+  if (!refCode) refCode = Math.random().toString(36).slice(2, 8);
+  const url = location.origin + '/?ref=' + refCode;
+  try {
+    await navigator.clipboard.writeText(url);
+  } catch (e) {
+    const ta = document.createElement('textarea');
+    ta.value = url; document.body.appendChild(ta); ta.select();
+    try { document.execCommand('copy'); } catch (_) {}
+    document.body.removeChild(ta);
+  }
+  const b = $('#shareTeam');
+  const old = b.textContent;
+  b.textContent = 'Team link copied';
+  b.title = 'Your team gets a free 14-day Pro trial when they run their first audit with this link';
   setTimeout(() => { b.textContent = old; }, 2200);
 });
 </script>

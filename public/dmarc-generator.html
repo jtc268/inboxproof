@@ -1,11 +1,12 @@
 <!doctype html>
 <html lang="en">
 <head>
+<script>(function(){try{var p=location.pathname||"/";var r=(document.referrer||"").split("/")[2]||"direct";var u="/api/track?page="+encodeURIComponent(p)+"&ref="+encodeURIComponent(r);if(navigator.sendBeacon&&navigator.sendBeacon(u))return;var i=new Image();i.src=u;}catch(e){}})();</script>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
-<title>Free DMARC Record Generator — Create Your DMARC TXT Record</title>
+<title>Free DMARC Record Generator | Create Your DMARC TXT Record</title>
 <meta name="description" content="Generate a correct DMARC record for your domain in seconds. Pick a policy, get the exact TXT record, and copy-paste it into your DNS provider. Free, no signup.">
-<meta property="og:title" content="Free DMARC Record Generator — Inboxproof">
+<meta property="og:title" content="Free DMARC Record Generator | Inboxproof">
 <meta property="og:description" content="Generate the exact DMARC TXT record for your domain and get step-by-step DNS instructions. Free, no signup.">
 <meta property="og:type" content="website">
 <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -49,9 +50,9 @@
       <div>
         <label style="display:block;font-size:13px;font-weight:600;margin-bottom:6px;opacity:.8">Policy</label>
         <div style="display:flex;gap:10px;flex-wrap:wrap">
-          <label style="flex:1;min-width:150px"><input type="radio" name="policy" value="none" checked style="margin-right:8px"> <span style="font-size:14px"><strong>none</strong> — monitor only (start here)</span></label>
-          <label style="flex:1;min-width:150px"><input type="radio" name="policy" value="quarantine" style="margin-right:8px"> <span style="font-size:14px"><strong>quarantine</strong> — send failures to spam</span></label>
-          <label style="flex:1;min-width:150px"><input type="radio" name="policy" value="reject" style="margin-right:8px"> <span style="font-size:14px"><strong>reject</strong> — block failures</span></label>
+          <label style="flex:1;min-width:150px"><input type="radio" name="policy" value="none" checked style="margin-right:8px"> <span style="font-size:14px"><strong>none</strong>: monitor only (start here)</span></label>
+          <label style="flex:1;min-width:150px"><input type="radio" name="policy" value="quarantine" style="margin-right:8px"> <span style="font-size:14px"><strong>quarantine</strong>: send failures to spam</span></label>
+          <label style="flex:1;min-width:150px"><input type="radio" name="policy" value="reject" style="margin-right:8px"> <span style="font-size:14px"><strong>reject</strong>: block failures</span></label>
         </div>
       </div>
       <div>
@@ -84,11 +85,11 @@
     <div class="card" style="margin-top:16px;padding:22px">
       <h3 style="margin-top:0">Provider quick-steps</h3>
       <div style="font-size:14px;opacity:.85;line-height:1.7">
-        <p style="margin:0 0 10px"><strong>Cloudflare</strong> — DNS → Records → Add record. Type TXT, Name <code>_dmarc</code>, Content the record, TTL Auto.</p>
-        <p style="margin:0 0 10px"><strong>GoDaddy</strong> — DNS → Manage Records → Add New Record. Type TXT, Name <code>_dmarc</code>, Value the record.</p>
-        <p style="margin:0 0 10px"><strong>Namecheap</strong> — Manage DNS → Add New Record. Type TXT, Host <code>_dmarc</code>, Value the record.</p>
-        <p style="margin:0 0 10px"><strong>AWS Route 53</strong> — Hosted zone → Create record. Type TXT, Record name <code>_dmarc</code>, Value the record.</p>
-        <p style="margin:0"><strong>Google Workspace</strong> — DNS → Custom resource records. Type TXT, Name <code>_dmarc</code>, Content the record.</p>
+        <p style="margin:0 0 10px"><strong>Cloudflare</strong>: DNS → Records → Add record. Type TXT, Name <code>_dmarc</code>, Content the record, TTL Auto.</p>
+        <p style="margin:0 0 10px"><strong>GoDaddy</strong>: DNS → Manage Records → Add New Record. Type TXT, Name <code>_dmarc</code>, Value the record.</p>
+        <p style="margin:0 0 10px"><strong>Namecheap</strong>: Manage DNS → Add New Record. Type TXT, Host <code>_dmarc</code>, Value the record.</p>
+        <p style="margin:0 0 10px"><strong>AWS Route 53</strong>: Hosted zone → Create record. Type TXT, Record name <code>_dmarc</code>, Value the record.</p>
+        <p style="margin:0"><strong>Google Workspace</strong>: DNS → Custom resource records. Type TXT, Name <code>_dmarc</code>, Content the record.</p>
       </div>
     </div>
 

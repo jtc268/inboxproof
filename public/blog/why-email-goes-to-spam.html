@@ -1,0 +1,113 @@
+<!doctype html>
+<html lang="en">
+<head>
+<script>(function(){try{var p=location.pathname||"/";var r=(document.referrer||"").split("/")[2]||"direct";var u="/api/track?page="+encodeURIComponent(p)+"&ref="+encodeURIComponent(r);if(navigator.sendBeacon&&navigator.sendBeacon(u))return;var i=new Image();i.src=u;}catch(e){}})();</script>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Why is my email going to spam? The five causes and the fix for each | Inboxproof</title>
+<meta name="description" content="Email lands in spam for a small set of reasons. Here are the five that account for most of it, how to tell which one is yours, and the exact fix for each.">
+<meta property="og:title" content="Why is my email going to spam? The five causes and the fix for each">
+<meta property="og:description" content="The five reasons mail lands in spam, how to tell which one is yours, and the exact record or change that fixes it.">
+<meta property="og:type" content="article">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="/styles.css">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' rx='8' fill='%236366f1'/%3E%3Cpath d='M8 16h13M15 10l6 6-6 6' stroke='white' stroke-width='3' fill='none' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E">
+<script type="application/ld+json">
+{"@context":"https://schema.org","@type":"Article","headline":"Why is my email going to spam? The five causes and the fix for each","description":"Email lands in spam for a small set of reasons. Here are the five that account for most of it, how to tell which one is yours, and the exact fix for each.","author":{"@type":"Organization","name":"Inboxproof"},"publisher":{"@type":"Organization","name":"Inboxproof"}}
+</script>
+<link rel="canonical" href="https://inboxproof.email/blog/why-email-goes-to-spam">
+<meta property="og:url" content="https://inboxproof.email/blog/why-email-goes-to-spam">
+<meta property="og:image" content="https://inboxproof.email/og.png">
+<meta property="og:image:width" content="1200">
+<meta property="og:image:height" content="630">
+<meta name="twitter:image" content="https://inboxproof.email/og.png">
+</head>
+<body>
+<nav class="nav">
+  <div class="container">
+    <a class="logo" href="/">
+      <span class="mark"><svg viewBox="0 0 24 24" fill="none"><path d="M4 12h11M11 7l5 5-5 5" stroke="#fff" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"/></svg></span>
+      Inboxproof
+    </a>
+    <div class="nav-links"><a href="/blog">All guides</a><a href="/">Run a free audit</a></div>
+  </div>
+</nav>
+
+<div class="container" style="max-width:760px;padding:60px 20px 80px">
+  <div class="kicker">Guide</div>
+  <h1 style="font-size:34px;margin:10px 0 24px">Why is my email going to spam? The five causes and the fix for each</h1>
+  <div style="opacity:.85;line-height:1.75;font-size:15.5px">
+    <p>When mail lands in the spam folder, it is almost never because of one big thing. It is because one of a small set of checks failed, and the receiver decided the cost of guessing wrong was too high. The good news is that the same five causes account for the large majority of spam-folder problems, and each one has a specific test and a specific fix. Work through them in order, from the cheapest to check to the hardest, and you will usually find the culprit in the first two.</p>
+
+    <h2 style="font-size:22px;margin:34px 0 12px">1. The authentication layer is missing or broken</h2>
+    <p>This is the most common cause, and the one people most often overlook. Before a mailbox will accept your mail, it reads three DNS records: SPF, DKIM, and DMARC. If any of them is missing, misconfigured, or not aligned with the domain in your From address, the receiver has no proof that you are who you say you are. Many mailboxes now treat unauthenticated mail as spam by default.</p>
+    <ul style="line-height:1.85">
+      <li><b>SPF is missing or does not list your sender.</b> If you send through an ESP or a transactional provider, its IP has to be in your SPF record. A record over the 10-DNS-lookup limit fails silently. <a href="/spf-checker">Check your SPF</a>, or <a href="/spf-generator">generate the record</a>.</li>
+      <li><b>DKIM is not signing, or the key is not published.</b> The selector your provider uses must have a matching DNS record, and the key must be strong enough (2048-bit). <a href="/dkim-checker">Check the DKIM</a>.</li>
+      <li><b>DMARC is absent or the domain does not align.</b> Without a DMARC record, there is no policy telling the receiver what to do with spoofed mail. Start at <code>p=none</code> with reporting, then tighten it. <a href="/dmarc-checker">Check the DMARC</a>.</li>
+    </ul>
+    <p>The fastest way to see all three at once is the <a href="/dmarc-checker">free audit</a>, which scores the whole authentication stack and tells you the exact record to add.</p>
+
+    <h2 style="font-size:22px;margin:34px 0 12px">2. The IP or domain has a bad reputation</h2>
+    <p>Even with perfect authentication, a mailbox will hold your mail if the sending IP or the domain itself is on a blocklist, or if it has no history at all. This is the cause that surprises people the most, because nothing in their own setup is wrong.</p>
+    <ul style="line-height:1.85">
+      <li><b>The sending IP is listed.</b> One hit on Spamhaus, or a handful of other lists, and most mailboxes will quarantine you. <a href="/is-my-ip-blacklisted">Check the IP against the major lists</a>.</li>
+      <li><b>The domain is listed.</b> The domain can be flagged even when the IP is clean, usually because of a past abuse report. <a href="/is-my-domain-blacklisted">Check the domain</a>.</li>
+      <li><b>The IP is cold.</b> A brand new IP with no sending history starts with a low reputation and gets filtered until it earns trust. If you just moved to a new IP or a new provider, this is likely the cause. See the <a href="/cold-email-warm-up">warm-up guide</a>.</li>
+      <li><b>You are on a shared IP.</b> On a shared IP, other senders can drag the reputation down with you. Know which you are on, and whether the provider isolates your traffic.</li>
+    </ul>
+
+    <h2 style="font-size:22px;margin:34px 0 12px">3. The list you send to is dirty</h2>
+    <p>A clean list is the cheapest deliverability win available. The receiver watches your bounce and complaint rates, and a bad list quietly poisons your reputation even when every record is correct.</p>
+    <ul style="line-height:1.85">
+      <li><b>Bounce rate is above 2%.</b> Hard bounces tell the receiver you are sending to addresses that do not exist. <a href="/cold-email-bounce-rate">What a bad bounce rate means</a> and how to bring it down.</li>
+      <li><b>You are sending to a purchased or scraped list.</b> This is the fastest way to get reported as spam and to lose the domain's reputation. Stop, and prune the list.</li>
+      <li><b>Complaints are not near zero.</b> A spam complaint is the strongest negative signal a mailbox uses. Keep the rate under 0.1%, and honor unsubscribes the same day.</li>
+      <li><b>Engagement is low.</b> Recipients who never open mark your domain as low quality. Prune the cold segment or re-engage it before the next send.</li>
+    </ul>
+
+    <h2 style="font-size:22px;margin:34px 0 12px">4. The content or sending behavior trips a filter</h2>
+    <p>The same domain can deliver fine to one inbox and fail in another, depending on what the mail actually says and how you send it.</p>
+    <ul style="line-height:1.85">
+      <li><b>Spam-trigger words are stacked.</b> A few are fine. A subject line full of them, especially with the word repeated, is not.</li>
+      <li><b>The subject and preview do not match the body.</b> Bait-and-switch subjects get flagged.</li>
+      <li><b>The message is one giant image.</b> A mail that is mostly an image with no text reads as spam to many filters. Keep a real text body.</li>
+      <li><b>Links point to flagged or dead domains.</b> Dead links and links to listed domains hurt. Check the domains you link to.</li>
+      <li><b>Volume spiked.</b> A sudden 10x jump in send volume trips spam filters. Ramp volume in steps over days instead of all at once.</li>
+    </ul>
+
+    <h2 style="font-size:22px;margin:34px 0 12px">5. Something changed and you did not notice</h2>
+    <p>Deliverability is a state, not a one-time setup. Records rot, IPs get listed, and providers change their rules. A lot of "my email suddenly went to spam" is a change that happened somewhere and nobody re-ran the check after it.</p>
+    <ul style="line-height:1.85">
+      <li><b>A provider rotated your sending IP.</b> Transactional and ESP providers rotate IPs without telling you. The new IP may be cold or listed. <a href="/is-my-ip-blacklisted">Check the current IP</a>.</li>
+      <li><b>A DNS record expired or was edited.</b> A DKIM key rotation, an SPF change, or a DMARC edit can break alignment. <a href="/dmarc-checker">Re-check the stack</a>.</li>
+      <li><b>You added a new sender and did not add it to SPF.</b> A new tool or a new team sending from the domain, without its IP in the SPF record.</li>
+      <li><b>You are not reading your DMARC reports.</b> They tell you who is sending as your domain and what is failing. The <a href="/dmarc-report-parser">report parser</a> turns them into a who-is-sending-as-you list.</li>
+    </ul>
+
+    <h2 style="font-size:22px;margin:34px 0 12px">How to find out which one is yours</h2>
+    <p>Do not guess. Run the checks in order. Start with the authentication layer, because it is the most common and the cheapest to verify. Then check the IP and domain reputation. Then look at the list and the content. The <a href="/cold-email-checker">free audit</a> runs the DNS and reputation checks in one pass, scores the domain, and points at the exact record to fix first. That is the fastest way to stop guessing and start fixing.</p>
+    <p style="margin-top:28px;padding:18px;background:#f4f4ff;border-radius:12px">Want this checked automatically every day? <a href="/#pricing" style="font-weight:600">Inboxproof Pro</a> monitors your domain around the clock and alerts you the moment a record breaks or an IP gets listed. <a href="/#pricing" style="font-weight:600">See pricing →</a></p>
+
+    <div style="margin-top:24px;padding:20px;border:1px solid rgba(99,102,241,.25);border-radius:12px;background:rgba(99,102,241,.06)">
+      <div style="font-weight:700;font-size:15px;margin-bottom:10px">Related guides</div>
+      <div style="opacity:.8;font-size:14px;line-height:2">
+        <a href="/blog/email-deliverability-by-platform">Email deliverability by platform</a><br>
+        <a href="/blog/email-deliverability-checklist">Email deliverability checklist</a><br>
+        <a href="/blog/cold-email-deliverability">Cold email deliverability: how to stay out of spam</a><br>
+        <a href="/blog/transactional-email-api-deliverability">Transactional email API deliverability</a><br>
+        <a href="/blog/cold-email-infrastructure">Cold email infrastructure that keeps domains alive</a>
+      </div>
+    </div>
+  </div>
+</div>
+
+<footer>
+  <div class="container">
+    <span>© 2026 Inboxproof, Inc.</span>
+    <span><a href="/blog">All guides</a> · <a href="/">Home</a> · <a href="/privacy">Privacy</a> · <a href="https://github.com/jtc268/inboxproof" target="_blank" rel="noopener">GitHub</a></span>
+  </div>
+</footer>
+</body>
+</html>

@@ -1,11 +1,12 @@
 <!doctype html>
 <html lang="en">
 <head>
+<script>(function(){try{var p=location.pathname||"/";var r=(document.referrer||"").split("/")[2]||"direct";var u="/api/track?page="+encodeURIComponent(p)+"&ref="+encodeURIComponent(r);if(navigator.sendBeacon&&navigator.sendBeacon(u))return;var i=new Image();i.src=u;}catch(e){}})();</script>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
-<title>Free MX Record Checker — Does Your Domain Have Working Mail Servers?</title>
+<title>Free MX Record Checker | Does Your Domain Have Working Mail Servers?</title>
 <meta name="description" content="Check your domain's MX records, resolve each mail server to its IP, and verify reverse DNS (PTR). Find out in seconds whether your domain can actually receive email. Free, no signup.">
-<meta property="og:title" content="Free MX Record Checker — Inboxproof">
+<meta property="og:title" content="Free MX Record Checker | Inboxproof">
 <meta property="og:description" content="See your MX records, the mail server IPs they resolve to, and their PTR records. Free, no signup.">
 <meta property="og:type" content="website">
 <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -60,7 +61,7 @@
     <div id="lead" style="display:none;margin-top:20px">
       <div class="card" style="background:#eef2ff;border-color:#c7d2fe">
         <h3 style="margin-top:0">Check the whole domain, not just the MX</h3>
-        <p style="opacity:.8;margin-bottom:14px">MX and STARTTLS are only two of eight signals. Add your email and we'll run the full audit — SPF, DKIM, DMARC, TLS, reverse DNS, blocklists and IP reputation — and save a shareable report with your score history. Free, no card.</p>
+        <p style="opacity:.8;margin-bottom:14px">MX and STARTTLS are only two of eight signals. Add your email and we'll run the full audit, SPF, DKIM, DMARC, TLS, reverse DNS, blocklists and IP reputation, and save a shareable report with your score history. Free, no card.</p>
         <form id="lead-form" style="display:flex;gap:10px;flex-wrap:wrap">
           <input id="lead-email" type="email" placeholder="you@yourdomain.com" style="flex:1;min-width:220px;padding:12px 14px;border-radius:10px;border:1px solid #c7d2fe;font-size:15px" autocomplete="off" required>
           <button class="btn btn-primary" type="submit">Run full audit &amp; save</button>
@@ -140,7 +141,7 @@ document.getElementById('check-form').addEventListener('submit', async e => {
       title.textContent = 'MX found, but some servers do not resolve';
       title.style.color = '#d97706';
       sub.textContent = j.domain;
-      detail.textContent = j.domain + ' has MX records, but one or more mail servers do not resolve to an IP. Mail to this domain may be rejected or delayed — check your MX configuration.';
+      detail.textContent = j.domain + ' has MX records, but one or more mail servers do not resolve to an IP. Mail to this domain may be rejected or delayed, check your MX configuration.';
     }
     const rows = (j.results || []).map(r => {
       let color = '#16a34a', mark = 'Resolves';

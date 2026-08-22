@@ -1,11 +1,12 @@
 <!doctype html>
 <html lang="en">
 <head>
+<script>(function(){try{var p=location.pathname||"/";var r=(document.referrer||"").split("/")[2]||"direct";var u="/api/track?page="+encodeURIComponent(p)+"&ref="+encodeURIComponent(r);if(navigator.sendBeacon&&navigator.sendBeacon(u))return;var i=new Image();i.src=u;}catch(e){}})();</script>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
-<title>Free Email Spam Checker — Will Your Email Land in the Inbox?</title>
+<title>Free Email Spam Checker | Will Your Email Land in the Inbox?</title>
 <meta name="description" content="Check your domain's spam risk in seconds. We test SPF, DKIM, DMARC, TLS, reverse DNS, MX and IP blocklists, then score how likely your email is to hit the spam folder. Free, no signup.">
-<meta property="og:title" content="Free Email Spam Checker — Inboxproof">
+<meta property="og:title" content="Free Email Spam Checker | Inboxproof">
 <meta property="og:description" content="Check your domain's spam risk in seconds. Free, no signup.">
 <meta property="og:type" content="website">
 <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -21,7 +22,7 @@
  {"@type":"Question","name":"Is this email spam checker free?","acceptedAnswer":{"@type":"Answer","text":"Yes. The spam risk check is free and does not require a signup. You can optionally enter an email to save a full audit report with a shareable link."}},
  {"@type":"Question","name":"What does the spam risk score mean?","acceptedAnswer":{"@type":"Answer","text":"The score runs from 0 to 100, where lower is better. 0-15 is low risk and inbox-ready, 16-35 is moderate, 36-60 is high, and above 60 is severe. The score reflects how many of the core deliverability checks your domain passes."}},
  {"@type":"Question","name":"Why is my email going to the spam folder?","acceptedAnswer":{"@type":"Answer","text":"Most often it is a missing or broken authentication record (SPF, DKIM or DMARC), a sending IP on a blocklist, or missing reverse DNS. Run the checker above and it will list the exact failing signal and how to fix it."}},
- {"@type":"Question","name":"Does a good spam score guarantee inbox delivery?","acceptedAnswer":{"@type":"Answer","text":"No. Spam filters also weigh sending volume, recipient engagement and content. A clean authentication and reputation baseline is the prerequisite though — without it, no amount of good content rescues you."}}
+ {"@type":"Question","name":"Does a good spam score guarantee inbox delivery?","acceptedAnswer":{"@type":"Answer","text":"No. Spam filters also weigh sending volume, recipient engagement and content. A clean authentication and reputation baseline is the prerequisite though, without it, no amount of good content rescues you."}}
 ]}
 </script>
 </head>
@@ -39,7 +40,7 @@
 <div class="container" style="max-width:760px;padding:60px 20px 80px;text-align:center">
   <div class="kicker">Free tool</div>
   <h1 style="font-size:38px;margin:10px 0 12px">Email spam checker</h1>
-  <p style="opacity:.8;font-size:16px;margin-bottom:30px">Enter your domain. We test the signals spam filters weigh — SPF, DKIM, DMARC, TLS, MX, reverse DNS and IP blocklists — and score how likely your email is to land in the spam folder. No signup, no email required.</p>
+  <p style="opacity:.8;font-size:16px;margin-bottom:30px">Enter your domain. We test the signals spam filters weigh, SPF, DKIM, DMARC, TLS, MX, reverse DNS and IP blocklists, and score how likely your email is to land in the spam folder. No signup, no email required.</p>
 
   <form id="check-form" style="display:flex;gap:10px;max-width:520px;margin:0 auto 10px;flex-wrap:wrap;justify-content:center">
     <input id="domain" type="text" placeholder="yourdomain.com" style="flex:1;min-width:220px;padding:14px 16px;border-radius:10px;border:1px solid #d4d4d8;font-size:16px;background:#fff" autocomplete="off" spellcheck="false">
@@ -135,7 +136,7 @@ form.addEventListener('submit', async e => {
     const num = document.getElementById('score-num');
     num.textContent = j.risk;
     num.style.color = RISK_COLOR(j.risk);
-    document.getElementById('score-grade').textContent = j.riskLabel + ' spam risk — ' + j.domain;
+    document.getElementById('score-grade').textContent = j.riskLabel + ' spam risk: ' + j.domain;
     document.getElementById('score-note').textContent = j.verdict;
     checksEl.innerHTML = j.checks.map(c => {
       const s = STATUS[c.status] || STATUS.fail;

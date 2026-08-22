@@ -1,0 +1,72 @@
+<!doctype html>
+<html lang="en">
+<head>
+<script>(function(){try{var p=location.pathname||"/";var r=(document.referrer||"").split("/")[2]||"direct";var u="/api/track?page="+encodeURIComponent(p)+"&ref="+encodeURIComponent(r);if(navigator.sendBeacon&&navigator.sendBeacon(u))return;var i=new Image();i.src=u;}catch(e){}})();</script>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Email deliverability for developers: make sure your product's email actually lands | Inboxproof</title>
+<meta name="description" content="Email deliverability is a product problem, not just an ops problem. The records and reputation signals that decide whether your transactional and notification email lands in the inbox, and how to monitor them so a broken record never silently kills your user experience.">
+<meta property="og:title" content="Email deliverability for developers: make sure your product's email actually lands">
+<meta property="og:description" content="The records and reputation signals that decide whether your transactional and notification email lands in the inbox, and how to monitor them.">
+<meta property="og:type" content="article">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="/styles.css">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' rx='8' fill='%236366f1'/%3E%3Cpath d='M8 16h13M15 10l6 6-6 6' stroke='white' stroke-width='3' fill='none' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E">
+<script type="application/ld+json">
+{"@context":"https://schema.org","@type":"Article","headline":"Email deliverability for developers: make sure your product's email actually lands","description":"Email deliverability is a product problem, not just an ops problem. The records and reputation signals that decide whether your transactional and notification email lands in the inbox, and how to monitor them so a broken record never silently kills your user experience.","author":{"@type":"Organization","name":"Inboxproof"},"publisher":{"@type":"Organization","name":"Inboxproof"}}
+</script>
+<link rel="canonical" href="https://inboxproof.email/blog/email-deliverability-for-developers">
+<meta property="og:url" content="https://inboxproof.email/blog/email-deliverability-for-developers">
+<meta property="og:image" content="https://inboxproof.email/og.png">
+<meta property="og:image:width" content="1200">
+<meta property="og:image:height" content="630">
+<meta name="twitter:image" content="https://inboxproof.email/og.png">
+</head>
+<body>
+<nav class="nav">
+  <div class="container">
+    <a class="logo" href="/">
+      <span class="mark"><svg viewBox="0 0 24 24" fill="none"><path d="M4 12h11M11 7l5 5-5 5" stroke="#fff" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"/></svg></span>
+      Inboxproof
+    </a>
+    <div class="nav-links"><a href="/blog">All guides</a><a href="/">Run a free audit</a></div>
+  </div>
+</nav>
+
+<div class="container" style="max-width:760px;padding:60px 20px 80px">
+  <div class="kicker">Guide</div>
+  <h1 style="font-size:34px;margin:10px 0 24px">Email deliverability for developers: make sure your product's email actually lands</h1>
+  <div style="opacity:.85;line-height:1.75;font-size:15.5px">
+    <p>Most developers treat email as a solved problem. You wire up SendGrid or Postmark, you send a confirmation, you move on. But "sent" and "delivered" are not the same thing. A user who never sees your password reset email does not file a bug report. They just stop using your product. Email deliverability is a product problem, and it deserves the same attention you give to any other part of the user experience.</p>
+
+    <h2 style="font-size:22px;margin:34px 0 12px">The difference between sending and delivering</h2>
+    <p>Your email provider accepts the message and puts it on the wire. That is the end of your involvement, as far as the API is concerned. But the receiving mailbox (Gmail, Microsoft, Yahoo) has its own opinion about whether that message belongs in the inbox or the spam folder. It makes that decision based on a set of signals it can look up in real time: your domain's authentication records, your sending IP's reputation, and whether your sending pattern looks normal. If any of those signals are weak, the message gets filtered, and you will not know unless you check.</p>
+
+    <h2 style="font-size:22px;margin:34px 0 12px">The records you own</h2>
+    <p>Even when you send through a third-party provider, the authentication records live on your domain, not theirs. That means you are responsible for them, and a misconfiguration on your side will sink every email your provider sends on your behalf.</p>
+    <ul style="line-height:1.9">
+      <li><b>SPF.</b> A list of the servers allowed to send for your domain. If your provider's sending IPs are not in your SPF record, every email fails authentication. Most providers give you the exact include statement to add. Check it with the <a href="/spf-checker">SPF checker</a>.</li>
+      <li><b>DKIM.</b> A signing key that proves the email came from you. You generate the key pair, publish the public key in your DNS, and hand the private key to your provider so it can sign outgoing mail. Use a strong key (2048-bit or longer). Check it with the <a href="/dkim-checker">DKIM checker</a>.</li>
+      <li><b>DMARC.</b> A policy that tells receivers what to do when SPF or DKIM fails. Start with <code>p=none</code> and <code>rua</code> reporting so you can see what is failing, then tighten to <code>p=quarantine</code> or <code>p=reject</code> once you are confident. Check it with the <a href="/dmarc-checker">DMARC checker</a>.</li>
+      <li><b>MX and PTR.</b> Your domain needs a valid MX record, and your sending IP needs a matching reverse DNS record. A bare IP with no PTR is one of the fastest ways to get filtered.</li>
+      <li><b>TLS / STARTTLS.</b> Your mail server should offer a modern TLS version. A server that only offers an old cipher is a signal a receiver will use against you.</li>
+    </ul>
+
+    <h2 style="font-size:22px;margin:34px 0 12px">The provider problem</h2>
+    <p>When you send through SendGrid, Postmark, Mailgun, or Resend, you are inheriting their infrastructure. Their sending IPs have their own reputation, and their configuration can change under you. A provider that rotates its IP pool, changes its signing key, or tightens its own authentication can quietly break your deliverability without you ever seeing a single error in your logs. The API still returns 200. The email still gets accepted. But the receiving mailbox now filters it.</p>
+    <p>This is why "it worked yesterday" is not a guarantee. The only way to know is to check the live records and the live sending IP, not to assume the provider has not changed anything.</p>
+
+    <h2 style="font-size:22px;margin:34px 0 12px">Monitoring: the difference between finding out and being told</h2>
+    <p>A one-time audit tells you the state of your records right now. It does not tell you what happens tomorrow when your provider rotates an IP, or when a DNS change propagates, or when your sending volume spikes and triggers a heuristic. The developers who avoid deliverability incidents are the ones who monitor their sending domain on a schedule and get alerted the moment a check flips from pass to fail.</p>
+    <p>That is the difference between finding out about a deliverability drop from a user who says "I never got my password reset email" and finding out from an alert that says "DKIM check failed on your sending domain 6 hours ago." The second one is a 10-minute fix. The first one is a support ticket and a lost user.</p>
+
+    <h2 style="font-size:22px;margin:34px 0 12px">The developer workflow</h2>
+    <p>Run the audit on your sending domain. Read the score, then read each failed check and apply the exact record the tool hands you. Confirm your sending IP is not on a blocklist. Re-run the audit to confirm the score climbed. Then set up monitoring so the next time a record breaks or your IP gets listed, you find out before your users do. <a href="/">Run a free audit on your sending domain</a> and get the score, the exact records to fix, and the option to monitor them daily.</p>
+
+    <p style="opacity:.6;font-size:13px;margin-top:28px">Related: <a href="/blog/email-deliverability-audit-tool">What an audit tool actually checks</a> · <a href="/blog/email-deliverability-monitoring">Deliverability monitoring</a> · <a href="/blog/transactional-email-deliverability">Transactional email deliverability</a> · <a href="/blog/spf-dkim-dmarc">SPF vs DKIM vs DMARC</a> · <a href="/blog/email-in-spam">Why email lands in spam</a> · <a href="/blog/deliverability-score">What is a good deliverability score?</a></p>
+  </div>
+</div>
+
+</body>
+</html>

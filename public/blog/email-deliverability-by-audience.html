@@ -1,0 +1,81 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Email deliverability by audience: guides for agencies, developers, e-commerce, and SaaS</title>
+<meta property="og:url" content="https://inboxproof.email/blog/email-deliverability-by-audience">
+<meta name="description" content="Email deliverability guides organized by audience: agencies, developers, e-commerce, and SaaS. Find the guide that matches your use case and fix the DNS records that decide delivery.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="/styles.css">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' rx='8' fill='%236366f1'/%3E%3Cpath d='M8 16h13M15 10l6 6-6 6' stroke='white' stroke-width='3' fill='none' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E">
+<script>
+(function(){try{var p=location.pathname||'/';var r=(document.referrer||'').split('/')[2]||'direct';var u='/api/track?page='+encodeURIComponent(p)+'&ref='+encodeURIComponent(r);if(navigator.sendBeacon&&navigator.sendBeacon(u))return;var i=new Image();i.src=u;}catch(e){}})();
+</script>
+<script type="application/ld+json">
+{"@context":"https://schema.org","@type":"Article","headline":"Email Deliverability by Audience: Guides for Agencies, Developers, E-commerce, and SaaS","description":"Email deliverability guides organized by audience: agencies, developers, e-commerce, and SaaS. Find the guide that matches your use case.","author":{"@type":"Organization","name":"Inboxproof"},"publisher":{"@type":"Organization","name":"Inboxproof"}}
+</script>
+<link rel="canonical" href="https://inboxproof.email/blog/email-deliverability-by-audience">
+<meta property="og:image" content="https://inboxproof.email/og.png">
+<meta property="og:image:width" content="1200">
+<meta property="og:image:height" content="630">
+<meta name="twitter:image" content="https://inboxproof.email/og.png">
+</head>
+<body>
+<nav class="nav">
+  <div class="container">
+    <a class="logo" href="/">
+      <span class="mark"><svg viewBox="0 0 24 24" fill="none"><path d="M4 12h11M11 7l5 5-5 5" stroke="#fff" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"/></svg></span>
+      Inboxproof
+    </a>
+    <div class="nav-links"><a href="/">Run a free audit</a></div>
+  </div>
+</nav>
+
+<div class="container" style="max-width:860px;padding:60px 20px 80px">
+  <div class="kicker">Guide</div>
+  <h1>Email deliverability by audience</h1>
+  <p style="opacity:.8;font-size:16px;margin-bottom:36px">Email deliverability problems look different depending on who you are and what you send. An agency managing 20 client domains has different needs than a developer sending transactional email from a SaaS product. This page organizes our guides by audience so you can find the one that matches your use case.</p>
+
+  <h2>Choose your audience</h2>
+  <ul style="line-height:2.2">
+    <li><a href="/blog/email-deliverability-for-agencies">Agencies</a> : managing multiple client domains, daily monitoring, and the DNS records that break when a client changes their email provider.</li>
+    <li><a href="/blog/email-deliverability-for-developers">Developers</a> : sending transactional email from a SaaS product, the SPF/DKIM/DMARC records you need, and how to test without sending real email.</li>
+    <li><a href="/blog/email-deliverability-ecommerce">E-commerce</a> : cart abandonment emails, order confirmations, and the DNS records that decide whether your marketing campaigns land in the inbox.</li>
+    <li><a href="/blog/email-deliverability-saas">SaaS</a> : welcome sequences, usage notifications, and the DNS records that keep your product email out of spam.</li>
+  </ul>
+
+  <h2>Or browse by platform</h2>
+  <p>If you use a specific email platform, our <a href="/blog/email-deliverability-by-platform">email deliverability by platform</a> guide covers the platform-specific gotchas for Shopify, WordPress, WooCommerce, Squarespace, Wix, HubSpot, Salesforce, Mailchimp, Klaviyo, ActiveCampaign, ConvertKit, and GetResponse.</p>
+
+  <h2>Quick checklist</h2>
+  <ul>
+    <li>MX record exists and points to a valid mail server</li>
+    <li>SPF record includes all sending services</li>
+    <li>DKIM record is present and the selector matches your setup</li>
+    <li>DMARC record exists with p=quarantine or p=reject</li>
+    <li>TLS/STARTTLS is enabled on your mail server</li>
+    <li>PTR record matches your sending IP</li>
+  </ul>
+  <p>If any of these are missing, <a href="/">run a free audit</a> and get the exact record values to add. Takes 30 seconds. No account needed.</p>
+
+  <h2>Related guides</h2>
+  <ul>
+    <li><a href="/blog/email-deliverability-checklist">Email deliverability checklist</a></li>
+    <li><a href="/blog/why-email-goes-to-spam">Why email goes to spam</a></li>
+    <li><a href="/blog/dmarc">DMARC: what it is and why you need it</a></li>
+    <li><a href="/blog/spf-record-guide">SPF record guide</a></li>
+    <li><a href="/blog/dkim-signature-failing">Why your DKIM signature is failing</a></li>
+  </ul>
+
+  <div class="card" style="margin-top:40px;background:#eef2ff;border-color:#c7d2fe">
+    <h3 style="margin-top:0">Check your domain now</h3>
+    <p style="opacity:.8;margin-bottom:14px">Run a free 30 second audit on your domain. No account, no setup, reads your live DNS only.</p>
+    <a class="btn btn-primary" href="/">Run my free audit</a>
+  </div>
+
+  <p style="text-align:center;opacity:.4;font-size:12px;margin-top:28px">Audited by <a href="/" style="opacity:.8">Inboxproof</a> · live DNS checks · <a href="/privacy" style="opacity:.8">privacy</a></p>
+</div>
+</body>
+</html>

@@ -1,11 +1,12 @@
 <!doctype html>
 <html lang="en">
 <head>
+<script>(function(){try{var p=location.pathname||"/";var r=(document.referrer||"").split("/")[2]||"direct";var u="/api/track?page="+encodeURIComponent(p)+"&ref="+encodeURIComponent(r);if(navigator.sendBeacon&&navigator.sendBeacon(u))return;var i=new Image();i.src=u;}catch(e){}})();</script>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
-<title>Free Email Warm-up Calculator — Cold Email Ramp Plan</title>
+<title>Free Email Warm-up Calculator | Cold Email Ramp Plan</title>
 <meta name="description" content="Build a day-by-day email warm-up plan. Set your target daily volume and we generate a safe ramp schedule so a new sending domain reaches volume without triggering spam filters. Free, no signup.">
-<meta property="og:title" content="Free Email Warm-up Calculator — Inboxproof">
+<meta property="og:title" content="Free Email Warm-up Calculator | Inboxproof">
 <meta property="og:description" content="Generate a safe, day-by-day cold email warm-up ramp. Free, no signup.">
 <meta property="og:type" content="website">
 <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -82,7 +83,7 @@
 <div class="container" style="max-width:760px;padding:0 20px 80px">
   <div class="card" style="text-align:center">
     <h3 style="margin-top:0">Check the domain before you ramp</h3>
-    <p style="opacity:.8">A warm-up only works if the domain is ready. Run the free cold email readiness check first — it scores SPF, DKIM, DMARC, IP reputation, TLS and routing.</p>
+    <p style="opacity:.8">A warm-up only works if the domain is ready. Run the free cold email readiness check first, it scores SPF, DKIM, DMARC, IP reputation, TLS and routing.</p>
     <a class="btn btn-primary btn-lg" href="/cold-email-checker">Check my domain</a>
     <p style="opacity:.6;font-size:13px;margin-bottom:0">More tools: <a href="/dmarc-checker">DMARC checker</a> · <a href="/spf-checker">SPF checker</a> · <a href="/dkim-checker">DKIM checker</a> · <a href="/blocklist-checker">IP blocklist checker</a> · <a href="/tls-checker">TLS/STARTTLS checker</a> · <a href="/blog/cold-email-deliverability">Cold email deliverability guide</a></p>
   </div>
@@ -160,7 +161,7 @@ function render() {
       '<div style="font-size:13px;font-weight:600;margin:6px 0 4px">Day-by-day schedule</div>' +
       '<div style="max-height:320px;overflow:auto;border:1px solid #f4f4f5;border-radius:8px">' +
       '<table style="width:100%;border-collapse:collapse;font-size:13.5px"><thead><tr style="text-align:left;color:var(--dim);font-size:12px;position:sticky;top:0;background:#fff"><th style="padding:6px 10px">Day</th><th style="padding:6px 10px;text-align:right">Sends / day</th><th style="padding:6px 10px;text-align:right">Cumulative</th></tr></thead><tbody>' + dayRows + '</tbody></table></div>' +
-      '<p style="font-size:13px;opacity:.65;margin:12px 0 0">This is a starting plan. Adjust based on bounce rate, complaints and reply quality — if any of those worsen, hold the current volume for a few days before climbing.</p>' +
+      '<p style="font-size:13px;opacity:.65;margin:12px 0 0">This is a starting plan. Adjust based on bounce rate, complaints and reply quality, if any of those worsen, hold the current volume for a few days before climbing.</p>' +
     '</div>';
   resultEl.style.display = 'block';
   resultEl.scrollIntoView({ behavior: 'smooth', block: 'start' });

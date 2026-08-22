@@ -1,0 +1,75 @@
+﻿<!doctype html>
+<html lang="en">
+<head>
+<script>(function(){try{var p=location.pathname||"/";var r=(document.referrer||"").split("/")[2]||"direct";var u="/api/track?page="+encodeURIComponent(p)+"&ref="+encodeURIComponent(r);if(navigator.sendBeacon&&navigator.sendBeacon(u))return;var i=new Image();i.src=u;}catch(e){}})();</script>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Can you use SendGrid for cold email? Short answer: no, and here is why | Inboxproof</title>
+<meta name="description" content="SendGrid shared IPs, its terms, and why cold outreach from the platform lands in spam. What actually works for cold email, and how to set it up.">
+<meta property="og:title" content="Can you use SendGrid for cold email? Short answer: no, and here is why">
+<meta property="og:description" content="SendGrid shared IPs, its terms, and why cold outreach from the platform lands in spam. What actually works for cold email, and how to set it up.">
+<meta property="og:type" content="article">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="/styles.css">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' rx='8' fill='%236366f1'/%3E%3Cpath d='M8 16h13M15 10l6 6-6 6' stroke='white' stroke-width='3' fill='none' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E">
+<script type="application/ld+json">
+{"@context":"https://schema.org","@type":"Article","headline":"Can you use SendGrid for cold email? Short answer: no, and here is why","description":"SendGrid shared IPs, its terms, and why cold outreach from the platform lands in spam. What actually works for cold email, and how to set it up.","author":{"@type":"Organization","name":"Inboxproof"},"publisher":{"@type":"Organization","name":"Inboxproof"}}
+</script>
+<link rel="canonical" href="https://inboxproof.email/blog/sendgrid-for-cold-email">
+<meta property="og:url" content="https://inboxproof.email/blog/sendgrid-for-cold-email">
+<meta property="og:image" content="https://inboxproof.email/og.png">
+<meta property="og:image:width" content="1200">
+<meta property="og:image:height" content="630">
+<meta name="twitter:image" content="https://inboxproof.email/og.png">
+</head>
+<body>
+<nav class="nav">
+  <div class="container">
+    <a class="logo" href="/">
+      <span class="mark"><svg viewBox="0 0 24 24" fill="none"><path d="M4 12h11M11 7l5 5-5 5" stroke="#fff" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"/></svg></span>
+      Inboxproof
+    </a>
+    <div class="nav-links"><a href="/blog">All guides</a><a href="/">Run a free audit</a></div>
+  </div>
+</nav>
+
+<div class="container" style="max-width:760px;padding:60px 20px 80px">
+  <div class="kicker">Cold email</div>
+  <h1 style="font-size:34px;margin:10px 0 24px">Can you use SendGrid for cold email? Short answer: no</h1>
+  <div style="opacity:.85;line-height:1.75;font-size:15.5px">
+<p>People ask this because SendGrid is cheap, has an API, and gets mail out the door. But cold email from SendGrid fails for three reasons that have nothing to do with your copy.</p>
+<h2 style="font-size:22px;margin:34px 0 12px">Reason one: the shared IP pool</h2>
+<p>SendGrid sends from shared IPs by default. Those IPs carry transactional and marketing mail from many customers, and they are well known to mailbox providers. Cold outreach is the most filter-sensitive kind of mail: unknown sender, no prior relationship, high volume per recipient segment. Mail from a well-known shared pool with cold-email patterns is exactly what spam filters are tuned to catch. Your mail does not need to be bad; it needs to be different, and a shared SendGrid IP makes it look like everyone else.</p>
+<h2 style="font-size:22px;margin:34px 0 12px">Reason two: the terms of service</h2>
+<p>SendGrid's acceptable use policy restricts unsolicited bulk email. Cold email at volume is unsolicited bulk email. The risk is not just deliverability; it is the account. A provider can throttle or suspend a sending account that violates its policy, and your outreach pipeline stops the day it matters.</p>
+<h2 style="font-size:22px;margin:34px 0 12px">Reason three: your brand domain</h2>
+<p>Most teams send cold email from their main domain or a subdomain of it. If the sending reputation of that domain sinks, your transactional mail, your receipts, and your support mail follow it into the spam folder. Cold email is a reputation gamble, and you should never run the gamble on the domain your business runs on.</p>
+<h2 style="font-size:22px;margin:34px 0 12px">What actually works</h2>
+<p><strong>A dedicated sending domain.</strong> A cheap second domain, nothing else on it. Your brand domain stays clean for transactional mail.</p>
+<p><strong>A provider that allows it.</strong> Either a cold-email tool built for outreach, or a transactional provider where cold outreach is explicitly permitted, with a dedicated IP.</p>
+<p><strong>Proper DNS on the sending domain.</strong> SPF authorizing only the provider you use, DKIM signing, DMARC in place, and a working MX or a clear explanation of why the domain does not receive mail.</p>
+<p><strong>Warmup and low volume.</strong> Two to four weeks of ramping, starting at 10 to 20 emails a day, growing slowly. No provider setting fixes a cold IP that suddenly sends 500 emails a day.</p>
+<p><strong>Plain text, one link, a real address.</strong> Cold email that looks like marketing gets treated like marketing.</p>
+<div style="margin:32px 0;padding:20px;border-radius:12px;background:#eef2ff">
+<p style="margin:0 0 12px;font-weight:600">Whichever provider you pick, the setup on your domain decides the outcome.</p>
+<p style="margin:0 0 14px;opacity:.85">Run a <a href="/#audit">free audit of your sending domain</a>. It checks SPF, DKIM, DMARC, MX, TLS and IP reputation in about 30 seconds, no account needed.</p>
+<a class="btn btn-primary" href="/#audit">Check my domain free</a>
+</div>
+    <div style="margin:36px 0;padding:18px;border-radius:12px;background:rgba(99,102,241,.06)">
+      <div style="font-weight:700;font-size:15px;margin-bottom:10px">Related guides</div>
+      <div style="opacity:.8;font-size:14px;line-height:2">
+        <a href="/blog/cold-email-domains">Cold email domains: how many, how to rotate</a><br><a href="/blog/cold-email-tools">Best cold email tools</a><br><a href="/blog/sendgrid-deliverability">SendGrid deliverability: why emails go to spam</a><br><a href="/blog/cold-email-warm-up">Cold email warmup: how to ramp a new sending domain</a>
+      </div>
+    </div>
+  </div>
+</div>
+
+<footer>
+  <div class="container">
+    <span>&copy; 2026 Inboxproof, Inc.</span>
+    <span><a href="/blog">All guides</a> &middot; <a href="/">Home</a> &middot; <a href="/privacy">Privacy</a> &middot; <a href="https://github.com/jtc268/inboxproof" target="_blank" rel="noopener">GitHub</a></span>
+  </div>
+</footer>
+</body>
+</html>

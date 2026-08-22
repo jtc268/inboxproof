@@ -1,0 +1,86 @@
+﻿<!doctype html>
+<html lang="en">
+<head>
+<script>(function(){try{var p=location.pathname||"/";var r=(document.referrer||"").split("/")[2]||"direct";var u="/api/track?page="+encodeURIComponent(p)+"&ref="+encodeURIComponent(r);if(navigator.sendBeacon&&navigator.sendBeacon(u))return;var i=new Image();i.src=u;}catch(e){}})();</script>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Mailgun deliverability: why your emails go to spam and how to fix it | Inboxproof</title>
+<meta name="description" content="Mailgun accepts your mail but recipients never see it. The five reasons Mailgun deliverability drops, and the exact fix for each one.">
+<meta property="og:title" content="Mailgun deliverability: why your emails go to spam and how to fix it">
+<meta property="og:description" content="Mailgun accepts your mail but recipients never see it. The five reasons Mailgun deliverability drops, and the exact fix for each one.">
+<meta property="og:type" content="article">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="/styles.css">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' rx='8' fill='%236366f1'/%3E%3Cpath d='M8 16h13M15 10l6 6-6 6' stroke='white' stroke-width='3' fill='none' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E">
+<script type="application/ld+json">
+{"@context":"https://schema.org","@type":"Article","headline":"Mailgun deliverability: why your emails go to spam and how to fix it","description":"Mailgun accepts your mail but recipients never see it. The five reasons Mailgun deliverability drops, and the exact fix for each one.","author":{"@type":"Organization","name":"Inboxproof"},"publisher":{"@type":"Organization","name":"Inboxproof"}}
+</script>
+<link rel="canonical" href="https://inboxproof.email/blog/mailgun-deliverability">
+<meta property="og:url" content="https://inboxproof.email/blog/mailgun-deliverability">
+<meta property="og:image" content="https://inboxproof.email/og.png">
+<meta property="og:image:width" content="1200">
+<meta property="og:image:height" content="630">
+<meta name="twitter:image" content="https://inboxproof.email/og.png">
+</head>
+<body>
+<nav class="nav">
+  <div class="container">
+    <a class="logo" href="/">
+      <span class="mark"><svg viewBox="0 0 24 24" fill="none"><path d="M4 12h11M11 7l5 5-5 5" stroke="#fff" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"/></svg></span>
+      Inboxproof
+    </a>
+    <div class="nav-links"><a href="/blog">All guides</a><a href="/">Run a free audit</a></div>
+  </div>
+</nav>
+
+<div class="container" style="max-width:760px;padding:60px 20px 80px">
+  <div class="kicker">Guide</div>
+  <h1 style="font-size:34px;margin:10px 0 24px">Mailgun deliverability: why your emails go to spam and how to fix it</h1>
+  <div style="opacity:.85;line-height:1.75;font-size:15.5px">
+    <p>You send the email through Mailgun, the API returns 200, and the event webhooks say "delivered." But the recipient never sees it. It is in spam, or it is not there at all. Mailgun is a solid sender, but when deliverability drops, the cause is almost always on your side: the sending domain, the authentication records, the routing, or the list you are sending to. Here are the five reasons Mailgun deliverability drops, in order of likelihood, and the exact fix for each one.</p>
+
+    <h2 style="font-size:22px;margin:34px 0 12px">1. Your SPF record does not include Mailgun</h2>
+    <p>This is the number one cause. When you send through Mailgun, the mail leaves from a Mailgun IP, not your own server. The receiving mail server checks your SPF record to see if that IP is allowed to send as your domain. If your SPF record does not include <code>send.mailgun.org</code>, the receiving server sees an unauthorized sender and flags the mail.</p>
+    <p>The fix: add <code>include:send.mailgun.org</code> to your SPF record. If you are also sending from your own server, add both: <code>v=spf1 include:send.mailgun.org ip4:YOUR_SERVER_IP -all</code>. Then verify the record is actually live: run the <a href="/spf-checker">SPF checker</a> on your domain and confirm the include resolves.</p>
+
+    <h2 style="font-size:22px;margin:34px 0 12px">2. Your DKIM signature is not verifying</h2>
+    <p>DKIM is the second layer. Mailgun signs your mail with a DKIM key, and the receiving server verifies that signature against the DNS record for your domain. If the DKIM record is missing, expired, or the selector does not match, the signature fails and the mail is flagged.</p>
+    <p>The fix: go to Mailgun's settings, copy the DKIM host record and value, and add it to your DNS. Then verify it: run the <a href="/dkim-checker">DKIM checker</a> on your domain and confirm the signature verifies. If you recently changed your DKIM key in Mailgun, the old selector may still be in your DNS and the new one may not be. Check both.</p>
+
+    <h2 style="font-size:22px;margin:34px 0 12px">3. Your DMARC record is missing or misconfigured</h2>
+    <p>DMARC is the policy layer. It tells the receiving server what to do when SPF or DKIM fails. If you do not have a DMARC record, the receiving server has no policy to follow and may treat the mail as suspicious. If your DMARC record is misconfigured (wrong selector, wrong policy, missing reporting address), it can cause the same problem.</p>
+    <p>The fix: add a DMARC record that references your SPF and DKIM selectors. Start with <code>p=none</code> and a reporting address, then tighten it to <code>p=quarantine</code> or <code>p=reject</code> as your domain proves itself. Run the <a href="/dmarc-checker">DMARC checker</a> on your domain and confirm the record is live and correctly configured.</p>
+
+    <h2 style="font-size:22px;margin:34px 0 12px">4. Your sending IP is listed on a blocklist</h2>
+    <p>Mailgun uses shared IPs by default. If another sender on that IP has been flagged for spam, your mail can be affected too. Even on a dedicated IP, a blocklist hit will not announce itself: the mail is still "delivered" by Mailgun, but the receiving server rejects it at the SMTP level.</p>
+    <p>The fix: check your sending IP against the major blocklists. Run the <a href="/is-my-ip-blacklisted">IP blocklist checker</a> on your sending IP. If it is listed, request delisting from the blocklist operator. If you are on a shared IP and your deliverability is inconsistent, consider moving to a dedicated IP in Mailgun.</p>
+
+    <h2 style="font-size:22px;margin:34px 0 12px">5. Your list is dirty or your volume spiked</h2>
+    <p>The last two causes are on your side, not Mailgun's. A list full of hard bounces and cold recipients poisons your reputation. A sudden 10x spike in send volume trips spam filters. Both of these show up as a sudden drop in deliverability with no obvious cause in your infrastructure.</p>
+    <p>The fix: prune your list. Remove hard bounces, honor unsubscribes the same day, and keep your complaint rate under 0.1%. Ramp your volume in steps over days instead of all at once. If you are sending cold email, warm up the domain before you scale.</p>
+
+    <h2 style="font-size:22px;margin:34px 0 12px">How to find out which one is yours</h2>
+    <p>Do not guess. Run the checks in order. Start with the authentication layer (SPF, DKIM, DMARC), because it is the most common and the cheapest to verify. Then check the IP reputation. Then look at the list and the volume. The <a href="/cold-email-checker">free audit</a> runs the DNS and reputation checks in one pass, scores the domain, and points at the exact record to fix first. That is the fastest way to stop guessing and start fixing.</p>
+    <p style="margin-top:28px;padding:18px;background:#f4f4ff;border-radius:12px">Want this checked automatically every day? <a href="/#pricing" style="font-weight:600">Inboxproof Pro</a> monitors your domain around the clock and alerts you the moment a record breaks or an IP gets listed. <a href="/#pricing" style="font-weight:600">See pricing →</a></p>
+
+    <div style="margin-top:24px;padding:20px;border:1px solid rgba(99,102,241,.25);border-radius:12px;background:rgba(99,102,241,.06)">
+      <div style="font-weight:700;font-size:15px;margin-bottom:10px">Related guides</div>
+      <div style="opacity:.8;font-size:14px;line-height:2">
+        <a href="/blog/sendgrid-deliverability">SendGrid deliverability: why your emails go to spam</a><br>
+        <a href="/blog/postmark-deliverability">Postmark deliverability: why your emails go to spam</a><br>
+        <a href="/blog/transactional-email-api-deliverability">Transactional email API deliverability</a><br>
+        <a href="/blog/why-email-goes-to-spam">Why email goes to spam</a>
+      </div>
+    </div>
+  </div>
+</div>
+
+<footer>
+  <div class="container">
+    <span>© 2026 Inboxproof, Inc.</span>
+    <span><a href="/blog">All guides</a> · <a href="/">Home</a> · <a href="/privacy">Privacy</a> · <a href="https://github.com/jtc268/inboxproof" target="_blank" rel="noopener">GitHub</a></span>
+  </div>
+</footer>
+</body>
+</html>

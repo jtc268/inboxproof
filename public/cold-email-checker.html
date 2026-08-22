@@ -1,11 +1,12 @@
 <!doctype html>
 <html lang="en">
 <head>
+<script>(function(){try{var p=location.pathname||"/";var r=(document.referrer||"").split("/")[2]||"direct";var u="/api/track?page="+encodeURIComponent(p)+"&ref="+encodeURIComponent(r);if(navigator.sendBeacon&&navigator.sendBeacon(u))return;var i=new Image();i.src=u;}catch(e){}})();</script>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
-<title>Free Cold Email Deliverability Checker — Is Your Domain Ready to Send?</title>
+<title>Free Cold Email Deliverability Checker | Is Your Domain Ready to Send?</title>
 <meta name="description" content="Check if your domain is ready for cold email. We test SPF, DKIM, DMARC, IP reputation, TLS and more, then score your cold email readiness. Free, no signup.">
-<meta property="og:title" content="Free Cold Email Deliverability Checker — Inboxproof">
+<meta property="og:title" content="Free Cold Email Deliverability Checker | Inboxproof">
 <meta property="og:description" content="Find out if your domain will land in the inbox or the spam folder. Free cold email readiness check, no signup.">
 <meta property="og:type" content="website">
 <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -81,7 +82,7 @@
       <li><strong>Warm up for 2-4 weeks</strong> before real campaigns. Start at 20-30 sends per day per mailbox and ramp slowly. Use the <a href="/warm-up-calculator" style="color:#6366f1;font-weight:600">warm-up calculator</a> to get a day-by-day schedule.</li>
       <li><strong>Keep volume low</strong>: under 50 cold emails per mailbox per day once warmed up.</li>
       <li><strong>One recipient per email</strong>, a real reply-to address, and plain text. No images, no heavy HTML.</li>
-      <li><strong>Align SPF, DKIM and DMARC</strong> with the provider you actually send through — the check above verifies that.</li>
+      <li><strong>Align SPF, DKIM and DMARC</strong> with the provider you actually send through, the check above verifies that.</li>
     </ul>
   </div>
 </div>
@@ -136,7 +137,7 @@ const CE_NAMES = { rbl: 'IP reputation (most important for cold mail)', dmarc: '
 const CE_TIPS = {
   rbl: 'Cold mail from a blocklisted IP goes straight to spam. Delist the IP or send from a clean one.',
   dmarc: 'Gmail and Microsoft use DMARC as a hard filter signal for bulk and unsolicited mail.',
-  spf: 'Without SPF, receivers cannot verify your sending servers — a top spoofing and spam vector.',
+  spf: 'Without SPF, receivers cannot verify your sending servers, a top spoofing and spam vector.',
   dkim: 'DKIM signs each message. Unsigned cold mail is treated as untrusted by major inboxes.',
   tls: 'Plaintext mail is a negative reputation signal and a security risk.',
   ptr: 'Receivers check that your sending IP has a matching reverse DNS record.',
@@ -158,7 +159,7 @@ function render(a) {
   const crit = document.getElementById('critical');
   if (hardFails.length) {
     crit.style.display = 'block';
-    crit.innerHTML = '<strong>Blocking for cold email:</strong> ' + hardFails.map(id => c(id).name + ' — ' + c(id).detail.replace(/</g, '&lt;')).join(' &middot; ');
+    crit.innerHTML = '<strong>Blocking for cold email:</strong> ' + hardFails.map(id => c(id).name + ': ' + c(id).detail.replace(/</g, '&lt;')).join(' &middot; ');
   } else crit.style.display = 'none';
   document.getElementById('checks').innerHTML = '<div style="opacity:.65;font-size:13px;font-weight:600;margin:4px 0 8px">What we checked on ' + a.domain + '</div>' + a.checks.map(x => {
     const o = STATUS[x.status] || STATUS.fail;

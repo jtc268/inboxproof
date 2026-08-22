@@ -1,0 +1,71 @@
+﻿<!doctype html>
+<html lang="en">
+<head>
+<script>(function(){try{var p=location.pathname||"/";var r=(document.referrer||"").split("/")[2]||"direct";var u="/api/track?page="+encodeURIComponent(p)+"&ref="+encodeURIComponent(r);if(navigator.sendBeacon&&navigator.sendBeacon(u))return;var i=new Image();i.src=u;}catch(e){}})();</script>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Can you use Resend for cold email? No, it is a transactional API | Inboxproof</title>
+<meta name="description" content="Resend is transactional-only by design, its terms restrict unsolicited mail, and its shared IPs are new. Why cold email on Resend fails, and what to use instead.">
+<meta property="og:title" content="Can you use Resend for cold email? No, it is a transactional API">
+<meta property="og:description" content="Resend is transactional-only by design, its terms restrict unsolicited mail, and its shared IPs are new. Why cold email on Resend fails, and what to use instead.">
+<meta property="og:type" content="article">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="/styles.css">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' rx='8' fill='%236366f1'/%3E%3Cpath d='M8 16h13M15 10l6 6-6 6' stroke='white' stroke-width='3' fill='none' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E">
+<script type="application/ld+json">
+{"@context":"https://schema.org","@type":"Article","headline":"Can you use Resend for cold email? No, it is a transactional API","description":"Resend is transactional-only by design, its terms restrict unsolicited mail, and its shared IPs are new. Why cold email on Resend fails, and what to use instead.","author":{"@type":"Organization","name":"Inboxproof"},"publisher":{"@type":"Organization","name":"Inboxproof"}}
+</script>
+<link rel="canonical" href="https://inboxproof.email/blog/resend-for-cold-email">
+<meta property="og:url" content="https://inboxproof.email/blog/resend-for-cold-email">
+<meta property="og:image" content="https://inboxproof.email/og.png">
+<meta property="og:image:width" content="1200">
+<meta property="og:image:height" content="630">
+<meta name="twitter:image" content="https://inboxproof.email/og.png">
+</head>
+<body>
+<nav class="nav">
+  <div class="container">
+    <a class="logo" href="/">
+      <span class="mark"><svg viewBox="0 0 24 24" fill="none"><path d="M4 12h11M11 7l5 5-5 5" stroke="#fff" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"/></svg></span>
+      Inboxproof
+    </a>
+    <div class="nav-links"><a href="/blog">All guides</a><a href="/">Run a free audit</a></div>
+  </div>
+</nav>
+
+<div class="container" style="max-width:760px;padding:60px 20px 80px">
+  <div class="kicker">Cold email</div>
+  <h1 style="font-size:34px;margin:10px 0 24px">Can you use Resend for cold email? No, it is a transactional API</h1>
+  <div style="opacity:.85;line-height:1.75;font-size:15.5px">
+<p>Resend is one of the cleanest developer experiences in email, which makes it tempting for cold email. It is the wrong tool for the job, for the same reasons Postmark is: design, policy, and reputation.</p>
+<h2 style="font-size:22px;margin:34px 0 12px">Resend is transactional-only by design</h2>
+<p>Resend is built for transactional mail: account events, receipts, alerts, the mail a user expects because they did something. The API, the defaults, and the documentation all assume that relationship. Cold email has no prior relationship, and the platform has no machinery for it: no warmup tooling, no outreach features, no complaint management tuned for cold lists.</p>
+<h2 style="font-size:22px;margin:34px 0 12px">The terms prohibit it</h2>
+<p>Resend's acceptable use policy restricts unsolicited bulk email. Running a cold outreach campaign on Resend is a terms violation, and a younger provider has less to lose by enforcing it. The account risk is real: suspension stops your sending cold, including the transactional mail you do want to send.</p>
+<h2 style="font-size:22px;margin:34px 0 12px">The reputation math</h2>
+<p>Resend sends from shared infrastructure by default, and that infrastructure is newer than SendGrid's or Mailgun's. Newer shared IPs have less history with mailbox providers, and cold email is the fastest way to write a bad history. You would be spending the reputation of a young provider on the use case that burns reputation fastest.</p>
+<h2 style="font-size:22px;margin:34px 0 12px">What to do instead</h2>
+<p>Keep Resend for the transactional mail it is good at. For cold email, use a separate sending domain, a provider that explicitly permits outreach (a dedicated cold-email tool or a transactional provider with a dedicated IP and the right terms), proper SPF, DKIM and DMARC on that domain, and a two to four week warmup starting at 10 to 20 emails a day. The two systems never share a domain, so the cold-email risk never touches your transactional mail.</p>
+<div style="margin:32px 0;padding:20px;border-radius:12px;background:#eef2ff">
+<p style="margin:0 0 12px;font-weight:600">Whichever provider you pick, the setup on your domain decides the outcome.</p>
+<p style="margin:0 0 14px;opacity:.85">Run a <a href="/#audit">free audit of your sending domain</a>. It checks SPF, DKIM, DMARC, MX, TLS and IP reputation in about 30 seconds, no account needed.</p>
+<a class="btn btn-primary" href="/#audit">Check my domain free</a>
+</div>
+    <div style="margin:36px 0;padding:18px;border-radius:12px;background:rgba(99,102,241,.06)">
+      <div style="font-weight:700;font-size:15px;margin-bottom:10px">Related guides</div>
+      <div style="opacity:.8;font-size:14px;line-height:2">
+        <a href="/blog/cold-email-domains">Cold email domains: how many, how to rotate</a><br><a href="/blog/cold-email-tools">Best cold email tools</a><br><a href="/blog/resend-deliverability">Resend deliverability: why emails go to spam</a><br><a href="/blog/cold-email-warm-up">Cold email warmup: how to ramp a new sending domain</a>
+      </div>
+    </div>
+  </div>
+</div>
+
+<footer>
+  <div class="container">
+    <span>&copy; 2026 Inboxproof, Inc.</span>
+    <span><a href="/blog">All guides</a> &middot; <a href="/">Home</a> &middot; <a href="/privacy">Privacy</a> &middot; <a href="https://github.com/jtc268/inboxproof" target="_blank" rel="noopener">GitHub</a></span>
+  </div>
+</footer>
+</body>
+</html>

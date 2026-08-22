@@ -57,28 +57,39 @@ const findLeadByApiKey = key => {
   return null;
 };
 
-/* ---------------- store (local files, or Upstash REST on Vercel) ---------------- */
+/* ---------------- store (local files, or Supabase storage on Vercel) ---------------- */
 const LEADS_F = path.join(DATA, 'leads.json');
 const AUDITS_F = path.join(DATA, 'audits.json');
 const REPORTS_F = path.join(DATA, 'reports.json');
 const STATS_F = path.join(DATA, 'stats.json');
 const loadJson = (f, fb) => { try { return JSON.parse(fs.readFileSync(f, 'utf8')); } catch { return fb; } };
 const saveJson = (f, v) => fs.writeFileSync(f, JSON.stringify(v, null, 2));
-const REMOTE = !!(process.env.UPSTASH_REST_URL && process.env.UPSTASH_TOKEN);
+const SB_URL = process.env.SUPABASE_URL;
+const SB_KEY = process.env.SUPABASE_SERVICE_KEY;
+const SB_BUCKET = 'kv';
+const REMOTE = !!(SB_URL && SB_KEY);
 const LOCAL = !process.env.VERCEL && !REMOTE;
-const UP_HEADERS = () => ({ Authorization: 'Bearer ' + process.env.UPSTASH_TOKEN });
+const SB_HEADERS = () => ({ Authorization: 'Bearer ' + SB_KEY, apikey: SB_KEY, 'Content-Type': 'application/json' });
 async function upGet(key) {
-  const r = await fetch(process.env.UPSTASH_REST_URL, { headers: UP_HEADERS() });
-  const j = await r.json();
-  return j.result ?? null;
+  if (!REMOTE) return null;
+  try {
+    const r = await fetch(SB_URL + '/storage/v1/object/' + SB_BUCKET + '/' + key, { headers: SB_HEADERS() });
+    if (!r.ok) return null;
+    return await r.text();
+  } catch { return null; }
 }
 async function upSet(key, val) {
-  const r = await fetch(process.env.UPSTASH_REST_URL, {
-    method: 'POST', headers: { ...UP_HEADERS(), 'Content-Type': 'application/json' },
-    body: JSON.stringify(['SET', key, val]),
-  });
-  const j = await r.json();
-  if (j.status !== 'OK') throw new Error('upstash SET ' + key + ': ' + j.status);
+  if (!REMOTE) return;
+  try {
+    // reliable overwrite: delete then post (upsert=true is not honored in this storage version)
+    await fetch(SB_URL + '/storage/v1/object/' + SB_BUCKET, {
+      method: 'DELETE', headers: SB_HEADERS(), body: JSON.stringify({ prefixes: [key] }),
+    });
+    const r = await fetch(SB_URL + '/storage/v1/object/' + SB_BUCKET + '/' + key, {
+      method: 'POST', headers: SB_HEADERS(), body: val,
+    });
+    if (!r.ok) console.error('upSet failed', key, r.status);
+  } catch (e) { console.error('upSet error', key, e.message); }
 }
 let leads = loadJson(LEADS_F, {});  // email -> {id,email,domain,pro,proSince,createdAt,lastScore}
 let audits = loadJson(AUDITS_F, {}); // email -> [{domain,at,score,grade,checks:[{id,name,status}]}]
@@ -87,15 +98,17 @@ let stats = loadJson(STATS_F, { pageViews: 0, byPage: {}, byRef: {}, lastView: n
 let hydrated = false;
 async function hydrate() {
   if (!REMOTE || hydrated) return;
-  const [l, a] = await Promise.all([upGet('leads'), upGet('audits')]);
+  const [l, a, s] = await Promise.all([upGet('leads'), upGet('audits'), upGet('stats')]);
   if (l) leads = JSON.parse(l);
   if (a) audits = JSON.parse(a);
+  if (s) stats = { ...stats, ...JSON.parse(s) };
   hydrated = true;
 }
 async function persist(kind) {
-  const obj = kind === 'leads' ? leads : audits;
+  const obj = kind === 'leads' ? leads : kind === 'audits' ? audits : kind === 'stats' ? stats : null;
+  if (obj === null) return;
   if (REMOTE) await upSet(kind, JSON.stringify(obj));
-  else if (LOCAL) saveJson(kind === 'leads' ? LEADS_F : AUDITS_F, obj);
+  else if (LOCAL) saveJson(kind === 'leads' ? LEADS_F : kind === 'audits' ? AUDITS_F : STATS_F, obj);
 }
 async function saveReport(id, audit) {
   if (REMOTE) { await upSet('report:' + id, JSON.stringify(audit)); return; }
@@ -108,12 +121,12 @@ async function getReport(id) {
   return reports[id] || null;
 }
 async function upDel(key) {
-  const r = await fetch(process.env.UPSTASH_REST_URL, {
-    method: 'POST', headers: { ...UP_HEADERS(), 'Content-Type': 'application/json' },
-    body: JSON.stringify(['DEL', key]),
-  });
-  const j = await r.json();
-  if (j.status !== 'OK') throw new Error('upstash DEL ' + key + ': ' + j.status);
+  if (!REMOTE) return;
+  try {
+    await fetch(SB_URL + '/storage/v1/object/' + SB_BUCKET, {
+      method: 'DELETE', headers: SB_HEADERS(), body: JSON.stringify({ prefixes: [key] }),
+    });
+  } catch {}
 }
 async function deleteReport(id) {
   if (REMOTE) { await upDel('report:' + id); }
@@ -397,8 +410,8 @@ async function auditDomain(domain) {
 }
 
 /* ---------------- http ---------------- */
-const MIME = { '.html': 'text/html; charset=utf-8', '.css': 'text/css; charset=utf-8', '.js': 'text/javascript; charset=utf-8', '.svg': 'image/svg+xml', '.json': 'application/json; charset=utf-8', '.png': 'image/png', '.ico': 'image/x-icon' };
-const CANONICAL_BASE = 'https://inboxproof-phi.vercel.app';
+const MIME = { '.html': 'text/html; charset=utf-8', '.css': 'text/css; charset=utf-8', '.js': 'text/javascript; charset=utf-8', '.svg': 'image/svg+xml', '.json': 'application/json; charset=utf-8', '.png': 'image/png', '.ico': 'image/x-icon', '.txt': 'text/plain; charset=utf-8' };
+const CANONICAL_BASE = 'https://inboxproof.email';
 function canonicalTag(p) { return '<link rel="canonical" href="' + CANONICAL_BASE + p + '" />\n'; }
 function ogMetaTags(base, pageUrl, extra) {
   let t = '<meta property="og:image" content="' + base + '/og.png" />\n'
@@ -485,7 +498,8 @@ async function handler(req, res) {
         stats.byPage[page] = (stats.byPage[page] || 0) + 1;
         if (ref) stats.byRef[ref] = (stats.byRef[ref] || 0) + 1;
         stats.lastView = new Date().toISOString();
-        if (!REMOTE) saveJson(STATS_F, stats);
+        if (REMOTE) await upSet('stats', JSON.stringify(stats));
+        else if (LOCAL) saveJson(STATS_F, stats);
         return sendJson(res, 200, { ok: true });
       }
       if (u.pathname === '/api/stats') {
@@ -648,6 +662,16 @@ async function handler(req, res) {
       await persist('leads');
       return sendJson(res, 200, { ok: true, brand: null });
     }
+    if (req.method === 'POST' && u.pathname === '/api/lead') {
+      const body = await readBody(req);
+      const email = String(body.email || '').toLowerCase().trim();
+      if (!EMAIL_RE.test(email)) return sendJson(res, 400, { error: 'Valid email required' });
+      const lead = await upsertLead(email, null);
+      lead.source = String(body.source || 'lead-magnet-checklist').slice(0, 60);
+      lead.sourceAt = new Date().toISOString();
+      await persist('leads');
+      return sendJson(res, 200, { ok: true, email: lead.email });
+    }
     if (req.method === 'POST' && u.pathname === '/api/audit') {
       const body = await readBody(req);
       const domain = cleanDomain(body.domain);
@@ -673,6 +697,24 @@ async function handler(req, res) {
         await persist('leads');
       }
       return sendJson(res, 200, { audit, reportId });
+    }
+    if (req.method === 'POST' && u.pathname === '/api/attach') {
+      const body = await readBody(req);
+      const email = String(body.email || '').toLowerCase().trim();
+      const reportId = String(body.reportId || '').trim();
+      const domain = cleanDomain(body.domain || '');
+      if (!EMAIL_RE.test(email)) return sendJson(res, 400, { error: 'Enter a valid email address' });
+      if (!/^[a-f0-9-]{36}$/i.test(reportId)) return sendJson(res, 400, { error: 'Invalid report id' });
+      const rep = await getReport(reportId);
+      if (!rep) return sendJson(res, 404, { error: 'Report not found' });
+      await upsertLead(email, domain || rep.domain || null);
+      await pushAudit(email, rep);
+      if (rep.score != null) leads[email].lastScore = rep.score;
+      leads[email].reportIds = leads[email].reportIds || [];
+      if (!leads[email].reportIds.includes(reportId)) leads[email].reportIds.push(reportId);
+      if (leads[email].reportIds.length > 50) leads[email].reportIds = leads[email].reportIds.slice(-50);
+      await persist('leads');
+      return sendJson(res, 200, { ok: true });
     }
     if (req.method === 'POST' && u.pathname === '/api/tls-check') {
       const body = await readBody(req);
@@ -700,7 +742,18 @@ async function handler(req, res) {
       const host = req.headers.host || 'localhost:4321';
       const proto = String(req.headers['x-forwarded-proto'] || '').split(',')[0].trim() === 'https' ? 'https' : 'http';
       const base = proto + '://' + host;
-      const urls = ['/', '/#pricing', '/#faq', '/dmarc-checker', '/spam-checker', '/deliverability-tools', '/mail-tester-alternatives', '/glockapps-alternatives', '/dmarc-generator', '/spf-generator', '/spf-checker', '/dkim-checker', '/blocklist-checker', '/mx-checker', '/header-analyzer', '/dmarc-report-parser', '/cold-email-checker', '/warm-up-calculator', '/tls-checker', '/ptr-checker', '/compare', '/developers', '/blog', '/blog/dmarc', '/blog/spf-dkim-dmarc', '/blog/spoofing', '/blog/dmarc-policies', '/blog/email-not-landing-gmail', '/blog/dmarc-record', '/blog/email-in-spam', '/blog/is-my-domain-blacklisted', '/blog/is-my-ip-blacklisted', '/blog/deliverability-score', '/blog/dmarc-report-monitoring', '/blog/spf-not-working', '/blog/google-workspace-spf-dkim-dmarc', '/blog/microsoft-365-spf-dkim-dmarc', '/blog/gmail-smtp-error-550-5-7-26', '/blog/dkim-not-signing', '/blog/email-authentication-startups', '/blog/reverse-dns-ptr-email', '/blog/cold-email-warm-up', '/blog/spamhaus-delisting', '/blog/mx-records', '/blog/how-to-read-email-headers', '/blog/cold-email-deliverability', '/blog/transactional-email-deliverability', '/blog/smtp-error-codes', '/blog/dkim-selector', '/blog/email-bounce-codes', '/blog/spf-lookup-limit', '/blog/email-deliverability-for-agencies', '/blog/cold-email-tools', '/blog/get-out-of-spam-folder', '/blog/cold-email-reply-rate', '/blog/gmail-postmaster-tools', '/blog/how-to-check-email-deliverability', '/blog/email-deliverability-software', '/blog/outlook-smtp-error-550-5-7-1', '/blog/email-not-delivering-to-outlook', '/blog/yahoo-email-in-spam', '/blog/yahoo-smtp-error-550-5-7-1', '/blog/email-rejected-by-microsoft', '/blog/email-not-landing-yahoo', '/blog/cold-email-bounce-rate', '/blog/email-deliverability-ecommerce'].map(l => '  <url><loc>' + base + l + '</loc><changefreq>weekly</changefreq></url>').join('\n');
+      const skip = new Set(['404.html', 'pro.html', 'report.html']);
+      const paths = [];
+      try {
+        const top = fs.readdirSync(PUBLIC).filter(f => f.endsWith('.html') && !skip.has(f));
+        const rest = [];
+        for (const f of top) { if (f === 'index.html') paths.push('/'); else rest.push('/' + f.replace(/\.html$/, '')); }
+        paths.push('/#pricing', '/#faq');
+        paths.push(...rest);
+        const blogDir = path.join(PUBLIC, 'blog');
+        if (fs.existsSync(blogDir)) { for (const f of fs.readdirSync(blogDir).filter(f => f.endsWith('.html'))) paths.push('/blog/' + f.replace(/\.html$/, '')); }
+      } catch { /* keep anchors only */ }
+      const urls = paths.map(l => '  <url><loc>' + base + l + '</loc><changefreq>weekly</changefreq></url>').join('\n');
       res.writeHead(200, { 'Content-Type': 'application/xml; charset=utf-8' });
       return res.end('<?xml version="1.0" encoding="UTF-8"?>\n<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">\n' + urls + '\n</urlset>\n');
     }

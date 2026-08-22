@@ -1,0 +1,124 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Email deliverability by platform: Shopify, WordPress, Klaviyo, and more</title>
+<meta property="og:url" content="https://inboxproof.email/blog/email-deliverability-by-platform">
+<meta name="description" content="Email deliverability problems look different on every platform. Find the guide for your stack: Shopify, WordPress, WooCommerce, Squarespace, Wix, HubSpot, Salesforce, Mailchimp, or Klaviyo.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="/styles.css">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' rx='8' fill='%236366f1'/%3E%3Cpath d='M8 16h13M15 10l6 6-6 6' stroke='white' stroke-width='3' fill='none' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E">
+<script>
+(function(){try{var p=location.pathname||'/';var r=(document.referrer||'').split('/')[2]||'direct';var u='/api/track?page='+encodeURIComponent(p)+'&ref='+encodeURIComponent(r);if(navigator.sendBeacon&&navigator.sendBeacon(u))return;var i=new Image();i.src=u;}catch(e){}})();
+</script>
+<script type="application/ld+json">
+{"@context":"https://schema.org","@type":"Article","headline":"Email Deliverability by Platform: Shopify, WordPress, Klaviyo, and More","description":"Find the email deliverability guide for your specific platform. Each guide covers the 6 DNS records, platform-specific gotchas, and monitoring setup.","author":{"@type":"Organization","name":"Inboxproof"},"publisher":{"@type":"Organization","name":"Inboxproof"}}
+</script>
+<link rel="canonical" href="https://inboxproof.email/blog/email-deliverability-by-platform">
+<meta property="og:image" content="https://inboxproof.email/og.png">
+<meta property="og:image:width" content="1200">
+<meta property="og:image:height" content="630">
+<meta name="twitter:image" content="https://inboxproof.email/og.png">
+</head>
+<body>
+<nav class="nav">
+  <div class="container">
+    <a class="logo" href="/">
+      <span class="mark"><svg viewBox="0 0 24 24" fill="none"><path d="M4 12h11M11 7l5 5-5 5" stroke="#fff" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"/></svg></span>
+      Inboxproof
+    </a>
+    <div class="nav-links"><a href="/">Run a free audit</a></div>
+  </div>
+</nav>
+
+<div class="container" style="max-width:860px;padding:60px 20px 80px">
+  <div class="kicker">Guide</div>
+  <h1>Email deliverability by platform</h1>
+  <p style="opacity:.8;font-size:16px;margin-bottom:36px">The DNS records that decide whether your email reaches the inbox are the same on every platform. But the way they break is different. A Shopify store has different gotchas than a WordPress blog. A HubSpot CRM has different gotchas than a Klaviyo flow. This hub links to the guide for your specific stack.</p>
+
+  <h2>Find your platform</h2>
+  <p>Click the platform you use to jump to the guide with the exact DNS records, the platform-specific gotchas, and the monitoring setup you need.</p>
+
+  <h3>E-commerce and website builders</h3>
+  <ul>
+    <li><a href="/blog/email-deliverability-shopify">Shopify</a> : order confirmations, shipping updates, and Klaviyo flows. The From: header domain mismatch is the most common failure.</li>
+    <li><a href="/blog/email-deliverability-woocommerce">WooCommerce</a> : shared hosting IP reputation, port 25 blocking, and the WooCommerce email settings that matter.</li>
+    <li><a href="/blog/email-deliverability-wordpress">WordPress</a> : shared hosting, missing SPF/DKIM/DMARC, and the WP plugins that send email on your behalf.</li>
+    <li><a href="/blog/email-deliverability-squarespace">Squarespace</a> : custom domain DNS setup, Squarespace email marketing, and the records Squarespace does not create for you.</li>
+    <li><a href="/blog/email-deliverability-wix">Wix</a> : custom domain DNS, Wix email marketing, and the missing SPF/DKIM/DMARC records that Wix does not set up.</li>
+  </ul>
+
+  <h3>Marketing and CRM platforms</h3>
+  <ul>
+    <li><a href="/blog/email-deliverability-mailchimp">Mailchimp</a> : the SPF include you need, DKIM setup, and the Mailchimp sending domains that break SPF.</li>
+    <li><a href="/blog/email-deliverability-klaviyo">Klaviyo</a> : the Klaviyo SPF include, DKIM selector, and the flow emails that fail when your domain is not authenticated.</li>
+    <li><a href="/blog/email-deliverability-hubspot">HubSpot</a> : the HubSpot sending domain, SPF include, and the CRM emails that fail when your domain is not in the SPF record.</li>
+    <li><a href="/blog/email-deliverability-salesforce">Salesforce</a> : the Salesforce sending domain, SPF include, and the CRM emails that fail when your domain is not authenticated.</li>
+    <li><a href="/blog/email-deliverability-activecampaign">ActiveCampaign</a> : the ActiveCampaign SPF include, DKIM selector, and the campaign emails that fail when your domain is not in the SPF record.</li>
+    <li><a href="/blog/email-deliverability-convertkit">ConvertKit</a> : the ConvertKit SPF include, DKIM selector, and the campaign emails that fail when your domain is not in the SPF record.</li>
+    <li><a href="/blog/email-deliverability-getresponse">GetResponse</a> : the GetResponse SPF include, DKIM selector, and the campaign emails that fail when your domain is not in the SPF record.</li>
+  </ul>
+
+  <h2>Why platform-specific guides matter</h2>
+  <p>The 6 DNS records (MX, SPF, DKIM, DMARC, TLS, PTR) are universal. But the way they break is platform-specific. Here is why:</p>
+  <ol>
+    <li><b>Different sending domains</b>: Each platform uses a different sending domain. Shopify uses your domain, but Klaviyo uses a Klaviyo subdomain. Your SPF record needs to include the right domain.</li>
+    <li><b>Different DKIM selectors</b>: Each platform uses a different DKIM selector. Mailchimp uses one, Klaviyo uses another. Your DKIM record needs to match the platform you use.</li>
+    <li><b>Different IP rotation</b>: Some platforms rotate IPs more than others. If your SPF record has hard-coded IPs, it will break when the platform rotates. Use the include syntax instead.</li>
+    <li><b>Different default settings</b>: Some platforms create DNS records for you, others do not. Wix does not create SPF/DKIM/DMARC records. Squarespace creates some but not all. You need to know what your platform does and does not do.</li>
+  </ol>
+
+  <h2>The 6 records that decide delivery</h2>
+  <p>Regardless of platform, the receiving mail server checks these 6 records:</p>
+  <ol>
+    <li><b>MX record</b>: tells the mail server where to deliver mail for your domain.</li>
+    <li><b>SPF record</b>: lists the IP addresses and services allowed to send email as your domain.</li>
+    <li><b>DKIM record</b>: a cryptographic signature that proves the email was not tampered with in transit.</li>
+    <li><b>DMARC record</b>: tells the receiving server what to do when SPF or DKIM fails.</li>
+    <li><b>TLS/STARTTLS</b>: encrypts the email in transit.</li>
+    <li><b>PTR / reverse DNS</b>: maps the sending IP back to a hostname.</li>
+  </ol>
+  <p>Any one of these can break your deliverability. Most domains have at least one missing or misconfigured.</p>
+
+  <h2>How to check your domain in 30 seconds</h2>
+  <p>You do not need to run dig commands by hand. <a href="/">Inboxproof</a> checks all 6 records in about 30 seconds. You type in your domain, it queries your live DNS, and gives you a score plus the exact records to fix. No account, no setup, nothing to install.</p>
+  <p>The report is public and shareable, which is handy when you need to send the findings to whoever manages your DNS (your developer, your agency, your platform).</p>
+
+  <h2>How to monitor so a broken record never costs you a sale</h2>
+  <p>Fixing the records is the first step. But records break. Your email provider changes something. Your DNS provider expires a record. A new include gets added. You do not get an email when this happens. You find out when a customer says "I never got the order confirmation."</p>
+  <p><a href="/pro">Inboxproof Pro</a> monitors all 6 records daily and emails you the moment one breaks, expires, or changes. $29/month for up to 5 domains. For an agency managing multiple clients, the Agency plan covers up to 25 domains for $99/month.</p>
+
+  <h2>Quick checklist</h2>
+  <ul>
+    <li>MX record exists and points to a valid mail server</li>
+    <li>SPF record includes all sending services (your platform, your ESP, your CRM)</li>
+    <li>DKIM record is present and the selector matches your email provider</li>
+    <li>DMARC record exists with p=quarantine or p=reject</li>
+    <li>TLS/STARTTLS is enabled on your mail server</li>
+    <li>PTR record matches your sending IP</li>
+    <li>Your From: header domain matches the domain with the SPF/DKIM/DMARC records</li>
+  </ul>
+  <p>If any of these are missing, <a href="/">run a free audit</a> and get the exact record values to add. Takes 30 seconds. No account needed.</p>
+
+  <h2>Related guides</h2>
+  <ul>
+    <li><a href="/blog/email-deliverability-by-audience">Email deliverability by audience</a></li>
+    <li><a href="/blog/email-deliverability-ecommerce">Email deliverability for e-commerce</a></li>
+    <li><a href="/blog/email-deliverability-saas">Email deliverability for SaaS</a></li>
+    <li><a href="/blog/transactional-email-deliverability">Transactional email deliverability</a></li>
+    <li><a href="/blog/email-deliverability-checklist">Email deliverability checklist</a></li>
+    <li><a href="/blog/dmarc">DMARC: what it is and why you need it</a></li>
+  </ul>
+
+  <div class="card" style="margin-top:40px;background:#eef2ff;border-color:#c7d2fe">
+    <h3 style="margin-top:0">Check your domain now</h3>
+    <p style="opacity:.8;margin-bottom:14px">Run a free 30 second audit on your domain. No account, no setup, reads your live DNS only.</p>
+    <a class="btn btn-primary" href="/">Run my free audit</a>
+  </div>
+
+  <p style="text-align:center;opacity:.4;font-size:12px;margin-top:28px">Audited by <a href="/" style="opacity:.8">Inboxproof</a> · live DNS checks · <a href="/privacy" style="opacity:.8">privacy</a></p>
+</div>
+</body>
+</html>

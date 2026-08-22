@@ -1,0 +1,101 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Inbox Placement Test: Check Where Your Email Lands</title>
+  <meta name="description" content="Run a free inbox placement test on your domain. Check SPF, DKIM, DMARC, TLS, PTR and IP reputation to find out if your email lands in the inbox or spam. No signup required.">
+  <meta property="og:title" content="Inbox Placement Test: Check Where Your Email Lands">
+  <meta property="og:description" content="Run a free inbox placement test on your domain. Check SPF, DKIM, DMARC, TLS, PTR and IP reputation to find out if your email lands in the inbox or spam.">
+  <meta property="og:type" content="website">
+  <meta property="og:url" content="https://inboxproof.email/blog/inbox-placement-test">
+  <link rel="canonical" href="https://inboxproof.email/blog/inbox-placement-test">
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; line-height: 1.6; color: #1a1a2e; background: #fff; }
+    .container { max-width: 720px; margin: 0 auto; padding: 2rem 1.5rem; }
+    h1 { font-size: 2rem; margin-bottom: 1rem; line-height: 1.3; }
+    h2 { font-size: 1.4rem; margin: 2rem 0 0.75rem; }
+    p { margin-bottom: 1rem; }
+    ul, ol { margin: 0 0 1rem 1.5rem; }
+    li { margin-bottom: 0.5rem; }
+    code { background: #f0f0f5; padding: 0.15rem 0.4rem; border-radius: 4px; font-size: 0.9em; font-family: 'SF Mono', Monaco, monospace; }
+    pre { background: #1a1a2e; color: #e0e0e0; padding: 1rem; border-radius: 8px; overflow-x: auto; margin: 1rem 0; }
+    pre code { background: none; padding: 0; color: inherit; }
+    .cta-box { background: #f0f7ff; border: 1px solid #c3d9f7; border-radius: 12px; padding: 1.5rem; margin: 2rem 0; text-align: center; }
+    .cta-box h3 { margin-bottom: 0.5rem; }
+    .btn { display: inline-block; background: #2563eb; color: #fff; padding: 0.75rem 1.5rem; border-radius: 8px; text-decoration: none; font-weight: 600; margin-top: 0.5rem; }
+    .btn:hover { background: #1d4ed8; }
+    .related { margin-top: 2rem; padding-top: 1.5rem; border-top: 1px solid #e5e5e5; }
+    .related h3 { margin-bottom: 0.75rem; }
+    .related ul { list-style: none; margin: 0; }
+    .related li { margin-bottom: 0.5rem; }
+    .related a { color: #2563eb; text-decoration: none; }
+    .related a:hover { text-decoration: underline; }
+  </style>
+<meta property="og:image" content="https://inboxproof.email/og.png">
+<meta property="og:image:width" content="1200">
+<meta property="og:image:height" content="630">
+<meta name="twitter:image" content="https://inboxproof.email/og.png">
+<script type="application/ld+json">{"@context":"https://schema.org","@type":"Article","headline":"Inbox Placement Test: Check Where Your Email Lands","description":"Run a free inbox placement test on your domain. Check SPF, DKIM, DMARC, TLS, PTR and IP reputation to find out if your email lands in the inbox or spam. No signup required.","author":{"@type":"Organization","name":"Inboxproof"},"publisher":{"@type":"Organization","name":"Inboxproof"},"mainEntityOfPage":"https://inboxproof.email/blog/inbox-placement-test"}</script>
+</head>
+<body>
+  <div class="container">
+    <h1>Inbox Placement Test: Check Where Your Email Lands</h1>
+    <p>An inbox placement test checks whether your email lands in the recipient's inbox, spam folder, or gets rejected outright. It looks up your DNS records, validates the syntax, and flags the specific issues that cause email to be marked as spam.</p>
+    <p>A good inbox placement test checks six things: SPF, DKIM, DMARC, TLS, PTR (reverse DNS), and IP reputation. If any of these are missing or misconfigured, your email is at risk of landing in spam or being rejected.</p>
+
+    <div class="cta-box">
+      <h3>Run Your Free Inbox Placement Test</h3>
+      <p>Check all six records on your domain in about 30 seconds. No signup, no credit card. Get a spam-risk score and the exact record to fix.</p>
+      <a class="btn" href="/">Run My Free Test</a>
+    </div>
+
+    <h2>What an Inbox Placement Test Checks</h2>
+    <ol>
+      <li><strong>SPF (Sender Policy Framework).</strong> A TXT record that lists the mail servers allowed to send for your domain. If it's missing or misconfigured, receiving servers may reject your email.</li>
+      <li><strong>DKIM (DomainKeys Identified Mail).</strong> A cryptographic signature added to each email, proving it wasn't tampered with in transit. If your DKIM key is weak or missing, your email is vulnerable to spoofing.</li>
+      <li><strong>DMARC (Domain-based Message Authentication, Reporting and Conformance).</strong> A policy that tells receivers what to do when SPF or DKIM fails. Without DMARC, you have no visibility into who's sending as your domain.</li>
+      <li><strong>TLS (Transport Layer Security).</strong> Encryption in transit. If your mail server doesn't support TLS, your email is sent in the clear, which is a red flag for receivers.</li>
+      <li><strong>PTR (Pointer Record, reverse DNS).</strong> A reverse DNS record that maps your IP address back to a hostname. If your IP has no PTR record, or the PTR doesn't match your domain, receivers may flag your email as suspicious.</li>
+      <li><strong>IP Reputation.</strong> Whether your IP address is blacklisted or has a poor reputation. If your IP is on a blocklist, your email will be rejected or marked as spam regardless of your DNS configuration.</li>
+    </ol>
+
+    <h2>Why Inbox Placement Matters</h2>
+    <p>Email is still the highest-ROI channel for most businesses. But if your email doesn't land in the inbox, it's worthless. A single misconfigured DNS record can send 100% of your email to spam, and you won't know until your open rates tank or your customers complain.</p>
+    <p>The problem is that inbox placement issues are invisible. Your email client sends the email, the SMTP server accepts it, and you assume it was delivered. But the recipient's mail server may have quietly moved it to spam, or rejected it outright. Without an inbox placement test, you're flying blind.</p>
+
+    <h2>How to Run an Inbox Placement Test</h2>
+    <p>You can check your DNS records manually using <code>dig</code> or <code>nslookup</code>, but that only tells you if the records exist. It doesn't validate the syntax, count the DNS lookups, or flag common mistakes.</p>
+    <p>A dedicated inbox placement test does all of that automatically. It looks up your SPF, DKIM, DMARC, TLS, PTR, and IP reputation, validates each one, and gives you a spam-risk score. It also tells you exactly which record to fix and how.</p>
+
+    <h2>What a Good Score Looks Like</h2>
+    <p>A perfect inbox placement score means all six checks pass: SPF is valid, DKIM is signing your email, DMARC is in place, TLS is enabled, PTR is correct, and your IP has a clean reputation. If any of these fail, your score drops, and your email is at risk of landing in spam.</p>
+    <p>The most common issues are:</p>
+    <ul>
+      <li>No SPF record (or multiple SPF records)</li>
+      <li>DKIM key is too short (1024-bit instead of 2048-bit)</li>
+      <li>No DMARC record (or a DMARC record with <code>p=none</code> that doesn't enforce anything)</li>
+      <li>TLS not enabled on your mail server</li>
+      <li>IP has no PTR record, or the PTR doesn't match your domain</li>
+      <li>IP is on a blocklist</li>
+    </ul>
+
+    <div class="cta-box">
+      <h3>Find Out Where Your Email Lands</h3>
+      <p>Run a free inbox placement test on your domain in about 30 seconds. Get a spam-risk score and the exact record to fix. No signup required.</p>
+      <a class="btn" href="/">Run My Free Test</a>
+    </div>
+
+    <div class="related">
+      <h3>Related Guides</h3>
+      <ul>
+        <li><a href="/blog/spf-record-checker">SPF Record Checker: Verify Your Domain's SPF in 30 Seconds</a></li>
+        <li><a href="/blog/email-deliverability-test">Email Deliverability Test: Check Your Domain in 30 Seconds</a></li>
+        <li><a href="/blog/email-deliverability-checklist">Email Deliverability Checklist: 12 Points</a></li>
+        <li><a href="/blog/why-email-goes-to-spam">Why Your Email Goes to Spam</a></li>
+      </ul>
+    </div>
+  </div>
+</body>
+</html>

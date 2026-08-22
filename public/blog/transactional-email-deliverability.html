@@ -1,6 +1,7 @@
-<!doctype html>
+﻿<!doctype html>
 <html lang="en">
 <head>
+<script>(function(){try{var p=location.pathname||"/";var r=(document.referrer||"").split("/")[2]||"direct";var u="/api/track?page="+encodeURIComponent(p)+"&ref="+encodeURIComponent(r);if(navigator.sendBeacon&&navigator.sendBeacon(u))return;var i=new Image();i.src=u;}catch(e){}})();</script>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
 <title>Transactional Email Deliverability: The Complete Guide (2026)</title>
@@ -24,6 +25,12 @@ pre{background:#0a0e16;border:1px solid var(--line);border-radius:10px;padding:1
 .rel{margin-top:36px;padding-top:20px;border-top:1px solid var(--line);color:var(--muted)}
 table{width:100%;border-collapse:collapse;margin:16px 0;font-size:15px}th,td{border:1px solid var(--line);padding:10px 12px;text-align:left}th{background:#0a0e16}
 </style>
+<meta property="og:url" content="https://inboxproof.email/blog/transactional-email-deliverability">
+<meta property="og:image" content="https://inboxproof.email/og.png">
+<meta property="og:image:width" content="1200">
+<meta property="og:image:height" content="630">
+<meta name="twitter:image" content="https://inboxproof.email/og.png">
+<script type="application/ld+json">{"@context":"https://schema.org","@type":"Article","headline":"Transactional Email Deliverability: The Complete Guide (2026)","description":"Transactional emails (password resets, order confirmations, receipts) must land in the inbox, not spam. Here is exactly how to keep them out of spam: SPF, DKIM, DMARC, IP warming, and monitoring.","author":{"@type":"Organization","name":"Inboxproof"},"publisher":{"@type":"Organization","name":"Inboxproof"},"mainEntityOfPage":"https://inboxproof.email/blog/transactional-email-deliverability"}</script>
 </head>
 <body>
 <div class="wrap">
@@ -37,9 +44,9 @@ table{width:100%;border-collapse:collapse;margin:16px 0;font-size:15px}th,td{bor
 
 <h2>1. Authenticate with SPF, DKIM, and DMARC</h2>
 <p>Receivers (Gmail, Microsoft, Yahoo) require authenticated mail. Transactional domains are no exception. You need all three:</p>
-<div class="check"><span class="dot g"></span><div><strong>SPF</strong> — publishes which servers may send for your domain. Keep the list short (under 10 DNS lookups) and include your ESP's sending domain.</div></div>
-<div class="check"><span class="dot g"></span><div><strong>DKIM</strong> — signs each message so receivers can verify it wasn't tampered with. Your ESP generates the key; you add the TXT record.</div></div>
-<div class="check"><span class="dot g"></span><div><strong>DMARC</strong> — tells receivers what to do when SPF or DKIM fails. Start at <code>p=none</code>, move to <code>p=quarantine</code>, then <code>p=reject</code> as you gain confidence.</div></div>
+<div class="check"><span class="dot g"></span><div><strong>SPF</strong>: publishes which servers may send for your domain. Keep the list short (under 10 DNS lookups) and include your ESP's sending domain.</div></div>
+<div class="check"><span class="dot g"></span><div><strong>DKIM</strong>: signs each message so receivers can verify it wasn't tampered with. Your ESP generates the key; you add the TXT record.</div></div>
+<div class="check"><span class="dot g"></span><div><strong>DMARC</strong>: tells receivers what to do when SPF or DKIM fails. Start at <code>p=none</code>, move to <code>p=quarantine</code>, then <code>p=reject</code> as you gain confidence.</div></div>
 
 <p>A minimal, safe DMARC policy for a new transactional domain:</p>
 <pre>v=DMARC1; p=none; pct=100; rua=mailto:dmarc@yourdomain.com; aspf=r; adkim=r</pre>
@@ -59,14 +66,14 @@ table{width:100%;border-collapse:collapse;margin:16px 0;font-size:15px}th,td{bor
 
 <h2>3. Keep bounce and complaint rates near zero</h2>
 <p>Receivers watch two numbers closely: <strong>bounce rate</strong> and <strong>complaint rate</strong>. For transactional email, both should be near zero because you are emailing people who just took an action (signed up, made a purchase, requested a reset).</p>
-<div class="check"><span class="dot g"></span><div><strong>Bounce rate &lt; 2%</strong> — ideally under 0.5%. If it climbs, you are sending to invalid addresses. Clean your list.</div></div>
-<div class="check"><span class="dot g"></span><div><strong>Complaint rate &lt; 0.1%</strong> — a complaint is a user marking you as spam. For transactional email, any complaint is a signal something is wrong (wrong address, unexpected email, no way to stop it).</div></div>
+<div class="check"><span class="dot g"></span><div><strong>Bounce rate &lt; 2%</strong>: ideally under 0.5%. If it climbs, you are sending to invalid addresses. Clean your list.</div></div>
+<div class="check"><span class="dot g"></span><div><strong>Complaint rate &lt; 0.1%</strong>: a complaint is a user marking you as spam. For transactional email, any complaint is a signal something is wrong (wrong address, unexpected email, no way to stop it).</div></div>
 
 <p>Practical steps: verify addresses before sending, suppress known bounces, and make sure every transactional email has a clear "why am I getting this?" line and a way to manage preferences.</p>
 
 <h2>4. Monitor continuously, not just after incidents</h2>
 <p>Deliverability degrades silently. A new filter update, a reputation dip, or a misconfigured DNS record can push your transactional email into spam overnight. You will not notice from the dashboard alone.</p>
-<p>Continuous monitoring catches the problem while it is small: a drop in your deliverability score, a new blocklist listing, or a failing SPF/DKIM/DMARC check. That is exactly what <a href="/pro">Inboxproof Pro</a> does — it re-checks your domain daily and alerts you when your score drops.</p>
+<p>Continuous monitoring catches the problem while it is small: a drop in your deliverability score, a new blocklist listing, or a failing SPF/DKIM/DMARC check. That is exactly what <a href="/pro">Inboxproof Pro</a> does: it re-checks your domain daily and alerts you when your score drops.</p>
 
 <div class="card">
 <p><strong>Run a full audit now.</strong> Check SPF, DKIM, DMARC, MX, TLS, PTR, and blocklists for your transactional sending domain in one click.</p>

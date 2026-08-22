@@ -1,9 +1,10 @@
 <!doctype html>
 <html lang="en">
 <head>
+<script>(function(){try{var p=location.pathname||"/";var r=(document.referrer||"").split("/")[2]||"direct";var u="/api/track?page="+encodeURIComponent(p)+"&ref="+encodeURIComponent(r);if(navigator.sendBeacon&&navigator.sendBeacon(u))return;var i=new Image();i.src=u;}catch(e){}})();</script>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
-<title>Email Deliverability Guides — Inboxproof</title>
+<title>Email Deliverability Guides | Inboxproof</title>
 <meta name="description" content="Short, practical guides to SPF, DKIM, DMARC and email spoofing. No fluff, no fake stats.">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
@@ -27,15 +28,87 @@
   <p style="opacity:.8;font-size:16px;margin-bottom:36px">Short technical guides. Every claim here is something you can verify yourself with a DNS lookup.</p>
 
   <div class="card" style="margin-bottom:20px;background:#eef2ff;border-color:#c7d2fe">
-    <h3 style="margin-top:0">Skip the theory — check your domain now</h3>
+    <h3 style="margin-top:0">Skip the theory, check your domain now</h3>
     <p style="opacity:.8;margin-bottom:14px">The <a href="/dmarc-checker">free DMARC checker</a> looks up your SPF, DKIM, DMARC and MX records in seconds. No signup. Just checking SPF? The <a href="/spf-checker">SPF checker</a> shows the exact record and flags the 10-lookup and -all issues. Just checking DKIM? The <a href="/dkim-checker">DKIM checker</a> finds your key and flags weak or missing keys. Worried your IP is blacklisted? The <a href="/blocklist-checker">IP blocklist checker</a> tests it against 9 major lists. Not sure if your domain even receives mail? The <a href="/mx-checker">MX record checker</a> looks up your MX records, resolves each mail server to its IP and checks reverse DNS. Got a suspicious email and want to know if it's real? The <a href="/header-analyzer">email header analyzer</a> reads the raw headers and tells you whether SPF, DKIM and DMARC passed. Getting a weekly DMARC XML you cannot make sense of? The <a href="/dmarc-report-parser">DMARC report parser</a> turns it into a who's-sending-as-you list. Need the record itself? The <a href="/dmarc-generator">DMARC record generator</a> writes the exact TXT for you.</p>
     <a class="btn btn-primary" href="/dmarc-checker">Open the DMARC checker</a>
   </div>
 
   <div class="grid" style="grid-template-columns:1fr;gap:14px">
+    <a class="card" href="/blog/sendgrid-vs-postmark" style="text-decoration:none;color:inherit">
+      <h3>SendGrid vs Postmark: shared-IP volume or reputation-first sending?</h3>
+      <p>SendGrid is the full platform with a shared IP pool. Postmark is transactional-only with a reputation-first model. What each costs, what each buys, and which one fits.</p>
+    </a>
+    <a class="card" href="/blog/mailgun-vs-postmark" style="text-decoration:none;color:inherit">
+      <h3>Mailgun vs Postmark: shared IP pool or reputation-first sending?</h3>
+      <p>Mailgun gives you a flexible, cheap shared-IP workhorse. Postmark gives you a reputation-first transactional service. What the difference costs and buys.</p>
+    </a>
+    <a class="card" href="/blog/sendgrid-vs-mailgun" style="text-decoration:none;color:inherit">
+      <h3>SendGrid vs Mailgun: two shared-IP workhorses, different trade-offs</h3>
+      <p>Both are shared-IP workhorses. The difference is marketing features, pricing and ecosystem. How to choose between them.</p>
+    </a>
+    <a class="card" href="/blog/resend-vs-postmark" style="text-decoration:none;color:inherit">
+      <h3>Resend vs Postmark: developer-first simplicity versus reputation-first sending</h3>
+      <p>Resend is the new developer-first transactional API. Postmark is the reputation-first veteran. Both are transactional-only, but they optimize for different things.</p>
+    </a>
+    <a class="card" href="/blog/sendgrid-vs-resend" style="text-decoration:none;color:inherit">
+      <h3>SendGrid vs Resend: mature full-stack email versus the lean transactional API</h3>
+      <p>SendGrid is the mature full-stack email platform. Resend is the lean developer-first transactional API. How the two differ and which fits your product.</p>
+    </a>
+    <a class="card" href="/blog/mailgun-vs-resend" style="text-decoration:none;color:inherit">
+      <h3>Mailgun vs Resend: the flexible workhorse versus the developer-first API</h3>
+      <p>Mailgun is the flexible, cheap shared-IP workhorse. Resend is the developer-first transactional API. How they differ and which one fits.</p>
+    </a>
+    <a class="card" href="/blog/sendgrid-alternatives" style="text-decoration:none;color:inherit">
+      <h3>SendGrid alternatives: when to switch and how to move without breaking deliverability</h3>
+      <p>The real SendGrid alternatives, who should actually switch, and the migration checklist that keeps your domain out of spam during the move.</p>
+    </a>
+    <a class="card" href="/blog/postmark-alternatives" style="text-decoration:none;color:inherit">
+      <h3>Postmark alternatives: when to leave a reputation-first provider</h3>
+      <p>Postmark users usually stay for deliverability. When switching makes sense, what the alternatives are, and the migration checklist that keeps your domain clean.</p>
+    </a>
+    <a class="card" href="/blog/mailgun-alternatives" style="text-decoration:none;color:inherit">
+      <h3>Mailgun alternatives: when the shared-IP workhorse stops fitting</h3>
+      <p>Mailgun is cheap and flexible, but shared-IP reputation and the lack of marketing focus are real limits. The alternatives and the safe migration path.</p>
+    </a>
+    <a class="card" href="/blog/resend-alternatives" style="text-decoration:none;color:inherit">
+      <h3>Resend alternatives: when the lean transactional API is not enough</h3>
+      <p>Resend is the cleanest developer experience in transactional email, but it is young and narrow. The alternatives and when each one makes sense.</p>
+    </a>
+    <a class="card" href="/blog/sendgrid-for-cold-email" style="text-decoration:none;color:inherit">
+      <h3>Can you use SendGrid for cold email? Short answer: no, and here is why</h3>
+      <p>SendGrid shared IPs, its terms, and why cold outreach from the platform lands in spam. What actually works for cold email, and how to set it up.</p>
+    </a>
+    <a class="card" href="/blog/postmark-for-cold-email" style="text-decoration:none;color:inherit">
+      <h3>Can you use Postmark for cold email? No, and the terms say so</h3>
+      <p>Postmark is transactional-only by design and its terms prohibit unsolicited bulk mail. Why cold email on Postmark is a bad idea, and what to use instead.</p>
+    </a>
+    <a class="card" href="/blog/mailgun-for-cold-email" style="text-decoration:none;color:inherit">
+      <h3>Can you use Mailgun for cold email? Risky, and here is the minimum setup</h3>
+      <p>Mailgun is more permissive than Postmark but its shared IPs and terms still make cold email risky. The minimum viable setup if you do it anyway.</p>
+    </a>
+    <a class="card" href="/blog/resend-for-cold-email" style="text-decoration:none;color:inherit">
+      <h3>Can you use Resend for cold email? No, it is a transactional API</h3>
+      <p>Resend is transactional-only by design, its terms restrict unsolicited mail, and its shared IPs are new. Why cold email on Resend fails, and what to use instead.</p>
+    </a>
     <a class="card" href="/deliverability-tools" style="text-decoration:none;color:inherit;border-color:#c7d2fe">
       <h3>Best email deliverability testing tools in 2026</h3>
       <p>Mail-Tester, GlockApps, Litmus, MXToolbox, Sender Score and Inboxproof compared: what each checks, what it costs, and which to use for cold email.</p>
+    </a>
+    <a class="card" href="/blog/sendgrid-deliverability" style="text-decoration:none;color:inherit">
+      <h3>SendGrid deliverability: why your emails go to spam and how to fix it</h3>
+      <p>SendGrid is accepting your mail but recipients are not seeing it. The five reasons SendGrid deliverability drops, and the exact fix for each one.</p>
+    </a>
+    <a class="card" href="/blog/postmark-deliverability" style="text-decoration:none;color:inherit">
+      <h3>Postmark deliverability: why your emails go to spam and how to fix it</h3>
+      <p>Postmark accepts your mail but recipients never see it. The five reasons Postmark deliverability drops, and the exact fix for each one.</p>
+    </a>
+    <a class="card" href="/blog/mailgun-deliverability" style="text-decoration:none;color:inherit">
+      <h3>Mailgun deliverability: why your emails go to spam and how to fix it</h3>
+      <p>Mailgun accepts your mail but recipients never see it. The five reasons Mailgun deliverability drops, and the exact fix for each one.</p>
+    </a>
+    <a class="card" href="/blog/resend-deliverability" style="text-decoration:none;color:inherit">
+      <h3>Resend deliverability: why your emails go to spam and how to fix it</h3>
+      <p>Resend accepts your mail but recipients never see it. The five reasons Resend deliverability drops, and the exact fix for each one.</p>
     </a>
     <a class="card" href="/mail-tester-alternatives" style="text-decoration:none;color:inherit;border-color:#c7d2fe">
       <h3>Mail-Tester alternatives: free spam score and deliverability checkers</h3>
@@ -43,7 +116,7 @@
     </a>
     <a class="card" href="/glockapps-alternatives" style="text-decoration:none;color:inherit;border-color:#c7d2fe">
       <h3>GlockApps alternatives: inbox placement and deliverability testing</h3>
-      <p>Compare GlockApps with InboxMonster, 250ok, Litmus and the free checkers - and when you actually need paid inbox-placement testing.</p>
+      <p>Compare GlockApps with InboxMonster, 250ok, Litmus and the free checkers, and see when you actually need paid inbox-placement testing.</p>
     </a>
     <a class="card" href="/blog/email-deliverability-ecommerce" style="text-decoration:none;color:inherit">
       <h3>Email deliverability for e-commerce: SPF, DKIM, DMARC for online stores</h3>
@@ -52,6 +125,10 @@
     <a class="card" href="/blog/how-to-check-email-deliverability" style="text-decoration:none;color:inherit">
       <h3>How to check email deliverability (and what the results mean)</h3>
       <p>The DNS records to look up, what each result means, and the order to check them in. No test-email guessing.</p>
+    </a>
+    <a class="card" href="/blog/email-deliverability-checklist" style="text-decoration:none;color:inherit">
+      <h3>Email deliverability checklist: 24 things to check before you send</h3>
+      <p>The five areas that decide inbox placement: DNS records, sending infrastructure, list hygiene, content, and monitoring. Run it before every launch.</p>
     </a>
     <a class="card" href="/blog/email-deliverability-software" style="text-decoration:none;color:inherit">
       <h3>Email deliverability software: what to look for in 2026</h3>
@@ -76,6 +153,18 @@
     <a class="card" href="/blog/email-deliverability-for-agencies" style="text-decoration:none;color:inherit">
       <h3>Email deliverability for agencies: keep every client inbox-ready</h3>
       <p>The deliverability stack for agencies: per-domain authentication, daily monitoring of every client domain, and white-label reports you can hand over.</p>
+    </a>
+    <a class="card" href="/blog/email-deliverability-monitoring" style="text-decoration:none;color:inherit">
+      <h3>Email deliverability monitoring: catch broken records before campaigns die</h3>
+      <p>What to monitor, how often, and what to do when an alert fires. The daily loop that keeps every sending domain inbox-ready.</p>
+    </a>
+    <a class="card" href="/blog/email-deliverability-audit-tool" style="text-decoration:none;color:inherit">
+      <h3>What an email deliverability audit tool actually checks (and what to look for)</h3>
+      <p>The seven checks that decide delivery, why a score without the records is a black box, and how to tell a real audit from a marketing page.</p>
+    </a>
+    <a class="card" href="/blog/email-deliverability-for-developers" style="text-decoration:none;color:inherit">
+      <h3>Email deliverability for developers: make sure your product's email actually lands</h3>
+      <p>Sent is not delivered. The records you own even when you send through a provider, why "it worked yesterday" is not a guarantee, and how to monitor so a broken record never kills your user experience.</p>
     </a>
     <a class="card" href="/blog/transactional-email-deliverability" style="text-decoration:none;color:inherit">
       <h3>Transactional email deliverability: the complete guide</h3>
@@ -216,6 +305,118 @@
     <a class="card" href="/blog/cold-email-bounce-rate" style="text-decoration:none;color:inherit">
       <h3>Cold email bounce rate: what's a good number and how to fix it</h3>
       <p>What counts as a good cold email bounce rate, why it matters for deliverability, and the exact steps to bring a high bounce rate back under control.</p>
+    </a>
+    <a class="card" href="/blog/cold-email-infrastructure" style="text-decoration:none;color:inherit">
+      <h3>Cold email infrastructure: domains, IPs, warm-up and rotation that survive 2026</h3>
+      <p>How many sending domains you need, how to authenticate each one, warm-up, rotation, and the monitoring that catches a broken record before it burns a domain.</p>
+    </a>
+    <a class="card" href="/blog/transactional-email-api-deliverability" style="text-decoration:none;color:inherit">
+      <h3>SendGrid, Postmark, Mailgun, Resend: why your transactional email lands (or doesn't)</h3>
+      <p>What actually decides whether your app's emails land, how to check your sending domain's SPF, DKIM, DMARC, TLS and IP reputation, and how to catch a broken record before your users stop receiving password resets.</p>
+    </a>
+    <a class="card" href="/blog/why-email-goes-to-spam" style="text-decoration:none;color:inherit">
+      <h3>Why is my email going to spam? The five causes and the fix for each</h3>
+      <p>The five reasons mail lands in the spam folder, how to tell which one is yours, and the exact record or change that fixes it. Work through them in order and you will usually find the cause in the first two.</p>
+    </a>
+    <a class="card" href="/blog/email-deliverability-saas" style="text-decoration:none;color:inherit">
+      <h3>Email deliverability for SaaS: keep your users receiving password resets</h3>
+      <p>Your SaaS sends transactional and notification email through a provider. When deliverability breaks, your users miss password resets and onboarding emails. Here's how to catch it before your users do.</p>
+    </a>
+    <a class="card" href="/blog/cold-email-domains" style="text-decoration:none;color:inherit">
+      <h3>Cold email domains: how many you need, how to rotate them, and how to keep them out of spam</h3>
+      <p>The domain math for cold email, how to set each one up, when to rotate, and how to keep the pool out of spam. For agencies running cold email at volume.</p>
+    </a>
+    <a class="card" href="/blog/email-deliverability-by-platform" style="text-decoration:none;color:inherit">
+      <h3>Email deliverability by platform: find the guide for your stack</h3>
+      <p>Shopify, WordPress, WooCommerce, Squarespace, Wix, HubSpot, Salesforce, Mailchimp, or Klaviyo. Each platform has different gotchas. Find the guide for your specific stack.</p>
+    </a>
+    <a class="card" href="/blog/email-deliverability-shopify" style="text-decoration:none;color:inherit">
+      <h3>Email deliverability for Shopify: keep order confirmations out of spam</h3>
+      <p>Shopify merchants lose sales when order confirmations land in spam. The 6 DNS records that decide delivery, how to check them in 30 seconds, and how to monitor them.</p>
+    </a>
+    <a class="card" href="/blog/email-deliverability-wordpress" style="text-decoration:none;color:inherit">
+      <h3>Email deliverability for WordPress: stop your contact form emails going to spam</h3>
+      <p>WordPress sites lose leads when contact form emails and password resets land in spam. The DNS records that decide delivery, the WordPress-specific gotchas, and how to check your domain in 30 seconds.</p>
+    </a>
+    <a class="card" href="/blog/email-deliverability-woocommerce" style="text-decoration:none;color:inherit">
+      <h3>Email deliverability for WooCommerce: keep order confirmations out of spam</h3>
+      <p>WooCommerce stores lose sales when order confirmations and shipping updates land in spam. The DNS records that decide delivery, the WooCommerce-specific gotchas, and how to check your domain in 30 seconds.</p>
+    </a>
+    <a class="card" href="/blog/email-deliverability-squarespace" style="text-decoration:none;color:inherit">
+      <h3>Email deliverability for Squarespace: keep your form emails out of spam</h3>
+      <p>Squarespace sites lose leads when contact form emails and password resets land in spam. The DNS records that decide delivery, the Squarespace-specific gotchas, and how to check your domain in 30 seconds.</p>
+    </a>
+    <a class="card" href="/blog/email-deliverability-wix" style="text-decoration:none;color:inherit">
+      <h3>Email deliverability for Wix: keep your form emails out of spam</h3>
+      <p>Wix sites lose leads when contact form emails and password resets land in spam. The DNS records that decide delivery, the Wix-specific gotchas, and how to check your domain in 30 seconds.</p>
+    </a>
+    <a class="card" href="/blog/email-deliverability-hubspot" style="text-decoration:none;color:inherit">
+      <h3>Email deliverability for HubSpot: keep your CRM emails out of spam</h3>
+      <p>HubSpot users lose leads when CRM emails and marketing campaigns land in spam. The DNS records that decide delivery, the HubSpot-specific gotchas, and how to check your domain in 30 seconds.</p>
+    </a>
+    <a class="card" href="/blog/email-deliverability-salesforce" style="text-decoration:none;color:inherit">
+      <h3>Email deliverability for Salesforce: keep your Marketing Cloud emails out of spam</h3>
+      <p>Salesforce Marketing Cloud users lose leads when campaigns and transactional emails land in spam. The DNS records that decide delivery, the Salesforce-specific gotchas, and how to check your domain in 30 seconds.</p>
+    </a>
+    <a class="card" href="/blog/email-deliverability-mailchimp" style="text-decoration:none;color:inherit">
+      <h3>Email deliverability for Mailchimp: keep your campaigns out of spam</h3>
+      <p>Mailchimp users lose engagement when campaigns land in spam. The DNS records that decide delivery, the Mailchimp-specific gotchas, and how to check your domain in 30 seconds.</p>
+    </a>
+    <a class="card" href="/blog/email-deliverability-klaviyo" style="text-decoration:none;color:inherit">
+      <h3>Email deliverability for Klaviyo: keep your campaigns out of spam</h3>
+      <p>Klaviyo users lose revenue when campaigns land in spam. The DNS records that decide delivery, the Klaviyo-specific gotchas, and how to check your domain in 30 seconds.</p>
+    </a>
+    <a class="card" href="/blog/email-deliverability-activecampaign" style="text-decoration:none;color:inherit">
+      <h3>Email deliverability for ActiveCampaign: keep your campaigns out of spam</h3>
+      <p>ActiveCampaign users lose engagement when campaigns and transactional emails land in spam. The DNS records that decide delivery, the ActiveCampaign-specific gotchas, and how to check your domain in 30 seconds.</p>
+    </a>
+    <a class="card" href="/blog/email-deliverability-convertkit" style="text-decoration:none;color:inherit">
+      <h3>Email deliverability for ConvertKit: keep your campaigns out of spam</h3>
+      <p>ConvertKit users lose engagement when campaigns and automated emails land in spam. The DNS records that decide delivery, the ConvertKit-specific gotchas, and how to check your domain in 30 seconds.</p>
+    </a>
+    <a class="card" href="/blog/email-deliverability-getresponse" style="text-decoration:none;color:inherit">
+      <h3>Email deliverability for GetResponse: keep your campaigns out of spam</h3>
+      <p>GetResponse users lose engagement when campaigns and automated emails land in spam. The DNS records that decide delivery, the GetResponse-specific gotchas, and how to check your domain in 30 seconds.</p>
+    </a>
+    <a class="card" href="/blog/email-deliverability-by-audience" style="text-decoration:none;color:inherit">
+      <h3>Email deliverability by audience: agencies, developers, e-commerce, SaaS</h3>
+      <p>Email deliverability guides organized by audience. Find the guide that matches your use case and fix the DNS records that decide delivery.</p>
+    </a>
+    <a class="card" href="/blog/spf-record-checker" style="text-decoration:none;color:inherit">
+      <h3>SPF Record Checker: Verify Your Domain's SPF in 30 Seconds</h3>
+      <p>What an SPF record is, the five most common mistakes, and how to check yours for free. No signup required.</p>
+    </a>
+    <a class="card" href="/blog/email-deliverability-test" style="text-decoration:none;color:inherit">
+      <h3>Email Deliverability Test: Check Your Domain in 30 Seconds</h3>
+      <p>Run a free deliverability test on your domain. Check SPF, DKIM, DMARC, TLS, PTR and IP reputation. Get a spam-risk score and the exact record to fix.</p>
+    </a>
+    <a class="card" href="/blog/inbox-placement-test" style="text-decoration:none;color:inherit">
+      <h3>Inbox Placement Test: Check Where Your Email Lands</h3>
+      <p>Run a free inbox placement test on your domain. Check SPF, DKIM, DMARC, TLS, PTR and IP reputation to find out if your email lands in the inbox or spam.</p>
+    </a>
+    <a class="card" href="/blog/check-email-in-spam" style="text-decoration:none;color:inherit">
+      <h3>Check If Your Email Is in Spam: 5 Ways to Find Out</h3>
+      <p>Your email might be landing in spam without you knowing. Here are 5 ways to check, from DNS record lookups to free deliverability tests. No signup required.</p>
+    </a>
+    <a class="card" href="/blog/email-spam-test" style="text-decoration:none;color:inherit">
+      <h3>Email Spam Test: Check Your Domain's Spam Risk in 30 Seconds</h3>
+      <p>Run a free email spam test on your domain. Check SPF, DKIM, DMARC, TLS, PTR and IP reputation to find out your spam risk. Get the exact record to fix.</p>
+    </a>
+    <a class="card" href="/blog/email-deliverability-tools" style="text-decoration:none;color:inherit">
+      <h3>Best Email Deliverability Tools in 2026: 7 Options Compared</h3>
+      <p>The 7 best email deliverability tools in 2026, compared. Check SPF, DKIM, DMARC, TLS, PTR and IP reputation. Free options and paid options.</p>
+    </a>
+    <a class="card" href="/blog/how-to-fix-spf-record" style="text-decoration:none;color:inherit">
+      <h3>How to Fix Your SPF Record: 5 Common Mistakes and How to Solve Them</h3>
+      <p>Your SPF record might be broken. Here are the 5 most common SPF mistakes and how to fix them, step by step. No signup required.</p>
+    </a>
+    <a class="card" href="/blog/how-to-set-up-dmarc" style="text-decoration:none;color:inherit">
+      <h3>How to Set Up DMARC: Step-by-Step Guide for 2026</h3>
+      <p>Set up DMARC on your domain in 5 steps. Learn what DMARC does, how to choose the right policy, and how to monitor your DMARC reports. No signup required.</p>
+    </a>
+    <a class="card" href="/blog/check-domain-blocklist" style="text-decoration:none;color:inherit">
+      <h3>Check If Your Domain Is on a Blocklist: How to Find Out and Get Delisted</h3>
+      <p>Your domain might be on a blocklist. Here's how to check if your domain is on a blocklist, and how to get it delisted. No signup required.</p>
     </a>
   </div>
 

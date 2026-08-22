@@ -1,0 +1,118 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Email deliverability for GetResponse: keep your campaigns out of spam</title>
+<meta property="og:url" content="https://inboxproof.email/blog/email-deliverability-getresponse">
+<meta name="description" content="GetResponse users lose engagement when campaigns and automated emails land in spam. Learn the 6 DNS records that decide delivery, the GetResponse-specific gotchas, and how to monitor them.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="/styles.css">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' rx='8' fill='%236366f1'/%3E%3Cpath d='M8 16h13M15 10l6 6-6 6' stroke='white' stroke-width='3' fill='none' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E">
+<script>
+(function(){try{var p=location.pathname||'/';var r=(document.referrer||'').split('/')[2]||'direct';var u='/api/track?page='+encodeURIComponent(p)+'&ref='+encodeURIComponent(r);if(navigator.sendBeacon&&navigator.sendBeacon(u))return;var i=new Image();i.src=u;}catch(e){}})();
+</script>
+<script type="application/ld+json">
+{"@context":"https://schema.org","@type":"Article","headline":"Email Deliverability for GetResponse: Keep Your Campaigns Out of Spam","description":"How to fix email deliverability for GetResponse: the exact DNS records, platform-specific gotchas, and monitoring setup you need.","author":{"@type":"Organization","name":"Inboxproof"},"publisher":{"@type":"Organization","name":"Inboxproof"}}
+</script>
+<link rel="canonical" href="https://inboxproof.email/blog/email-deliverability-getresponse">
+<meta property="og:image" content="https://inboxproof.email/og.png">
+<meta property="og:image:width" content="1200">
+<meta property="og:image:height" content="630">
+<meta name="twitter:image" content="https://inboxproof.email/og.png">
+</head>
+<body>
+<nav class="nav">
+  <div class="container">
+    <a class="logo" href="/">
+      <span class="mark"><svg viewBox="0 0 24 24" fill="none"><path d="M4 12h11M11 7l5 5-5 5" stroke="#fff" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"/></svg></span>
+      Inboxproof
+    </a>
+    <div class="nav-links"><a href="/">Run a free audit</a></div>
+  </div>
+</nav>
+
+<div class="container" style="max-width:860px;padding:60px 20px 80px">
+  <div class="kicker">Guide</div>
+  <h1>Email deliverability for GetResponse: keep your campaigns out of spam</h1>
+  <p style="opacity:.8;font-size:16px;margin-bottom:36px">GetResponse sends both marketing campaigns and automated emails (welcome sequences, cart abandonment, webinar follow-ups). If these land in the spam folder, you lose engagement and revenue. The fix is usually a DNS record, not an email app.</p>
+
+  <h2>Why GetResponse email goes to spam</h2>
+  <p>GetResponse sends email on your behalf using your domain (or a subdomain you set up). But the receiving mail server does not trust your domain by default. It checks your DNS records to verify the email is legitimate.</p>
+  <p>When a subscriber receives an email from yourdomain.com sent by GetResponse, Gmail and Outlook check your domain's DNS records. If the records are missing or misconfigured, the email gets flagged as suspicious and filtered to spam.</p>
+  <p>The frustrating part: GetResponse's dashboard shows "delivered." The email reached the mail server. It just did not reach the inbox. You have zero opens and no idea why.</p>
+
+  <h2>The 6 records that decide delivery</h2>
+  <p>Here is what the receiving mail server checks, in order:</p>
+  <ol>
+    <li><b>MX record</b>: tells the mail server where to deliver mail for your domain. If this is missing, email bounces immediately.</li>
+    <li><b>SPF record</b>: lists the IP addresses and services allowed to send email as your domain. If GetResponse is not listed, the email fails SPF.</li>
+    <li><b>DKIM record</b>: a cryptographic signature that proves the email was not tampered with in transit. If the signature is broken or missing, the email fails DKIM.</li>
+    <li><b>DMARC record</b>: tells the receiving server what to do when SPF or DKIM fails. Without a DMARC record, Gmail and Outlook apply their own (stricter) policy.</li>
+    <li><b>TLS/STARTTLS</b>: encrypts the email in transit. If your mail server does not support TLS, some providers downgrade or reject the email.</li>
+    <li><b>PTR / reverse DNS</b>: maps the sending IP back to a hostname. If the PTR does not match the sending server, the email gets flagged.</li>
+  </ol>
+  <p>Any one of these can break your deliverability. Most GetResponse users have at least one missing or misconfigured.</p>
+
+  <h2>How to check your GetResponse domain in 30 seconds</h2>
+  <p>You do not need to run dig commands by hand. <a href="/">Inboxproof</a> checks all 6 records in about 30 seconds. You type in your domain, it queries your live DNS, and gives you a score plus the exact records to fix. No account, no setup, nothing to install.</p>
+  <p>The report is public and shareable, which is handy when you need to send the findings to whoever manages your DNS (your developer, your agency, your GetResponse setup).</p>
+
+  <h2>The GetResponse-specific gotchas</h2>
+  <h3>1. You are using a different domain for email</h3>
+  <p>Many GetResponse users use a custom domain for their website but send email from a different domain (e.g., yourdomain.com for the site, yourdomain-mail.com for email). The receiving server checks the domain in the From: header, not the domain in the URL. If your From: header says yourdomain.com but your SPF record is on yourdomain-mail.com, the email fails SPF.</p>
+  <p>Fix: make sure the domain in your From: header matches the domain with the SPF, DKIM, and DMARC records.</p>
+
+  <h3>2. Your SPF record does not include GetResponse</h3>
+  <p>GetResponse uses a specific domain include for SPF. If your SPF record does not include <code>include:getresponse.com</code> (or the specific GetResponse sending domain you are using), the email fails SPF. Check your GetResponse sending settings to find the exact include you need.</p>
+  <p>Fix: add the GetResponse include to your SPF record. If you have multiple includes, make sure the total SPF lookup count stays under 10.</p>
+
+  <h3>3. Your DKIM record is missing or the selector is wrong</h3>
+  <p>GetResponse uses a specific DKIM selector. If your DKIM record is missing or the selector does not match what GetResponse expects, the email fails DKIM. Check your GetResponse sending settings for the current DKIM selector and make sure it is in your DNS.</p>
+  <p>Fix: add the DKIM record with the correct selector to your DNS. The record type is TXT, and the name is the selector followed by a dot and your domain.</p>
+
+  <h3>4. Your DMARC record is missing or set to p=none</h3>
+  <p>Gmail has been enforcing DMARC more strictly since early 2024. A domain with no DMARC record, or one set to p=none, is treated as unauthenticated. Gmail filters these emails more aggressively. Set your DMARC record to at least p=quarantine, and ideally p=reject once you are confident your SPF and DKIM are correct.</p>
+  <p>Fix: add a DMARC record with p=quarantine or p=reject to your DNS. Start with p=quarantine, monitor your DMARC reports, and move to p=reject once you are confident.</p>
+
+  <h3>5. You have multiple sending domains</h3>
+  <p>If you use GetResponse for marketing email and a different provider for transactional email (e.g., Postmark for order confirmations), both need to be in your SPF record. Missing one means emails from that provider fail SPF. Check every service that sends email on your behalf.</p>
+  <p>Fix: make sure all sending services are included in your SPF record. If you have more than 10 includes, consider using a separate domain for one of the services.</p>
+
+  <h2>How to monitor so a broken record never costs you a sale</h2>
+  <p>Fixing the records is the first step. But records break. Your email provider changes something. Your DNS provider expires a record. A new include gets added. You do not get an email when this happens. You find out when a subscriber says "I never got the welcome email."</p>
+  <p><a href="/pro">Inboxproof Pro</a> monitors all 6 records daily and emails you the moment one breaks, expires, or changes. $29/month for up to 5 domains. For an agency managing multiple clients, the Agency plan covers up to 25 domains for $99/month.</p>
+
+  <h2>Quick checklist</h2>
+  <ul>
+    <li>MX record exists and points to a valid mail server</li>
+    <li>SPF record includes GetResponse and all other sending services</li>
+    <li>DKIM record is present and the selector matches your GetResponse setup</li>
+    <li>DMARC record exists with p=quarantine or p=reject</li>
+    <li>TLS/STARTTLS is enabled on your mail server</li>
+    <li>PTR record matches your sending IP</li>
+    <li>Your From: header domain matches the domain with the SPF/DKIM/DMARC records</li>
+  </ul>
+  <p>If any of these are missing, <a href="/">run a free audit</a> and get the exact record values to add. Takes 30 seconds. No account needed.</p>
+
+  <h2>Related guides</h2>
+  <ul>
+    <li><a href="/blog/email-deliverability-by-platform">Email deliverability by platform</a></li>
+    <li><a href="/blog/email-deliverability-ecommerce">Email deliverability for e-commerce</a></li>
+    <li><a href="/blog/email-deliverability-saas">Email deliverability for SaaS</a></li>
+    <li><a href="/blog/transactional-email-deliverability">Transactional email deliverability</a></li>
+    <li><a href="/blog/email-deliverability-checklist">Email deliverability checklist</a></li>
+    <li><a href="/blog/dmarc">DMARC: what it is and why you need it</a></li>
+  </ul>
+
+  <div class="card" style="margin-top:40px;background:#eef2ff;border-color:#c7d2fe">
+    <h3 style="margin-top:0">Check your GetResponse domain now</h3>
+    <p style="opacity:.8;margin-bottom:14px">Run a free 30 second audit on your domain. No account, no setup, reads your live DNS only.</p>
+    <a class="btn btn-primary" href="/">Run my free audit</a>
+  </div>
+
+  <p style="text-align:center;opacity:.4;font-size:12px;margin-top:28px">Audited by <a href="/" style="opacity:.8">Inboxproof</a> · live DNS checks · <a href="/privacy" style="opacity:.8">privacy</a></p>
+</div>
+</body>
+</html>

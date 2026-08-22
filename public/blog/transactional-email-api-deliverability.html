@@ -1,0 +1,80 @@
+﻿<!doctype html>
+<html lang="en">
+<head>
+<script>(function(){try{var p=location.pathname||"/";var r=(document.referrer||"").split("/")[2]||"direct";var u="/api/track?page="+encodeURIComponent(p)+"&ref="+encodeURIComponent(r);if(navigator.sendBeacon&&navigator.sendBeacon(u))return;var i=new Image();i.src=u;}catch(e){}})();</script>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>SendGrid, Postmark, Mailgun, Resend: why your transactional email lands (or doesn't) | Inboxproof</title>
+<meta name="description" content="Transactional email deliverability for developers: what actually decides whether your app's emails land, how to check your sending domain's SPF, DKIM, DMARC, TLS and IP reputation, and how to catch a broken record before your users stop receiving password resets.">
+<meta property="og:title" content="Why your transactional email lands (or doesn't)">
+<meta property="og:description" content="What actually decides whether your app's emails land, how to check your sending domain, and how to catch a broken record before your users stop receiving password resets.">
+<meta property="og:type" content="article">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="/styles.css">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' rx='8' fill='%236366f1'/%3E%3Cpath d='M8 16h13M15 10l6 6-6 6' stroke='white' stroke-width='3' fill='none' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E">
+<script type="application/ld+json">
+{"@context":"https://schema.org","@type":"Article","headline":"Why your transactional email lands (or doesn't)","description":"What actually decides whether your app's emails land, how to check your sending domain, and how to catch a broken record before your users stop receiving password resets.","author":{"@type":"Organization","name":"Inboxproof"},"publisher":{"@type":"Organization","name":"Inboxproof"}}
+</script>
+<link rel="canonical" href="https://inboxproof.email/blog/transactional-email-api-deliverability">
+<meta property="og:url" content="https://inboxproof.email/blog/transactional-email-api-deliverability">
+<meta property="og:image" content="https://inboxproof.email/og.png">
+<meta property="og:image:width" content="1200">
+<meta property="og:image:height" content="630">
+<meta name="twitter:image" content="https://inboxproof.email/og.png">
+</head>
+<body>
+<nav class="nav">
+  <div class="container">
+    <a class="logo" href="/">
+      <span class="mark"><svg viewBox="0 0 24 24" fill="none"><path d="M4 12h11M11 7l5 5-5 5" stroke="#fff" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"/></svg></span>
+      Inboxproof
+    </a>
+    <div class="nav-links"><a href="/blog">All guides</a><a href="/">Run a free audit</a></div>
+  </div>
+</nav>
+
+<div class="container" style="max-width:760px;padding:60px 20px 80px">
+  <div class="kicker">Guide</div>
+  <h1 style="font-size:34px;margin:10px 0 24px">Why your transactional email lands (or doesn't)</h1>
+  <div style="opacity:.85;line-height:1.75;font-size:15.5px">
+    <p>You are not sending marketing email. You are sending password resets, order confirmations, and account alerts, the emails your users depend on. When they stop arriving, your support queue fills up and your activation and retention numbers quietly tank. The frustrating part is that transactional email deliverability is decided by the same boring DNS records as everything else, and a single broken record can take your whole app's email out of the inbox with no error in your logs. Here is what actually decides delivery, and how to check it.</p>
+
+    <h2 style="font-size:22px;margin:34px 0 12px">1. Why transactional email still goes to spam</h2>
+    <p>Providers do not give transactional email a free pass. Gmail and Microsoft judge your sending domain the same way they judge anything: is SPF aligned, is DKIM signing, is DMARC present, does the IP have a clean reputation, is TLS working. "Transactional" is a category you can request (like Google's transactional email program or Microsoft's SNDS), but it does not override a broken record. If your SPF record is missing an include after you switched ESPs, or your DKIM selector rotated, your transactional email lands in spam exactly like your marketing email would. The category matters less than the records.</p>
+
+    <h2 style="font-size:22px;margin:34px 0 12px">2. The records that decide delivery</h2>
+    <p>For your sending domain (the domain your app sends from, which may be your main domain or a dedicated sending subdomain), providers check: MX records, so the domain can actually receive mail and bounces; SPF, so the receiving server knows which IPs are allowed to send; DKIM, so the message is signed and the receiver can verify it came from you; DMARC, so there is a policy for what to do when SPF or DKIM fail; TLS, so the connection is encrypted; PTR, so the sending IP resolves back to a hostname; and IP reputation, so the IP itself has not been flagged for spam. Any one of these failing can cost you delivery. A deliverability audit checks all seven and tells you exactly which one is broken.</p>
+
+    <h2 style="font-size:22px;margin:34px 0 12px">3. How to check your sending domain</h2>
+    <p>Run a free audit on your sending domain and you get a 0 to 100 score with the exact records that are failing and the exact value to fix. This is the fastest way to find out why your emails are not landing. If the score is high, your records are fine and the problem is elsewhere (usually IP reputation or a provider-specific issue). If the score is low, you have a concrete list of DNS changes to make, and you can verify each one by re-running the audit. No account, no DNS changes, nothing to install.</p>
+
+    <h2 style="font-size:22px;margin:34px 0 12px">4. The failures that are invisible until it is too late</h2>
+    <p>The dangerous failures are the ones that happen after you have already set things up correctly. An ESP rotates your DKIM key and the old selector stops signing. A provider changes the IP range your mail comes from and your SPF include no longer matches. Your DMARC record expires or gets overwritten by a misconfigured tool. None of these show up in your application logs, because your app is still sending fine and the ESP is still accepting the mail. The failure only shows up when recipients stop receiving it. The only way to catch these early is to re-check the records on a schedule and alert the moment one changes.</p>
+
+    <h2 style="font-size:22px;margin:34px 0 12px">5. Monitoring your sending domain</h2>
+    <p>This is the part most developers skip because it is not in their codebase. Your sending domain is infrastructure, and infrastructure needs monitoring. A deliverability monitor re-checks your domain's SPF, DKIM, DMARC, MX, TLS, PTR, and IP reputation on a schedule and pings you the moment one breaks, expires, or a provider changes your sending IP. For a SaaS product, that is the difference between catching a broken DKIM key in minutes and finding out from a support ticket that nobody has been able to reset their password for two days. It is cheap insurance on the one thing your product cannot function without.</p>
+
+    <h2 style="font-size:22px;margin:34px 0 12px">Start with a free audit on your sending domain</h2>
+    <p>Run a free audit on your sending domain now and see the seven-check score plus the exact records to fix: <a href="/dmarc-checker">DMARC checker</a> or the full <a href="/#pricing">audit</a>. When you want your sending domain re-checked daily and an email the moment a record breaks, that is what the <a href="/#pricing">Pro tier</a> is for, up to 5 domains with daily re-checks and alerts.</p>
+
+    <div style="margin-top:40px;padding:20px;border:1px solid rgba(99,102,241,.25);border-radius:12px;background:rgba(99,102,241,.06)">
+      <div style="font-weight:700;font-size:15px;margin-bottom:10px">Related guides</div>
+      <div style="opacity:.8;font-size:14px;line-height:2">
+        <a href="/blog/why-email-goes-to-spam">Why email goes to spam</a><br>
+        <a href="/blog/email-deliverability-checklist">Email deliverability checklist</a><br>
+        <a href="/blog/dkim-not-signing">DKIM not signing emails? How to fix it</a><br>
+        <a href="/blog/dmarc-record-setup">How to set up a DMARC record</a>
+      </div>
+    </div>
+  </div>
+</div>
+
+<footer>
+  <div class="container">
+    <span>© 2026 Inboxproof, Inc.</span>
+    <span><a href="/blog">All guides</a> · <a href="/">Home</a> · <a href="/privacy">Privacy</a> · <a href="https://github.com/jtc268/inboxproof" target="_blank" rel="noopener">GitHub</a></span>
+  </div>
+</footer>
+</body>
+</html>

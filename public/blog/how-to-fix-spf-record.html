@@ -1,0 +1,90 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>How to Fix Your SPF Record: 5 Common Mistakes and How to Solve Them</title>
+  <meta name="description" content="Your SPF record might be broken. Here are the 5 most common SPF mistakes and how to fix them, step by step. No signup required.">
+  <meta property="og:title" content="How to Fix Your SPF Record: 5 Common Mistakes and How to Solve Them">
+  <meta property="og:description" content="Your SPF record might be broken. Here are the 5 most common SPF mistakes and how to fix them, step by step.">
+  <meta property="og:type" content="website">
+  <meta property="og:url" content="https://inboxproof.email/blog/how-to-fix-spf-record">
+  <link rel="canonical" href="https://inboxproof.email/blog/how-to-fix-spf-record">
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; line-height: 1.6; color: #1a1a2e; background: #fff; }
+    .container { max-width: 720px; margin: 0 auto; padding: 2rem 1.5rem; }
+    h1 { font-size: 2rem; margin-bottom: 1rem; line-height: 1.3; }
+    h2 { font-size: 1.4rem; margin: 2rem 0 0.75rem; }
+    p { margin-bottom: 1rem; }
+    ul, ol { margin: 0 0 1rem 1.5rem; }
+    li { margin-bottom: 0.5rem; }
+    code { background: #f0f0f5; padding: 0.15rem 0.4rem; border-radius: 4px; font-size: 0.9em; font-family: 'SF Mono', Monaco, monospace; }
+    pre { background: #1a1a2e; color: #e0e0e0; padding: 1rem; border-radius: 8px; overflow-x: auto; margin: 1rem 0; }
+    pre code { background: none; padding: 0; color: inherit; }
+    .cta-box { background: #f0f7ff; border: 1px solid #c3d9f7; border-radius: 12px; padding: 1.5rem; margin: 2rem 0; text-align: center; }
+    .cta-box h3 { margin-bottom: 0.5rem; }
+    .btn { display: inline-block; background: #2563eb; color: #fff; padding: 0.75rem 1.5rem; border-radius: 8px; text-decoration: none; font-weight: 600; margin-top: 0.5rem; }
+    .btn:hover { background: #1d4ed8; }
+    .related { margin-top: 2rem; padding-top: 1.5rem; border-top: 1px solid #e5e5e5; }
+    .related h3 { margin-bottom: 0.75rem; }
+    .related ul { list-style: none; margin: 0; }
+    .related li { margin-bottom: 0.5rem; }
+    .related a { color: #2563eb; text-decoration: none; }
+    .related a:hover { text-decoration: underline; }
+  </style>
+<meta property="og:image" content="https://inboxproof.email/og.png">
+<meta property="og:image:width" content="1200">
+<meta property="og:image:height" content="630">
+<meta name="twitter:image" content="https://inboxproof.email/og.png">
+<script type="application/ld+json">{"@context":"https://schema.org","@type":"Article","headline":"How to Fix Your SPF Record: 5 Common Mistakes and How to Solve Them","description":"Your SPF record might be broken. Here are the 5 most common SPF mistakes and how to fix them, step by step. No signup required.","author":{"@type":"Organization","name":"Inboxproof"},"publisher":{"@type":"Organization","name":"Inboxproof"},"mainEntityOfPage":"https://inboxproof.email/blog/how-to-fix-spf-record"}</script>
+</head>
+<body>
+  <div class="container">
+    <h1>How to Fix Your SPF Record: 5 Common Mistakes and How to Solve Them</h1>
+    <p>Your SPF record might be broken. If it is, your email is at risk of landing in spam or being rejected outright. Here are the 5 most common SPF mistakes and how to fix them, step by step.</p>
+
+    <div class="cta-box">
+      <h3>Check Your SPF Record in 30 Seconds</h3>
+      <p>Run a free SPF record check on your domain. No signup, no credit card. Get the exact record to fix.</p>
+      <a class="btn" href="/blog/spf-record-checker">Check My SPF Record</a>
+    </div>
+
+    <h2>Mistake 1: No SPF Record</h2>
+    <p>The most common mistake is not having an SPF record at all. If your domain has no SPF record, receiving servers have no way to verify which mail servers are allowed to send for your domain. This means anyone can send email as your domain, and receiving servers may reject your email or mark it as spam.</p>
+    <p><strong>How to fix it:</strong> Add an SPF record to your DNS. The record should be a TXT record with the value <code>v=spf1 include:_spf.yourmailprovider.com -all</code>. Replace <code>yourmailprovider.com</code> with the actual domain of your email provider (e.g., <code>google.com</code> for Google Workspace, <code>sendgrid.net</code> for SendGrid).</p>
+
+    <h2>Mistake 2: Multiple SPF Records</h2>
+    <p>SPF only allows one TXT record per domain. If you have multiple SPF records, receiving servers will treat your domain as having no SPF record, which means your email is at risk of being rejected or marked as spam.</p>
+    <p><strong>How to fix it:</strong> Combine all your SPF records into a single TXT record. Use the <code>include:</code> directive to reference other domains. For example, if you have two SPF records, <code>v=spf1 include:_spf.google.com -all</code> and <code>v=spf1 include:sendgrid.net -all</code>, combine them into <code>v=spf1 include:_spf.google.com include:sendgrid.net -all</code>.</p>
+
+    <h2>Mistake 3: Too Many DNS Lookups</h2>
+    <p>SPF has a limit of 10 DNS lookups. If your SPF record has more than 10 <code>include:</code> directives, receiving servers will treat your domain as having no SPF record, which means your email is at risk of being rejected or marked as spam.</p>
+    <p><strong>How to fix it:</strong> Reduce the number of <code>include:</code> directives in your SPF record. Use the <code>redirect</code> directive to point to another domain that has the full list of mail servers. For example, <code>v=spf1 redirect=_spf.yourdomain.com</code>.</p>
+
+    <h2>Mistake 4: Missing <code>-all</code> at the End</h2>
+    <p>The <code>-all</code> directive tells receiving servers to reject any email that doesn't match your SPF record. If you don't have <code>-all</code> at the end of your SPF record, receiving servers may accept email from unauthorized mail servers, which means your domain is vulnerable to spoofing.</p>
+    <p><strong>How to fix it:</strong> Add <code>-all</code> to the end of your SPF record. For example, <code>v=spf1 include:_spf.google.com -all</code>.</p>
+
+    <h2>Mistake 5: Wrong Syntax</h2>
+    <p>SPF records have a specific syntax. If your SPF record has a typo or the wrong syntax, receiving servers may treat your domain as having no SPF record, which means your email is at risk of being rejected or marked as spam.</p>
+    <p><strong>How to fix it:</strong> Check your SPF record for typos. The record should start with <code>v=spf1</code>, followed by the mail servers you want to allow, and end with <code>-all</code>. For example, <code>v=spf1 include:_spf.google.com -all</code>.</p>
+
+    <div class="cta-box">
+      <h3>Find Out If Your SPF Record Is Broken</h3>
+      <p>Run a free SPF record check on your domain in about 30 seconds. Get the exact record to fix. No signup required.</p>
+      <a class="btn" href="/blog/spf-record-checker">Check My SPF Record</a>
+    </div>
+
+    <div class="related">
+      <h3>Related Guides</h3>
+      <ul>
+        <li><a href="/blog/spf-record-checker">SPF Record Checker: Verify Your Domain's SPF in 30 Seconds</a></li>
+        <li><a href="/blog/email-deliverability-test">Email Deliverability Test: Check Your Domain in 30 Seconds</a></li>
+        <li><a href="/blog/inbox-placement-test">Inbox Placement Test: Check Where Your Email Lands</a></li>
+        <li><a href="/blog/check-email-in-spam">Check If Your Email Is in Spam: 5 Ways to Find Out</a></li>
+      </ul>
+    </div>
+  </div>
+</body>
+</html>

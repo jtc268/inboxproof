@@ -1,0 +1,130 @@
+<!doctype html>
+<html lang="en">
+<head>
+<script>(function(){try{var p=location.pathname||"/";var r=(document.referrer||"").split("/")[2]||"direct";var u="/api/track?page="+encodeURIComponent(p)+"&ref="+encodeURIComponent(r);if(navigator.sendBeacon&&navigator.sendBeacon(u))return;var i=new Image();i.src=u;}catch(e){}})();</script>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Email deliverability checklist: 24 things to check before you send | Inboxproof</title>
+<meta name="description" content="A 24-point email deliverability checklist: DNS records, sending infrastructure, list hygiene, content, and monitoring. Run it before every send.">
+<meta property="og:title" content="Email deliverability checklist: 24 things to check before you send">
+<meta property="og:description" content="The 24 checks that decide whether your email reaches the inbox, grouped into the five areas that actually move the score.">
+<meta property="og:type" content="article">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="/styles.css">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' rx='8' fill='%236366f1'/%3E%3Cpath d='M8 16h13M15 10l6 6-6 6' stroke='white' stroke-width='3' fill='none' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E">
+<script type="application/ld+json">
+{"@context":"https://schema.org","@type":"Article","headline":"Email deliverability checklist: 24 things to check before you send","description":"A 24-point email deliverability checklist: DNS records, sending infrastructure, list hygiene, content, and monitoring.","author":{"@type":"Organization","name":"Inboxproof"},"publisher":{"@type":"Organization","name":"Inboxproof"}}
+</script>
+<link rel="canonical" href="https://inboxproof.email/blog/email-deliverability-checklist">
+<meta property="og:url" content="https://inboxproof.email/blog/email-deliverability-checklist">
+<meta property="og:image" content="https://inboxproof.email/og.png">
+<meta property="og:image:width" content="1200">
+<meta property="og:image:height" content="630">
+<meta name="twitter:image" content="https://inboxproof.email/og.png">
+</head>
+<body>
+<nav class="nav">
+  <div class="container">
+    <a class="logo" href="/">
+      <span class="mark"><svg viewBox="0 0 24 24" fill="none"><path d="M4 12h11M11 7l5 5-5 5" stroke="#fff" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"/></svg></span>
+      Inboxproof
+    </a>
+    <div class="nav-links"><a href="/blog">All guides</a><a href="/">Run a free audit</a></div>
+  </div>
+</nav>
+
+<div class="container" style="max-width:760px;padding:60px 20px 80px">
+  <div class="kicker">Guide</div>
+  <h1 style="font-size:34px;margin:10px 0 24px">Email deliverability checklist: 24 things to check before you send</h1>
+  <div style="opacity:.85;line-height:1.75;font-size:15.5px">
+    <p>Deliverability is not one thing. It is five areas working together: the DNS records that prove you are who you say you are, the infrastructure that sends the mail, the list you send to, the content you send, and the monitoring that tells you when something breaks. Most teams check the DNS and stop. The other four areas are where the quiet failures live. Run this checklist before a launch, before a big campaign, and once a month on a standing basis.</p>
+
+    <h2 style="font-size:22px;margin:34px 0 12px">1. DNS records (the proof layer)</h2>
+    <p>These are the records a receiving mailbox reads before it will accept your mail. All six must be present and correct.</p>
+    <ul style="line-height:1.85">
+      <li><b>MX exists and resolves.</b> If the domain has no MX, or the mail server does not resolve, mail bounces before authentication is considered. <a href="/mx-checker">Check the MX records</a>.</li>
+      <li><b>SPF lists every sender and ends in <code>-all</code>.</b> Include your ESP, CRM, and transactional provider. A record over the 10-DNS-lookup limit fails outright. <a href="/spf-checker">Check the SPF</a>, or <a href="/spf-generator">generate it</a>.</li>
+      <li><b>DKIM key is published and strong.</b> The selector you publish in DNS must have a key, and the key must be long enough (2048-bit). <a href="/dkim-checker">Check the DKIM</a>.</li>
+      <li><b>DMARC policy is set and aligned.</b> Start at <code>p=none</code> with reporting, then move to <code>quarantine</code> or <code>reject</code>. <a href="/dmarc-checker">Check the DMARC</a>.</li>
+      <li><b>Reverse DNS (PTR) matches the sending IP.</b> The IP that sends your mail should resolve back to a hostname that matches your sending domain. <a href="/ptr-checker">Check the PTR</a>.</li>
+      <li><b>TLS certificate is valid.</b> An expired or misconfigured certificate on the mail server is a quiet killer. <a href="/tls-checker">Check the TLS</a>.</li>
+    </ul>
+
+    <h2 style="font-size:22px;margin:34px 0 12px">2. Sending infrastructure</h2>
+    <p>The records prove identity. The infrastructure determines whether the receiver trusts the connection.</p>
+    <ul style="line-height:1.85">
+      <li><b>IP reputation is clean.</b> Test the sending IP against the major blocklists. One hit on Spamhaus and you are in the spam folder. <a href="/is-my-ip-blacklisted">Check the IP</a>.</li>
+      <li><b>Domain reputation is clean.</b> The domain itself can be listed even when the IP is not. <a href="/is-my-domain-blacklisted">Check the domain</a>.</li>
+      <li><b>You are on a warm IP.</b> A fresh IP with no sending history starts with a low reputation. Warm it up gradually before volume. See the <a href="/cold-email-warm-up">warm-up guide</a>.</li>
+      <li><b>Volume is ramped, not spiked.</b> A sudden 10x jump in volume trips spam filters. Increase send volume in steps over days.</li>
+      <li><b>Shared vs dedicated IP is a known choice.</b> On a shared IP, other senders can drag your reputation down. Know which you are on and what that means.</li>
+    </ul>
+
+    <h2 style="font-size:22px;margin:34px 0 12px">3. List hygiene</h2>
+    <p>A clean list is the cheapest deliverability win available. Bad addresses and dead recipients hurt your reputation more than any record.</p>
+    <ul style="line-height:1.85">
+      <li><b>Bounce rate is under 2%.</b> Hard bounces above that tell the receiver you are sending to a bad list. <a href="/cold-email-bounce-rate">What a bad bounce rate means</a>.</li>
+      <li><b>No purchased or scraped lists.</b> These are the fastest way to get reported as spam and to lose the domain's reputation.</li>
+      <li><b>Engagement is real.</b> Recipients who never open get your domain marked as low-quality. Prune or re-engage the cold segment.</li>
+      <li><b>Unsubscribes are honored instantly.</b> A working one-click unsubscribe and honoring it the same day is a deliverability signal, not just a legal one.</li>
+      <li><b>Complaints are near zero.</b> Spam complaints are the strongest negative signal a mailbox uses. Keep the rate under 0.1%.</li>
+    </ul>
+
+    <h2 style="font-size:22px;margin:34px 0 12px">4. Content and sending practice</h2>
+    <p>The same records can deliver fine to one inbox and fail in another, depending on what the mail actually says.</p>
+    <ul style="line-height:1.85">
+      <li><b>No spam-trigger words stacked.</b> A few are fine. A subject line full of them is not.</li>
+      <li><b>Subject line and preview match the body.</b> Bait-and-switch subjects get flagged.</li>
+      <li><b>Text-to-image ratio is sane.</b> A message that is one giant image with no text reads as spam to many filters.</li>
+      <li><b>Links resolve and are safe.</b> Dead links and links to flagged domains hurt. Check the domains you link to.</li>
+      <li><b>You send consistently.</b> Regular, predictable volume builds reputation. Sporadic bursts do not.</li>
+      <li><b>You are not sending to role addresses in bulk.</b> info@, sales@, support@ have lower open rates and higher complaint rates.</li>
+    </ul>
+
+    <h2 style="font-size:22px;margin:34px 0 12px">5. Monitoring (so you catch the break)</h2>
+    <p>Deliverability is a state, not a setup. Records rot, IPs get listed, and providers change their rules. The teams that stay in the inbox are the ones watching.</p>
+    <ul style="line-height:1.85">
+      <li><b>You read your DMARC reports.</b> They tell you who is sending as your domain and what is failing. The <a href="/dmarc-report-parser">report parser</a> turns them into a who-is-sending-as-you list.</li>
+      <li><b>You check blocklists on a schedule.</b> A listing you do not know about is a listing you cannot delist. The <a href="/blocklist-checker">blocklist checker</a> covers domain and IP.</li>
+      <li><b>You watch the provider dashboards.</b> Gmail Postmaster Tools and the Microsoft equivalents show your reputation and complaints directly. See <a href="/gmail-postmaster-tools">how to read Gmail's</a>.</li>
+      <li><b>You re-run the audit after any change.</b> A new ESP, a new IP, a new domain. Re-run the full check after every infrastructure change.</li>
+    </ul>
+
+    <h2 style="font-size:22px;margin:34px 0 12px">Run all of it at once</h2>
+    <p>Doing these 24 checks by hand is slow and easy to miss one. The <a href="/cold-email-checker">free deliverability checker</a> runs the DNS and reputation checks in one pass, scores the domain, and points at the exact record to fix first. That is the fastest way to know where you stand before the next send.</p>
+    <p style="margin-top:28px;padding:18px;background:#f4f4ff;border-radius:12px">Want this checked automatically every day? <a href="/#pricing" style="font-weight:600">Inboxproof Pro</a> monitors your domain around the clock and alerts you the moment a record breaks or an IP gets listed. <a href="/#pricing" style="font-weight:600">See pricing →</a></p>
+
+    <div style="margin-top:24px;padding:20px;border:1px solid rgba(99,102,241,.25);border-radius:12px;background:rgba(99,102,241,.06)">
+      <div style="font-weight:700;font-size:15px;margin-bottom:10px">Related guides</div>
+      <div style="opacity:.8;font-size:14px;line-height:2">
+        <a href="/blog/email-deliverability-by-platform">Email deliverability by platform</a><br>
+        <a href="/blog/email-deliverability-shopify">Email deliverability for Shopify</a><br>
+        <a href="/blog/email-deliverability-wordpress">Email deliverability for WordPress</a><br>
+        <a href="/blog/email-deliverability-woocommerce">Email deliverability for WooCommerce</a><br>
+        <a href="/blog/email-deliverability-squarespace">Email deliverability for Squarespace</a><br>
+        <a href="/blog/email-deliverability-wix">Email deliverability for Wix</a><br>
+        <a href="/blog/email-deliverability-hubspot">Email deliverability for HubSpot</a><br>
+        <a href="/blog/email-deliverability-salesforce">Email deliverability for Salesforce</a><br>
+        <a href="/blog/email-deliverability-mailchimp">Email deliverability for Mailchimp</a><br>
+        <a href="/blog/email-deliverability-klaviyo">Email deliverability for Klaviyo</a><br>
+        <a href="/blog/email-deliverability-activecampaign">Email deliverability for ActiveCampaign</a><br>
+        <a href="/blog/email-deliverability-convertkit">Email deliverability for ConvertKit</a><br>
+        <a href="/blog/email-deliverability-getresponse">Email deliverability for GetResponse</a><br>
+        <a href="/blog/why-email-goes-to-spam">Why email goes to spam</a><br>
+        <a href="/blog/cold-email-infrastructure">Cold email infrastructure that keeps domains alive</a><br>
+        <a href="/blog/transactional-email-api-deliverability">Transactional email API deliverability</a><br>
+        <a href="/blog/dmarc-record-setup">How to set up a DMARC record</a>
+      </div>
+    </div>
+  </div>
+</div>
+
+<footer>
+  <div class="container">
+    <span>© 2026 Inboxproof, Inc.</span>
+    <span><a href="/blog">All guides</a> · <a href="/">Home</a> · <a href="/privacy">Privacy</a> · <a href="https://github.com/jtc268/inboxproof" target="_blank" rel="noopener">GitHub</a></span>
+  </div>
+</footer>
+</body>
+</html>

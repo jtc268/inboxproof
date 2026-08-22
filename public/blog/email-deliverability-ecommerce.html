@@ -1,9 +1,10 @@
 <!doctype html>
 <html lang="en">
 <head>
+<script>(function(){try{var p=location.pathname||"/";var r=(document.referrer||"").split("/")[2]||"direct";var u="/api/track?page="+encodeURIComponent(p)+"&ref="+encodeURIComponent(r);if(navigator.sendBeacon&&navigator.sendBeacon(u))return;var i=new Image();i.src=u;}catch(e){}})();</script>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
-<title>Email Deliverability for E-commerce: SPF, DKIM, DMARC for Online Stores — Inboxproof</title>
+<title>Email Deliverability for E-commerce: SPF, DKIM, DMARC for Online Stores | Inboxproof</title>
 <meta name="description" content="Why order confirmations and marketing emails from your online store land in spam, and the exact SPF, DKIM, DMARC and sender-reputation fixes for Shopify, WooCommerce and headless stores.">
 <meta property="og:title" content="Email Deliverability for E-commerce: SPF, DKIM, DMARC for Online Stores">
 <meta property="og:description" content="Why order confirmations and marketing emails from your online store land in spam, and the exact fixes.">
@@ -13,6 +14,12 @@
 <script type="application/ld+json">
 {"@context":"https://schema.org","@type":"Article","headline":"Email Deliverability for E-commerce: SPF, DKIM, DMARC for Online Stores","description":"Why order confirmations and marketing emails from your online store land in spam, and the exact SPF, DKIM, DMARC and sender-reputation fixes.","author":{"@type":"Organization","name":"Inboxproof"},"publisher":{"@type":"Organization","name":"Inboxproof"}}
 </script>
+<link rel="canonical" href="https://inboxproof.email/blog/email-deliverability-ecommerce">
+<meta property="og:url" content="https://inboxproof.email/blog/email-deliverability-ecommerce">
+<meta property="og:image" content="https://inboxproof.email/og.png">
+<meta property="og:image:width" content="1200">
+<meta property="og:image:height" content="630">
+<meta name="twitter:image" content="https://inboxproof.email/og.png">
 </head>
 <body>
 <nav class="nav">
@@ -31,18 +38,18 @@
   <h2>The two email streams that matter for a store</h2>
   <p>E-commerce sends two very different kinds of email, and they need different treatment:</p>
   <ul>
-    <li><strong>Transactional</strong> — order confirmations, shipping updates, password resets. These are expected, one-to-one, and have very high open rates. They should be sent from a domain with a clean reputation and strict authentication.</li>
-    <li><strong>Marketing / lifecycle</strong> — abandoned cart, back-in-stock, win-back, newsletters. These are bulk, and are where most spam-folder problems start.</li>
+    <li><strong>Transactional</strong>: order confirmations, shipping updates, password resets. These are expected, one-to-one, and have very high open rates. They should be sent from a domain with a clean reputation and strict authentication.</li>
+    <li><strong>Marketing / lifecycle</strong>: abandoned cart, back-in-stock, win-back, newsletters. These are bulk, and are where most spam-folder problems start.</li>
   </ul>
   <p>Many stores send both from the same domain (e.g. <code>yourstore.com</code>) via the platform's default email service. That is workable, but it couples your marketing reputation to your transactional reputation. A better setup separates them: transactional from the store domain, marketing from a dedicated subdomain (e.g. <code>mail.yourstore.com</code>) so a bad marketing campaign never drags your order confirmations into spam.</p>
 
   <h2>The DNS records a store must have</h2>
   <p>Every sending domain needs four records. Most store platforms handle SPF and DKIM for you, but you still need to verify they are actually published and not conflicting.</p>
   <ol>
-    <li><strong>SPF</strong> — a TXT record listing the servers allowed to send for the domain. If your platform (Shopify, Klaviyo, Mailchimp, etc.) adds its own SPF include and you also have a hand-written SPF, you can exceed the 10-DNS-lookup limit and break authentication. Use the <a href="/spf-checker">SPF checker</a> to see your effective record and catch that.</li>
-    <li><strong>DKIM</strong> — a signature proving the message came from you. Each sending service has its own selector. If you send through more than one provider you need one DKIM record per provider. The <a href="/dkim-checker">DKIM checker</a> finds your live key and flags weak (1024-bit) or missing keys.</li>
-    <li><strong>DMARC</strong> — the policy that tells receivers what to do with unauthenticated mail. Start at <code>p=none</code>, read the reports, then move to <code>p=quarantine</code> and finally <code>p=reject</code>. The <a href="/dmarc-checker">DMARC checker</a> shows your current policy and the <a href="/dmarc-report-parser">DMARC report parser</a> turns the XML reports into a list of who is actually sending as you.</li>
-    <li><strong>MX</strong> — even if you only send, you need a valid MX record so the domain is not treated as a throwaway. The <a href="/mx-checker">MX checker</a> confirms it resolves.</li>
+    <li><strong>SPF</strong>: a TXT record listing the servers allowed to send for the domain. If your platform (Shopify, Klaviyo, Mailchimp, etc.) adds its own SPF include and you also have a hand-written SPF, you can exceed the 10-DNS-lookup limit and break authentication. Use the <a href="/spf-checker">SPF checker</a> to see your effective record and catch that.</li>
+    <li><strong>DKIM</strong>: a signature proving the message came from you. Each sending service has its own selector. If you send through more than one provider you need one DKIM record per provider. The <a href="/dkim-checker">DKIM checker</a> finds your live key and flags weak (1024-bit) or missing keys.</li>
+    <li><strong>DMARC</strong>: the policy that tells receivers what to do with unauthenticated mail. Start at <code>p=none</code>, read the reports, then move to <code>p=quarantine</code> and finally <code>p=reject</code>. The <a href="/dmarc-checker">DMARC checker</a> shows your current policy and the <a href="/dmarc-report-parser">DMARC report parser</a> turns the XML reports into a list of who is actually sending as you.</li>
+    <li><strong>MX</strong>: even if you only send, you need a valid MX record so the domain is not treated as a throwaway. The <a href="/mx-checker">MX checker</a> confirms it resolves.</li>
   </ol>
 
   <h2>Sender reputation: the part DNS cannot fix</h2>
@@ -72,7 +79,7 @@
     <a class="btn" href="/">Run a free audit</a>
   </div>
 
-  <p style="font-size:14px;opacity:.75;margin-top:28px">Related: <a href="/blog/email-deliverability-for-agencies">deliverability for agencies</a> · <a href="/blog/cold-email-bounce-rate">bounce-rate guide</a> · <a href="/deliverability-tools">best deliverability tools</a> · <a href="/blog">all guides</a></p>
+  <p style="font-size:14px;opacity:.75;margin-top:28px">Related: <a href="/blog/email-deliverability-shopify">Shopify</a> · <a href="/blog/email-deliverability-woocommerce">WooCommerce</a> · <a href="/blog/email-deliverability-squarespace">Squarespace</a> · <a href="/blog/email-deliverability-wix">Wix</a> · <a href="/blog/email-deliverability-for-agencies">deliverability for agencies</a> · <a href="/blog/cold-email-bounce-rate">bounce-rate guide</a> · <a href="/deliverability-tools">best deliverability tools</a> · <a href="/blog">all guides</a></p>
 
   <p style="font-size:14px;opacity:.8;margin-top:24px">Need continuous monitoring of your store's sending domain? <a href="/#pricing">Inboxproof Pro</a> re-checks your records daily and emails you the moment authentication or reputation breaks.</p>
 </div>

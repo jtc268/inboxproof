@@ -1,9 +1,10 @@
-<!doctype html>
+﻿<!doctype html>
 <html lang="en">
 <head>
+<script>(function(){try{var p=location.pathname||"/";var r=(document.referrer||"").split("/")[2]||"direct";var u="/api/track?page="+encodeURIComponent(p)+"&ref="+encodeURIComponent(r);if(navigator.sendBeacon&&navigator.sendBeacon(u))return;var i=new Image();i.src=u;}catch(e){}})();</script>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
-<title>SPF vs DKIM vs DMARC: which one do you need? — Inboxproof</title>
+<title>SPF vs DKIM vs DMARC: which one do you need? | Inboxproof</title>
 <meta name="description" content="What each email authentication record proves, what breaks when one is missing, and the order to fix them in, with the exact TXT records to start from.">
 <meta property="og:title" content="SPF vs DKIM vs DMARC: which one do you need?">
 <meta property="og:description" content="What each record proves, what breaks when one is missing, and the order to fix them in.">
@@ -15,6 +16,12 @@
 <script type="application/ld+json">
 {"@context":"https://schema.org","@type":"Article","headline":"SPF vs DKIM vs DMARC: which one do you actually need?","description":"What each email authentication record proves, what breaks when one is missing, and the order to fix them in.","author":{"@type":"Organization","name":"Inboxproof"},"publisher":{"@type":"Organization","name":"Inboxproof"}}
 </script>
+<link rel="canonical" href="https://inboxproof.email/blog/spf-dkim-dmarc">
+<meta property="og:url" content="https://inboxproof.email/blog/spf-dkim-dmarc">
+<meta property="og:image" content="https://inboxproof.email/og.png">
+<meta property="og:image:width" content="1200">
+<meta property="og:image:height" content="630">
+<meta name="twitter:image" content="https://inboxproof.email/og.png">
 </head>
 <body>
 <nav class="nav">
@@ -51,9 +58,9 @@
     <p style="margin:0 0 12px"><b>No DMARC:</b> even with perfect SPF and DKIM, there's no policy telling receivers to act on failures, and no report stream telling you when someone else starts sending as you. This is the most common gap, because it's the record nobody sets up until they hear about it.</p>
 
     <h2 style="font-size:22px;margin:34px 0 12px">The order to fix them</h2>
-    <p style="margin:0 0 14px">1. <b>SPF first</b> — it's one TXT record and it's the foundation.</p>
-    <p style="margin:0 0 14px">2. <b>DKIM second</b> — confirm your provider's selector and key are published.</p>
-    <p style="margin:0 0 14px">3. <b>DMARC last</b> — publishing a policy before the other two work just gives you a way to reject your own mail.</p>
+    <p style="margin:0 0 14px">1. <b>SPF first</b>. It's one TXT record and it's the foundation.</p>
+    <p style="margin:0 0 14px">2. <b>DKIM second</b>. Confirm your provider's selector and key are published.</p>
+    <p style="margin:0 0 14px">3. <b>DMARC last</b>. Publishing a policy before the other two work just gives you a way to reject your own mail.</p>
 
     <p style="opacity:.6;font-size:13px;margin-top:28px">Related: <a href="/blog/dmarc">What is DMARC?</a> · <a href="/blog/dmarc-policies">p=none vs quarantine vs reject</a> · <a href="/blog/email-not-landing-gmail">Why email misses Gmail's inbox</a> · <a href="/blog/spf-not-working">SPF record not working?</a> · <a href="/blog/google-workspace-spf-dkim-dmarc">SPF, DKIM, DMARC for Google Workspace</a> · <a href="/blog/dkim-not-signing">DKIM not signing emails?</a> · <a href="/blog/email-authentication-startups">Email auth for startups</a></p>
 

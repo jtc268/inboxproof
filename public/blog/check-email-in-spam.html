@@ -1,0 +1,93 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Check If Your Email Is in Spam: 5 Ways to Find Out</title>
+  <meta name="description" content="Your email might be landing in spam without you knowing. Here are 5 ways to check, from DNS record lookups to free deliverability tests. No signup required.">
+  <meta property="og:title" content="Check If Your Email Is in Spam: 5 Ways to Find Out">
+  <meta property="og:description" content="Your email might be landing in spam without you knowing. Here are 5 ways to check, from DNS record lookups to free deliverability tests.">
+  <meta property="og:type" content="website">
+  <meta property="og:url" content="https://inboxproof.email/blog/check-email-in-spam">
+  <link rel="canonical" href="https://inboxproof.email/blog/check-email-in-spam">
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; line-height: 1.6; color: #1a1a2e; background: #fff; }
+    .container { max-width: 720px; margin: 0 auto; padding: 2rem 1.5rem; }
+    h1 { font-size: 2rem; margin-bottom: 1rem; line-height: 1.3; }
+    h2 { font-size: 1.4rem; margin: 2rem 0 0.75rem; }
+    p { margin-bottom: 1rem; }
+    ul, ol { margin: 0 0 1rem 1.5rem; }
+    li { margin-bottom: 0.5rem; }
+    code { background: #f0f0f5; padding: 0.15rem 0.4rem; border-radius: 4px; font-size: 0.9em; font-family: 'SF Mono', Monaco, monospace; }
+    pre { background: #1a1a2e; color: #e0e0e0; padding: 1rem; border-radius: 8px; overflow-x: auto; margin: 1rem 0; }
+    pre code { background: none; padding: 0; color: inherit; }
+    .cta-box { background: #f0f7ff; border: 1px solid #c3d9f7; border-radius: 12px; padding: 1.5rem; margin: 2rem 0; text-align: center; }
+    .cta-box h3 { margin-bottom: 0.5rem; }
+    .btn { display: inline-block; background: #2563eb; color: #fff; padding: 0.75rem 1.5rem; border-radius: 8px; text-decoration: none; font-weight: 600; margin-top: 0.5rem; }
+    .btn:hover { background: #1d4ed8; }
+    .related { margin-top: 2rem; padding-top: 1.5rem; border-top: 1px solid #e5e5e5; }
+    .related h3 { margin-bottom: 0.75rem; }
+    .related ul { list-style: none; margin: 0; }
+    .related li { margin-bottom: 0.5rem; }
+    .related a { color: #2563eb; text-decoration: none; }
+    .related a:hover { text-decoration: underline; }
+  </style>
+<meta property="og:image" content="https://inboxproof.email/og.png">
+<meta property="og:image:width" content="1200">
+<meta property="og:image:height" content="630">
+<meta name="twitter:image" content="https://inboxproof.email/og.png">
+<script type="application/ld+json">{"@context":"https://schema.org","@type":"Article","headline":"Check If Your Email Is in Spam: 5 Ways to Find Out","description":"Your email might be landing in spam without you knowing. Here are 5 ways to check, from DNS record lookups to free deliverability tests. No signup required.","author":{"@type":"Organization","name":"Inboxproof"},"publisher":{"@type":"Organization","name":"Inboxproof"},"mainEntityOfPage":"https://inboxproof.email/blog/check-email-in-spam"}</script>
+</head>
+<body>
+  <div class="container">
+    <h1>Check If Your Email Is in Spam: 5 Ways to Find Out</h1>
+    <p>Your email might be landing in the spam folder without you knowing. The SMTP server accepts the message, your dashboard shows "delivered," and you assume the recipient saw it. But the recipient's mail server may have quietly moved it to spam, and you won't know until your open rates tank or a customer complains.</p>
+    <p>Here are 5 ways to check if your email is in spam, from quick DNS lookups to a full deliverability test.</p>
+
+    <div class="cta-box">
+      <h3>Run a Free Deliverability Test</h3>
+      <p>Check all six records on your domain in about 30 seconds. No signup, no credit card. Get a spam-risk score and the exact record to fix.</p>
+      <a class="btn" href="/">Run My Free Test</a>
+    </div>
+
+    <h2>1. Check Your DNS Records</h2>
+    <p>The most common reason email lands in spam is a missing or misconfigured DNS record. You can check your SPF, DKIM, and DMARC records manually using <code>dig</code> or <code>nslookup</code>.</p>
+    <pre><code>dig TXT yourdomain.com
+dig TXT _dmarc.yourdomain.com</code></pre>
+    <p>If your SPF record is missing, or your DMARC record has <code>p=none</code>, your email is at risk of landing in spam. But DNS lookups only tell you if the records exist. They don't validate the syntax, count the DNS lookups, or flag common mistakes.</p>
+
+    <h2>2. Check Your IP Reputation</h2>
+    <p>If your IP address is on a blocklist, your email will be rejected or marked as spam regardless of your DNS configuration. You can check your IP reputation on sites like Spamhaus, Barracuda, or Spamhaus Block List (SBL).</p>
+    <p>If your IP is on a blocklist, you need to delist it before your email will start landing in the inbox. Most blocklists have a delisting process, but it can take days or weeks.</p>
+
+    <h2>3. Send a Test Email to a Spam Checker</h2>
+    <p>Services like Mail Tester, GlockApps, and InboxMonster let you send a test email to their server and get a score. They check your SPF, DKIM, DMARC, TLS, and IP reputation, and give you a spam-risk score.</p>
+    <p>The problem is that these services only check a single email. They don't look at your domain's overall configuration, and they don't tell you which record to fix.</p>
+
+    <h2>4. Check Your Open Rates</h2>
+    <p>If your open rates suddenly drop, your email might be landing in spam. But open rates are a lagging indicator. By the time you notice a drop, you've already sent hundreds of emails to the spam folder.</p>
+    <p>Open rates are also affected by many factors besides spam placement, so they're not a reliable signal on their own.</p>
+
+    <h2>5. Run a Full Deliverability Test</h2>
+    <p>A full deliverability test checks all six records on your domain: SPF, DKIM, DMARC, TLS, PTR, and IP reputation. It validates each one, gives you a spam-risk score, and tells you exactly which record to fix.</p>
+    <p>This is the most reliable way to check if your email is in spam. It's also the fastest. A full deliverability test takes about 30 seconds, and it tells you exactly what to fix.</p>
+
+    <div class="cta-box">
+      <h3>Find Out If Your Email Is in Spam</h3>
+      <p>Run a free deliverability test on your domain in about 30 seconds. Get a spam-risk score and the exact record to fix. No signup required.</p>
+      <a class="btn" href="/">Run My Free Test</a>
+    </div>
+
+    <div class="related">
+      <h3>Related Guides</h3>
+      <ul>
+        <li><a href="/blog/spf-record-checker">SPF Record Checker: Verify Your Domain's SPF in 30 Seconds</a></li>
+        <li><a href="/blog/email-deliverability-test">Email Deliverability Test: Check Your Domain in 30 Seconds</a></li>
+        <li><a href="/blog/inbox-placement-test">Inbox Placement Test: Check Where Your Email Lands</a></li>
+        <li><a href="/blog/why-email-goes-to-spam">Why Your Email Goes to Spam</a></li>
+      </ul>
+    </div>
+  </div>
+</body>
+</html>

@@ -2,3 +2,5 @@ User-agent: *
 Allow: /
 Disallow: /api/
 Disallow: /pro
+
+Sitemap: https://inboxproof.email/sitemap.xml

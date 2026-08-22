@@ -1,0 +1,76 @@
+﻿<!doctype html>
+<html lang="en">
+<head>
+<script>(function(){try{var p=location.pathname||"/";var r=(document.referrer||"").split("/")[2]||"direct";var u="/api/track?page="+encodeURIComponent(p)+"&ref="+encodeURIComponent(r);if(navigator.sendBeacon&&navigator.sendBeacon(u))return;var i=new Image();i.src=u;}catch(e){}})();</script>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>What an email deliverability audit tool actually checks (and what to look for) | Inboxproof</title>
+<meta name="description" content="What a real email deliverability audit tool checks: MX, SPF, DKIM, DMARC, TLS, PTR, IP reputation. What to look for in a tool, and how to tell a real audit from a marketing page.">
+<meta property="og:title" content="What an email deliverability audit tool actually checks">
+<meta property="og:description" content="The records and reputation signals a real audit reads, what to look for in a tool, and how to tell a real audit from a marketing page.">
+<meta property="og:type" content="article">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="/styles.css">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' rx='8' fill='%236366f1'/%3E%3Cpath d='M8 16h13M15 10l6 6-6 6' stroke='white' stroke-width='3' fill='none' stroke='linecap='round' stroke='linejoin='round'/%3E%3C/svg%3E">
+<script type="application/ld+json">
+{"@context":"https://schema.org","@type":"Article","headline":"What an email deliverability audit tool actually checks","description":"What a real email deliverability audit tool checks: MX, SPF, DKIM, DMARC, TLS, PTR, IP reputation. What to look for in a tool, and how to tell a real audit from a marketing page.","author":{"@type":"Organization","name":"Inboxproof"},"publisher":{"@type":"Organization","name":"Inboxproof"}}
+</script>
+<link rel="canonical" href="https://inboxproof.email/blog/email-deliverability-audit-tool">
+<meta property="og:url" content="https://inboxproof.email/blog/email-deliverability-audit-tool">
+<meta property="og:image" content="https://inboxproof.email/og.png">
+<meta property="og:image:width" content="1200">
+<meta property="og:image:height" content="630">
+<meta name="twitter:image" content="https://inboxproof.email/og.png">
+</head>
+<body>
+<nav class="nav">
+  <div class="container">
+    <a class="logo" href="/">
+      <span class="mark"><svg viewBox="0 0 24 24" fill="none"><path d="M4 12h11M11 7l5 5-5 5" stroke="#fff" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"/></svg></span>
+      Inboxproof
+    </a>
+    <div class="nav-links"><a href="/blog">All guides</a><a href="/">Run a free audit</a></div>
+  </div>
+</nav>
+
+<div class="container" style="max-width:760px;padding:60px 20px 80px">
+  <div class="kicker">Guide</div>
+  <h1 style="font-size:34px;margin:10px 0 24px">What an email deliverability audit tool actually checks (and what to look for)</h1>
+  <div style="opacity:.85;line-height:1.75;font-size:15.5px">
+    <p>A deliverability audit tool reads the same public signals the receiving mailbox uses to decide whether your email lands in the inbox or the spam folder. The difference between a real audit and a marketing page is whether it actually queries those signals, shows you the underlying records, and tells you the exact fix. Here is what a real audit checks, and what to look for in a tool.</p>
+
+    <h2 style="font-size:22px;margin:34px 0 12px">The seven checks that decide delivery</h2>
+    <p>A useful audit covers the records and reputation signals that actually gate inbox placement:</p>
+    <ul style="line-height:1.9">
+      <li><b>MX</b>: does the domain even receive mail, and do the mail servers resolve to real IPs with matching reverse DNS?</li>
+      <li><b>SPF</b>: which servers are allowed to send, and is the record within the 10-lookup limit with a proper <code>-all</code> or <code>~all</code>?</li>
+      <li><b>DKIM</b>: is there a signing key, is it a strong length (2048+), and does the selector actually resolve?</li>
+      <li><b>DMARC</b>: is there a policy, does it align with SPF/DKIM, and is it set to <code>rua</code> so you get reports?</li>
+      <li><b>TLS / STARTTLS</b>: does your mail server offer a modern TLS version, or is it falling back to a cipher a receiver will flag?</li>
+      <li><b>PTR / reverse DNS</b>: does the sending IP's reverse DNS match the hostname, or is it a bare IP that looks like a spam source?</li>
+      <li><b>IP reputation</b>: is the sending IP on any blocklist, and does it have a clean sending history?</li>
+    </ul>
+    <p>Each of these is a live lookup. A real tool runs them against your domain right now, not from a cached snapshot, and shows you the actual record value so you can see exactly what is broken.</p>
+
+    <h2 style="font-size:22px;margin:34px 0 12px">It must show the record, not just the score</h2>
+    <p>The most common failure mode of a deliverability tool is a black-box score. You get a number, but when something breaks you cannot tell which record is the problem. Look for a tool that shows the exact TXT value, flags the specific issue (a missing <code>-all</code>, a weak DKIM key, an SPF lookup over the limit, a PTR that does not match), and hands you the fix to paste into your DNS. The <a href="/spf-checker">SPF checker</a>, <a href="/dkim-checker">DKIM checker</a>, and <a href="/dmarc-checker">DMARC checker</a> do exactly this: they show the record and point at the problem.</p>
+
+    <h2 style="font-size:22px;margin:34px 0 12px">It must open a real SMTP connection</h2>
+    <p>DNS records are only half the story. A receiving mailbox also checks whether your mail server actually speaks TLS and whether the IP has a clean reputation. A real audit opens a real SMTP connection to your MX, checks the TLS version and cipher, and looks up the IP on the major blocklists. If a tool only reads DNS and never talks to your mail server, it is missing the half of the decision that happens at connection time.</p>
+
+    <h2 style="font-size:22px;margin:34px 0 12px">It must keep checking, not just check once</h2>
+    <p>Records break. A new <code>include:</code> gets added to your SPF, a DKIM key rotates, a provider changes your sending IP, a certificate expires. A one-time audit tells you where you are today; it does not tell you when you break. The tools worth paying for re-run the full audit on a schedule and alert you the moment a record changes or a check flips from pass to fail. That is the difference between catching a deliverability drop the day it happens and finding out from a customer who says their emails are going to spam.</p>
+
+    <h2 style="font-size:22px;margin:34px 0 12px">It must be read-only and account-free</h2>
+    <p>The best audit tools are the ones you can run in 30 seconds with no setup. They query your public DNS read-only and open a real SMTP connection, the same way Gmail and Microsoft do. No account, no DNS changes, nothing to install. If a tool requires you to forward an XML file, add a CNAME, or create an account before it will show you a single result, it is adding friction to the one action that should be frictionless.</p>
+
+    <h2 style="font-size:22px;margin:34px 0 12px">What to do with the result</h2>
+    <p>Run the audit on your sending domain. Read the score, then read each failed check and apply the exact record the tool hands you. Re-run the audit to confirm the score climbed. Then set up monitoring so the next time a record breaks, you find out before your customers do. <a href="/">Run a free audit on your domain</a> and get the score, the exact records to fix, and the option to monitor them daily.</p>
+
+    <p style="opacity:.6;font-size:13px;margin-top:28px">Related: <a href="/blog/email-deliverability-for-developers">Deliverability for developers</a> · <a href="/blog/email-deliverability-monitoring">Deliverability monitoring</a> · <a href="/blog/spf-dkim-dmarc">SPF vs DKIM vs DMARC</a> · <a href="/blog/deliverability-score">What is a good deliverability score?</a> · <a href="/blog/email-in-spam">Why email lands in spam</a></p>
+  </div>
+</div>
+
+</body>
+</html>

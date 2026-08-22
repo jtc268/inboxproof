@@ -1,0 +1,83 @@
+﻿<!doctype html>
+<html lang="en">
+<head>
+<script>(function(){try{var p=location.pathname||"/";var r=(document.referrer||"").split("/")[2]||"direct";var u="/api/track?page="+encodeURIComponent(p)+"&ref="+encodeURIComponent(r);if(navigator.sendBeacon&&navigator.sendBeacon(u))return;var i=new Image();i.src=u;}catch(e){}})();</script>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Cold email infrastructure: domains, IPs, warm-up and rotation that survive 2026 | Inboxproof</title>
+<meta name="description" content="The cold email infrastructure that keeps your domains alive: how many sending domains you need, how to authenticate each one, warm-up, rotation, and the monitoring that catches a broken record before it burns a domain.">
+<meta property="og:title" content="Cold email infrastructure that keeps your domains alive">
+<meta property="og:description" content="How many sending domains you need, how to authenticate each one, warm-up, rotation, and the monitoring that catches a broken record before it burns a domain.">
+<meta property="og:type" content="article">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="/styles.css">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' rx='8' fill='%236366f1'/%3E%3Cpath d='M8 16h13M15 10l6 6-6 6' stroke='white' stroke-width='3' fill='none' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E">
+<script type="application/ld+json">
+{"@context":"https://schema.org","@type":"Article","headline":"Cold email infrastructure that keeps your domains alive","description":"How many sending domains you need, how to authenticate each one, warm-up, rotation, and the monitoring that catches a broken record before it burns a domain.","author":{"@type":"Organization","name":"Inboxproof"},"publisher":{"@type":"Organization","name":"Inboxproof"}}
+</script>
+<link rel="canonical" href="https://inboxproof.email/blog/cold-email-infrastructure">
+<meta property="og:url" content="https://inboxproof.email/blog/cold-email-infrastructure">
+<meta property="og:image" content="https://inboxproof.email/og.png">
+<meta property="og:image:width" content="1200">
+<meta property="og:image:height" content="630">
+<meta name="twitter:image" content="https://inboxproof.email/og.png">
+</head>
+<body>
+<nav class="nav">
+  <div class="container">
+    <a class="logo" href="/">
+      <span class="mark"><svg viewBox="0 0 24 24" fill="none"><path d="M4 12h11M11 7l5 5-5 5" stroke="#fff" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"/></svg></span>
+      Inboxproof
+    </a>
+    <div class="nav-links"><a href="/blog">All guides</a><a href="/">Run a free audit</a></div>
+  </div>
+</nav>
+
+<div class="container" style="max-width:760px;padding:60px 20px 80px">
+  <div class="kicker">Guide</div>
+  <h1 style="font-size:34px;margin:10px 0 24px">Cold email infrastructure that keeps your domains alive</h1>
+  <div style="opacity:.85;line-height:1.75;font-size:15.5px">
+    <p>Cold email is a reputation game. You are sending to people who do not expect your email, so every provider weighs your sending domain and IP against a baseline of "does this look like a real, established sender?" The moment that baseline breaks, your open and reply rates drop and you start landing in spam or getting hard bounces. The people who scale cold email without burning their domains are not sending harder, they are running infrastructure that is authenticated, warmed up, rotated, and watched every day. Here is that infrastructure.</p>
+
+    <h2 style="font-size:22px;margin:34px 0 12px">1. What cold email infrastructure actually is</h2>
+    <p>It is four things working together. Sending domains (your main domain plus dedicated sending subdomains or secondary domains), the IP or ESP that actually delivers from them, a warm-up process that builds reputation before you hit volume, and rotation that spreads sending across domains and mailboxes so no single one takes the whole load. Most "cold email stacks" sell you the tooling. What they do not sell you is the monitoring that tells you a domain quietly broke at 3am, before the next campaign burns it.</p>
+
+    <h2 style="font-size:22px;margin:34px 0 12px">2. How many sending domains do you need</h2>
+    <p>Start with your main domain for low volume, then add dedicated sending subdomains (like mail.yourdomain.com or go.yourdomain.com) for your campaigns. Each subdomain carries its own reputation, so a bad campaign on one does not drag down your main domain. As you scale, add secondary domains and spread sending across them. A common rule of thumb: keep sending volume per domain low enough that you stay well under the volume that triggers spam complaints, and add a new domain before you need to push the current one past that line. The exact number depends on your list size and how fast you warm up, but the principle is always the same: never let one domain carry more than it can safely handle.</p>
+
+    <h2 style="font-size:22px;margin:34px 0 12px">3. Authenticate every sending domain</h2>
+    <p>Every sending domain and subdomain needs SPF, DKIM, and DMARC set up correctly, and they need to stay correct. This is where cold email stacks quietly fail. An SPF record breaks when you switch ESPs and forget to update the include. A DKIM key rotates and the old selector stops signing. A DMARC record that was p=none gets tightened by a provider and now rejects your own mail. Each of these is a silent, compounding failure that shows up as a sudden drop in deliverability with no obvious cause. The fix is not to set these up once and forget them, it is to check them on a schedule and alert the moment one fails. That is the whole job of a deliverability monitor.</p>
+
+    <h2 style="font-size:22px;margin:34px 0 12px">4. Warm up before you send</h2>
+    <p>A fresh domain has no reputation. If you send 500 cold emails from a brand new subdomain on day one, you will land in spam and possibly get blocked. Warm-up means sending a small, growing number of emails to engaged recipients over two to four weeks, so providers see a normal, human-like sending pattern before you scale. Most cold email tools include a warm-up module. The thing they do not tell you is that warm-up only works if the domain is authenticated. Warming up a domain with a broken SPF record teaches providers the wrong thing. Authenticate first, then warm up.</p>
+
+    <h2 style="font-size:22px;margin:34px 0 12px">5. Rotation and IP reputation</h2>
+    <p>Rotation is spreading your sending across domains, subdomains, and mailboxes so no single one is the obvious bottleneck. It also protects you when one domain does get flagged: you pause it, let it cool, and keep sending from the others. IP reputation matters too, especially if you send from your own IP instead of an ESP. A shared IP that other senders have abused will drag your deliverability down no matter how clean your domain is. If you are on a shared IP and your deliverability is inconsistent, that is usually why, and moving to a dedicated IP (or a cleaner ESP pool) is the fix.</p>
+
+    <h2 style="font-size:22px;margin:34px 0 12px">6. The monitoring that keeps domains alive</h2>
+    <p>This is the part most stacks skip. You have multiple sending domains, each with its own SPF, DKIM, DMARC, MX, TLS, and IP reputation. Any one of them can break between campaigns, and the break is invisible until your replies drop. A deliverability monitor re-checks every domain on a schedule and pings you the moment a record fails, expires, or a provider changes your sending IP. For an agency running many client domains, that is the difference between catching a broken SPF record in minutes and finding out from an angry client that their campaign went to spam. It is also the difference between a domain you recover and one you have to abandon.</p>
+
+    <h2 style="font-size:22px;margin:34px 0 12px">Start with a free check on one domain</h2>
+    <p>Run a free audit on one of your sending domains now and see the seven-check score plus the exact records to fix: <a href="/cold-email-checker">cold email deliverability checker</a>. When you are ready to watch every sending domain and client domain on a schedule, that is what the <a href="/#pricing">Agency tier</a> is for, up to 25 domains with daily re-checks and alerts.</p>
+
+    <div style="margin-top:40px;padding:20px;border:1px solid rgba(99,102,241,.25);border-radius:12px;background:rgba(99,102,241,.06)">
+      <div style="font-weight:700;font-size:15px;margin-bottom:10px">Related guides</div>
+      <div style="opacity:.8;font-size:14px;line-height:2">
+        <a href="/blog/cold-email-domains">Cold email domains: how many you need</a><br>
+        <a href="/blog/cold-email-warm-up">Cold email warm-up: the right way</a><br>
+        <a href="/blog/cold-email-deliverability">Cold email deliverability: how to stay out of spam</a><br>
+        <a href="/blog/why-email-goes-to-spam">Why email goes to spam</a>
+      </div>
+    </div>
+  </div>
+</div>
+
+<footer>
+  <div class="container">
+    <span>© 2026 Inboxproof, Inc.</span>
+    <span><a href="/blog">All guides</a> · <a href="/">Home</a> · <a href="/privacy">Privacy</a> · <a href="https://github.com/jtc268/inboxproof" target="_blank" rel="noopener">GitHub</a></span>
+  </div>
+</footer>
+</body>
+</html>

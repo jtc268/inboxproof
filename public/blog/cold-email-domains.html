@@ -1,0 +1,105 @@
+﻿<!doctype html>
+<html lang="en">
+<head>
+<script>(function(){try{var p=location.pathname||"/";var r=(document.referrer||"").split("/")[2]||"direct";var u="/api/track?page="+encodeURIComponent(p)+"&ref="+encodeURIComponent(r);if(navigator.sendBeacon&&navigator.sendBeacon(u))return;var i=new Image();i.src=u;}catch(e){}})();</script>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Cold email domains: how many you need, how to rotate them, and how to keep them out of spam | Inboxproof</title>
+<meta name="description" content="How many domains a cold email program needs, how to set each one up, when to rotate, and how to keep them out of spam. The setup, the math, and the monitoring.">
+<meta property="og:title" content="Cold email domains: how many you need, how to rotate them, and how to keep them out of spam">
+<meta property="og:description" content="The domain math for cold email, how to set each one up, when to rotate, and how to keep them out of spam.">
+<meta property="og:type" content="article">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="/styles.css">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' rx='8' fill='%236366f1'/%3E%3Cpath d='M8 16h13M15 10l6 6-6 6' stroke='white' stroke-width='3' fill='none' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E">
+<script type="application/ld+json">
+{"@context":"https://schema.org","@type":"Article","headline":"Cold email domains: how many you need, how to rotate them, and how to keep them out of spam","description":"How many domains a cold email program needs, how to set each one up, when to rotate, and how to keep them out of spam. The setup, the math, and the monitoring.","author":{"@type":"Organization","name":"Inboxproof"},"publisher":{"@type":"Organization","name":"Inboxproof"}}
+</script>
+<link rel="canonical" href="https://inboxproof.email/blog/cold-email-domains">
+<meta property="og:url" content="https://inboxproof.email/blog/cold-email-domains">
+<meta property="og:image" content="https://inboxproof.email/og.png">
+<meta property="og:image:width" content="1200">
+<meta property="og:image:height" content="630">
+<meta name="twitter:image" content="https://inboxproof.email/og.png">
+</head>
+<body>
+<nav class="nav">
+  <div class="container">
+    <a class="logo" href="/">
+      <span class="mark"><svg viewBox="0 0 24 24" fill="none"><path d="M4 12h11M11 7l5 5-5 5" stroke="#fff" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"/></svg></span>
+      Inboxproof
+    </a>
+    <div class="nav-links"><a href="/blog">All guides</a><a href="/">Run a free audit</a></div>
+  </div>
+</nav>
+
+<div class="container" style="max-width:760px;padding:60px 20px 80px">
+  <div class="kicker">Guide</div>
+  <h1 style="font-size:34px;margin:10px 0 24px">Cold email domains: how many you need, how to rotate them, and how to keep them out of spam</h1>
+  <div style="opacity:.85;line-height:1.75;font-size:15.5px">
+    <p>Cold email runs on a pool of domains, not one. Your main domain is for your brand, your site, and your real customers. Cold email is a separate workload with separate domains, because the sending behavior that works for cold email (high volume, low engagement, purchased lists) is exactly what gets a domain flagged if it is on your brand domain. This guide covers the domain math, how to set each one up, when to rotate, and how to keep the pool out of spam.</p>
+
+    <h2 style="font-size:22px;margin:34px 0 12px">How many domains you need</h2>
+    <p>The number comes from three constraints: the volume you want to send, the warm-up time each domain needs, and the rotation cycle. A domain that is not warmed up cannot take full volume, and a domain that is warmed up has a limited useful life before its reputation degrades.</p>
+    <ul style="line-height:1.85">
+      <li><b>Warm-up time.</b> A fresh domain needs roughly 2 to 4 weeks of warm-up before it can take meaningful volume. During warm-up you send small, rising amounts to real, engaged recipients.</li>
+      <li><b>Volume per domain.</b> A warmed-up domain can typically take on the order of 30 to 50 cold emails per day per mailbox, with a few mailboxes per domain. Go higher and the engagement rate drops and the spam risk climbs.</li>
+      <li><b>Useful life.</b> A cold email domain degrades over time. Most teams rotate a domain out every few months, before the reputation is too far gone to recover.</li>
+    </ul>
+    <p>The math: divide your target daily volume by the per-domain daily cap, then add a buffer for warm-up and rotation. If you want to send 500 cold emails a day at 40 per domain, that is about 12 to 13 active domains, plus a few more warming up or in rotation. Teams that run less volume need proportionally fewer.</p>
+
+    <h2 style="font-size:22px;margin:34px 0 12px">How to set up each domain</h2>
+    <p>Every domain in the pool needs the same authentication and reputation setup, or it will not send. This is the part that is easy to get wrong and hard to debug later.</p>
+    <ul style="line-height:1.85">
+      <li><b>SPF.</b> The domain's SPF record must list the sending IP or the ESP that sends for it. Keep the record under the 10-DNS-lookup limit. <a href="/spf-checker">Check the SPF</a>, or <a href="/spf-generator">generate the record</a>.</li>
+      <li><b>DKIM.</b> The selector your provider uses must have a matching DNS record, and the key must be 2048-bit. <a href="/dkim-checker">Check the DKIM</a>.</li>
+      <li><b>DMARC.</b> Start at <code>p=none</code> with reporting, then tighten it as the domain proves itself. <a href="/dmarc-checker">Check the DMARC</a>.</li>
+      <li><b>PTR.</b> The sending IP must have a reverse DNS record that matches the forward record. Most ESPs handle this, but if you send from your own IP, set it.</li>
+      <li><b>IP reputation.</b> The sending IP must not be on a blocklist, and it should not be shared with other senders who can drag it down. <a href="/is-my-ip-blacklisted">Check the IP</a>.</li>
+    </ul>
+    <p>The fastest way to verify all of this on a new domain is the <a href="/dmarc-checker">free audit</a>, which scores the whole stack and tells you the exact record to add before you start sending.</p>
+
+    <h2 style="font-size:22px;margin:34px 0 12px">When and how to rotate</h2>
+    <p>Rotation is not optional. A cold email domain that is not rotated will eventually get flagged, and recovering a flagged domain is slower than starting a new one. The goal is to retire a domain while it is still healthy, not after it is already in trouble.</p>
+    <ul style="line-height:1.85">
+      <li><b>Watch the engagement rate.</b> A steady drop in open and reply rate is the first sign the domain is degrading. If it falls below your baseline for a week or two, start the next rotation.</li>
+      <li><b>Watch the spam complaints.</b> Any spike in complaints is a hard signal to rotate out, not wait.</li>
+      <li><b>Hand off the volume.</b> Move the volume to a warmed-up domain before you retire the old one. Do not let the old domain carry the volume while the new one is still warming up.</li>
+      <li><b>Keep a warm bench.</b> Always have at least one domain in warm-up, ready to take over. If you run out of warm domains, you have to stop sending or risk the active ones.</li>
+    </ul>
+
+    <h2 style="font-size:22px;margin:34px 0 12px">How to keep the pool out of spam</h2>
+    <p>The pool is only as strong as its weakest domain. One flagged domain can hurt the whole program if the domains share an IP or if the rotation is sloppy.</p>
+    <ul style="line-height:1.85">
+      <li><b>Warm up every domain before it takes volume.</b> No exceptions. A domain that skips warm-up starts with a low reputation and gets filtered. See the <a href="/cold-email-warm-up">warm-up guide</a>.</li>
+      <li><b>Keep the list clean.</b> Bounces and complaints poison the domain. Prune the list and honor unsubscribes the same day. <a href="/cold-email-bounce-rate">What a bad bounce rate means</a>.</li>
+      <li><b>Isolate the sending IP.</b> If you can, send from an IP that is not shared with other senders. A shared IP means other senders can drag your reputation down.</li>
+      <li><b>Check the domains and IPs regularly.</b> A blocklist hit or a broken record will not announce itself. <a href="/is-my-domain-blacklisted">Check the domain</a> and <a href="/is-my-ip-blacklisted">check the IP</a> on a schedule.</li>
+    </ul>
+
+    <h2 style="font-size:22px;margin:34px 0 12px">How to monitor the pool</h2>
+    <p>A pool of domains is a pool of moving parts. A record breaks on one domain, an IP gets listed, a rotation goes wrong, and you do not notice until the engagement rate drops. The fix is to check every domain in the pool on a schedule, not just the ones you remember.</p>
+    <p>That is what the <a href="/#pricing" style="font-weight:600">Agency plan</a> is for: it monitors up to 25 domains, checks the full stack on each one daily, and alerts you the moment a record breaks or an IP gets listed. For a pool of cold email domains, that is the difference between catching a problem early and finding out from your engagement rate.</p>
+    <p style="margin-top:28px;padding:18px;background:#f4f4ff;border-radius:12px">Run the <a href="/dmarc-checker" style="font-weight:600">free audit</a> on your first domain now. It scores the whole stack and points at the exact record to fix first. Then <a href="/#pricing" style="font-weight:600">see the Agency plan →</a></p>
+
+    <div style="margin-top:24px;padding:20px;border:1px solid rgba(99,102,241,.25);border-radius:12px;background:rgba(99,102,241,.06)">
+      <div style="font-weight:700;font-size:15px;margin-bottom:10px">Related guides</div>
+      <div style="opacity:.8;font-size:14px;line-height:2">
+        <a href="/blog/cold-email-infrastructure">Cold email infrastructure that keeps domains alive</a><br>
+        <a href="/blog/cold-email-warm-up">Cold email warm-up: the right way</a><br>
+        <a href="/blog/cold-email-deliverability">Cold email deliverability: how to stay out of spam</a><br>
+        <a href="/blog/why-email-goes-to-spam">Why email goes to spam</a>
+      </div>
+    </div>
+  </div>
+</div>
+
+<footer>
+  <div class="container">
+    <span>© 2026 Inboxproof, Inc.</span>
+    <span><a href="/blog">All guides</a> · <a href="/">Home</a> · <a href="/privacy">Privacy</a> · <a href="https://github.com/jtc268/inboxproof" target="_blank" rel="noopener">GitHub</a></span>
+  </div>
+</footer>
+</body>
+</html>

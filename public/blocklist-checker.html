@@ -1,11 +1,12 @@
 <!doctype html>
 <html lang="en">
 <head>
+<script>(function(){try{var p=location.pathname||"/";var r=(document.referrer||"").split("/")[2]||"direct";var u="/api/track?page="+encodeURIComponent(p)+"&ref="+encodeURIComponent(r);if(navigator.sendBeacon&&navigator.sendBeacon(u))return;var i=new Image();i.src=u;}catch(e){}})();</script>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
-<title>Free IP Blocklist Checker — Is Your IP Blacklisted? (Spamhaus, SpamCop &amp; 7 more)</title>
-<meta name="description" content="Check any IPv4 address against 9 major DNS blocklists — Spamhaus SBL/PBL/XBL, SpamCop, Barracuda, CBL, UCEPROTECT and SORBS — in seconds. See exactly which lists flag your sending IP. Free, no signup.">
-<meta property="og:title" content="Free IP Blocklist Checker — Inboxproof">
+<title>Free IP Blocklist Checker | Is Your IP Blacklisted? (Spamhaus, SpamCop &amp; 7 more)</title>
+<meta name="description" content="Check any IPv4 address against 9 major DNS blocklists, Spamhaus SBL/PBL/XBL, SpamCop, Barracuda, CBL, UCEPROTECT and SORBS, in seconds. See exactly which lists flag your sending IP. Free, no signup.">
+<meta property="og:title" content="Free IP Blocklist Checker | Inboxproof">
 <meta property="og:description" content="Find out if your IP is on a blocklist (Spamhaus, SpamCop, Barracuda and more). Free, no signup.">
 <meta property="og:type" content="website">
 <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -20,7 +21,7 @@
  {"@type":"Question","name":"What is an IP blocklist (RBL)?","acceptedAnswer":{"@type":"Answer","text":"A blocklist, or real-time blackhole list (RBL), is a DNS zone that lists IP addresses known to send spam. Mail receivers query these lists and reject or mark as spam any mail coming from a listed IP. Being on one is one of the fastest ways to lose deliverability."}},
  {"@type":"Question","name":"Which blocklists does this checker test?","acceptedAnswer":{"@type":"Answer","text":"It queries 9 widely used DNS blocklists: Spamhaus SBL, PBL and XBL, SpamCop, Barracuda, CBL, UCEPROTECT Level 1 and Level 2, and SORBS. These are among the lists most major mail providers consult."}},
  {"@type":"Question","name":"My IP is on a blocklist. What do I do?","acceptedAnswer":{"@type":"Answer","text":"First confirm the listing is not a false positive. If it is legitimate, request delisting through the blocklist operator (for example check.spamhaus.org) and fix the underlying issue, such as an open relay, compromised account, or a shared IP with a spammer. If you cannot delist quickly, move sending to a clean IP or a reputable email service provider."}},
- {"@type":"Question","name":"Is being on a blocklist the same as being blacklisted by Gmail?","acceptedAnswer":{"@type":"Answer","text":"No. Blocklists are third-party reputation lists. Gmail and Microsoft maintain their own internal reputation systems on top of them. A clean blocklist result is necessary but not sufficient for good deliverability — SPF, DKIM and DMARC also matter."}},
+ {"@type":"Question","name":"Is being on a blocklist the same as being blacklisted by Gmail?","acceptedAnswer":{"@type":"Answer","text":"No. Blocklists are third-party reputation lists. Gmail and Microsoft maintain their own internal reputation systems on top of them. A clean blocklist result is necessary but not sufficient for good deliverability, SPF, DKIM and DMARC also matter."}},
  {"@type":"Question","name":"Is this blocklist checker free?","acceptedAnswer":{"@type":"Answer","text":"Yes. The IP blocklist lookup is free and requires no signup. You can optionally add an email to run and save the full deliverability audit, which adds SPF, DKIM, DMARC, TLS, reverse DNS and blocklist checks."}}
 ]}
 </script>
@@ -60,7 +61,7 @@
     <div id="lead" style="display:none;margin-top:20px">
       <div class="card" style="background:#eef2ff;border-color:#c7d2fe">
         <h3 style="margin-top:0">Check the whole domain, not just the IP</h3>
-        <p style="opacity:.8;margin-bottom:14px">A blocklisted IP is only one failure mode. Add your email and we'll run the full audit — SPF, DKIM, DMARC, TLS, reverse DNS and blocklists — and save a shareable report with your score history. Free, no card.</p>
+        <p style="opacity:.8;margin-bottom:14px">A blocklisted IP is only one failure mode. Add your email and we'll run the full audit, SPF, DKIM, DMARC, TLS, reverse DNS and blocklists, and save a shareable report with your score history. Free, no card.</p>
         <form id="lead-form" style="display:flex;gap:10px;flex-wrap:wrap">
           <input id="lead-email" type="email" placeholder="you@yourdomain.com" style="flex:1;min-width:220px;padding:12px 14px;border-radius:10px;border:1px solid #c7d2fe;font-size:15px" autocomplete="off" required>
           <button class="btn btn-primary" type="submit">Run full audit &amp; save</button>

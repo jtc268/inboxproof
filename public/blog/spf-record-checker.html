@@ -1,0 +1,108 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>SPF Record Checker: Verify Your Domain's SPF in 30 Seconds</title>
+  <meta name="description" content="Check your domain's SPF record for free. See if your SPF is valid, whether it's causing email deliverability problems, and exactly what to fix. No signup required.">
+  <meta property="og:title" content="SPF Record Checker: Verify Your Domain's SPF in 30 Seconds">
+  <meta property="og:description" content="Check your domain's SPF record for free. See if your SPF is valid, whether it's causing email deliverability problems, and exactly what to fix.">
+  <meta property="og:type" content="website">
+  <meta property="og:url" content="https://inboxproof.email/blog/spf-record-checker">
+  <link rel="canonical" href="https://inboxproof.email/blog/spf-record-checker">
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; line-height: 1.6; color: #1a1a2e; background: #fff; }
+    .container { max-width: 720px; margin: 0 auto; padding: 2rem 1.5rem; }
+    h1 { font-size: 2rem; margin-bottom: 1rem; line-height: 1.3; }
+    h2 { font-size: 1.4rem; margin: 2rem 0 0.75rem; }
+    p { margin-bottom: 1rem; }
+    ul, ol { margin: 0 0 1rem 1.5rem; }
+    li { margin-bottom: 0.5rem; }
+    code { background: #f0f0f5; padding: 0.15rem 0.4rem; border-radius: 4px; font-size: 0.9em; font-family: 'SF Mono', Monaco, monospace; }
+    pre { background: #1a1a2e; color: #e0e0e0; padding: 1rem; border-radius: 8px; overflow-x: auto; margin: 1rem 0; }
+    pre code { background: none; padding: 0; color: inherit; }
+    .cta-box { background: #f0f7ff; border: 1px solid #c3d9f7; border-radius: 12px; padding: 1.5rem; margin: 2rem 0; text-align: center; }
+    .cta-box h3 { margin-bottom: 0.5rem; }
+    .btn { display: inline-block; background: #2563eb; color: #fff; padding: 0.75rem 1.5rem; border-radius: 8px; text-decoration: none; font-weight: 600; margin-top: 0.5rem; }
+    .btn:hover { background: #1d4ed8; }
+    .related { margin-top: 2rem; padding-top: 1.5rem; border-top: 1px solid #e5e5e5; }
+    .related h3 { margin-bottom: 0.75rem; }
+    .related ul { list-style: none; margin: 0; }
+    .related li { margin-bottom: 0.5rem; }
+    .related a { color: #2563eb; text-decoration: none; }
+    .related a:hover { text-decoration: underline; }
+  </style>
+<meta property="og:image" content="https://inboxproof.email/og.png">
+<meta property="og:image:width" content="1200">
+<meta property="og:image:height" content="630">
+<meta name="twitter:image" content="https://inboxproof.email/og.png">
+<script type="application/ld+json">{"@context":"https://schema.org","@type":"Article","headline":"SPF Record Checker: Verify Your Domain's SPF in 30 Seconds","description":"Check your domain's SPF record for free. See if your SPF is valid, whether it's causing email deliverability problems, and exactly what to fix. No signup required.","author":{"@type":"Organization","name":"Inboxproof"},"publisher":{"@type":"Organization","name":"Inboxproof"},"mainEntityOfPage":"https://inboxproof.email/blog/spf-record-checker"}</script>
+</head>
+<body>
+  <div class="container">
+    <h1>SPF Record Checker: Verify Your Domain's SPF in 30 Seconds</h1>
+    <p>Your SPF (Sender Policy Framework) record tells the world which mail servers are allowed to send email on behalf of your domain. If it's missing, misconfigured, or too permissive, receiving mail servers may reject your email or flag it as spam.</p>
+    <p>An SPF record checker scans your domain's DNS for the <code>SPF</code> TXT record, validates the syntax, counts the DNS lookups (the limit is 10), and flags common mistakes like multiple SPF records, missing includes, or overly broad <code>all</code> mechanisms.</p>
+
+    <div class="cta-box">
+      <h3>Check Your SPF Record Free</h3>
+      <p>Run a full deliverability audit on your domain in about 30 seconds. No signup, no credit card.</p>
+      <a class="btn" href="/">Run My Free Audit</a>
+    </div>
+
+    <h2>What an SPF Record Looks Like</h2>
+    <p>A valid SPF record is a TXT record in your domain's DNS that starts with <code>v=spf1</code>. Here's a typical example:</p>
+    <pre><code>v=spf1 include:_spf.google.com ~all</code></pre>
+    <p>This says: "The SPF version is 1. Google's mail servers are allowed to send for this domain. Soft-fail everything else."</p>
+
+    <h2>Common SPF Problems</h2>
+    <ol>
+      <li><strong>No SPF record at all.</strong> This is the most common issue. If your domain has no SPF TXT record, receiving servers have no way to verify your sender. They may treat your email as suspicious.</li>
+      <li><strong>Multiple SPF records.</strong> You should only have ONE SPF TXT record per domain. If you have two, the SPF check fails with a <code>permerror</code>, and some receivers will reject your email.</li>
+      <li><strong>Too many DNS lookups.</strong> SPF has a hard limit of 10 DNS lookups. Each <code>include</code>, <code>a</code>, <code>mx</code>, or <code>exists</code> mechanism counts as one lookup. If you exceed 10, the check fails.</li>
+      <li><strong>Missing includes.</strong> If you use a third-party service (like Mailchimp, SendGrid, or Salesforce) to send email, you need to include their SPF mechanism. For example, <code>include:sendgrid.net</code> for SendGrid.</li>
+      <li><strong>Wrong <code>all</code> mechanism.</strong> The <code>all</code> mechanism at the end of your SPF record tells receivers what to do with mail that doesn't match any of the previous mechanisms. <code>-all</code> (hard fail) is the strictest and best for deliverability. <code>~all</code> (soft fail) is more forgiving. <code>+all</code> (hard pass) is dangerous because it tells receivers that ANY server can send for your domain.</li>
+    </ol>
+
+    <h2>How to Check Your SPF Record</h2>
+    <p>You can check your SPF record manually using <code>dig</code> or <code>nslookup</code>:</p>
+    <pre><code>dig TXT yourdomain.com</code></pre>
+    <p>Look for a TXT record that starts with <code>v=spf1</code>. If you don't see one, your domain has no SPF record.</p>
+    <p>But manual checking only tells you if the record exists. It doesn't validate the syntax, count the DNS lookups, or flag common mistakes. That's where a dedicated SPF checker comes in.</p>
+
+    <h2>What a Good SPF Record Includes</h2>
+    <ul>
+      <li><code>v=spf1</code> at the start (the SPF version)</li>
+      <li><code>include:</code> mechanisms for every third-party service you use to send email</li>
+      <li><code>ip4:</code> or <code>ip6:</code> for your own mail servers (if you host your own)</li>
+      <li><code>-all</code> at the end (hard fail, the strictest and best for deliverability)</li>
+    </ul>
+
+    <h2>SPF vs. DKIM vs. DMARC</h2>
+    <p>SPF is one of three core email authentication protocols. The other two are DKIM (DomainKeys Identified Mail) and DMARC (Domain-based Message Authentication, Reporting and Conformance). All three work together to prove that your email is legitimate.</p>
+    <ul>
+      <li><strong>SPF</strong> tells receivers which IP addresses are allowed to send for your domain.</li>
+      <li><strong>DKIM</strong> adds a cryptographic signature to each email, proving it wasn't tampered with in transit.</li>
+      <li><strong>DMARC</strong> tells receivers what to do when SPF or DKIM fails, and gives you a report on who's sending as your domain.</li>
+    </ul>
+    <p>A full deliverability audit checks all three, plus TLS, PTR, and IP reputation.</p>
+
+    <div class="cta-box">
+      <h3>Check All Three at Once</h3>
+      <p>Run a full deliverability audit on your domain: SPF, DKIM, DMARC, TLS, PTR, and IP reputation. Get a spam-risk score and the exact record to fix.</p>
+      <a class="btn" href="/">Run My Free Audit</a>
+    </div>
+
+    <div class="related">
+      <h3>Related Guides</h3>
+      <ul>
+        <li><a href="/blog/email-deliverability-checklist">Email Deliverability Checklist: 12 Points</a></li>
+        <li><a href="/blog/email-deliverability-by-platform">Email Deliverability by Platform</a></li>
+        <li><a href="/blog/email-deliverability-by-audience">Email Deliverability by Audience</a></li>
+        <li><a href="/blog/why-email-goes-to-spam">Why Your Email Goes to Spam</a></li>
+      </ul>
+    </div>
+  </div>
+</body>
+</html>

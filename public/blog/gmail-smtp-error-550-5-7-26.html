@@ -1,6 +1,7 @@
 <!doctype html>
 <html lang="en">
 <head>
+<script>(function(){try{var p=location.pathname||"/";var r=(document.referrer||"").split("/")[2]||"direct";var u="/api/track?page="+encodeURIComponent(p)+"&ref="+encodeURIComponent(r);if(navigator.sendBeacon&&navigator.sendBeacon(u))return;var i=new Image();i.src=u;}catch(e){}})();</script>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
 <title>Gmail SMTP error 550-5.7.26: how to fix it | InboxProof</title>
@@ -16,6 +17,11 @@
 <script type="application/ld+json">
 {"@context":"https://schema.org","@type":"Article","headline":"Gmail SMTP error 550-5.7.26: how to fix it","description":"Why Gmail rejects your email with SMTP error 550-5.7.26, and how to fix it by configuring SPF, DKIM, and DMARC correctly.","author":{"@type":"Organization","name":"InboxProof"},"publisher":{"@type":"Organization","name":"InboxProof"}}
 </script>
+<meta property="og:url" content="https://inboxproof.email/blog/gmail-smtp-error-550-5-7-26">
+<meta property="og:image" content="https://inboxproof.email/og.png">
+<meta property="og:image:width" content="1200">
+<meta property="og:image:height" content="630">
+<meta name="twitter:image" content="https://inboxproof.email/og.png">
 </head>
 <body>
 <nav class="nav">
@@ -42,9 +48,9 @@
   <h2 style="font-size:24px;margin:36px 0 12px">What does 550-5.7.26 mean?</h2>
   <p>This error code means Gmail has rejected your email because it failed one or more authentication checks. Common variants include:</p>
   <ul style="font-size:16px;line-height:1.8">
-    <li><b>550-5.7.26</b> - Message rejected due to SPF failure</li>
-    <li><b>550-5.7.25</b> - Message rejected due to DMARC failure</li>
-    <li><b>550-5.7.1</b> - Message rejected due to DKIM failure</li>
+    <li><b>550-5.7.26</b>: Message rejected due to SPF failure</li>
+    <li><b>550-5.7.25</b>: Message rejected due to DMARC failure</li>
+    <li><b>550-5.7.1</b>: Message rejected due to DKIM failure</li>
   </ul>
   <p>All of these point to the same root cause: your domain is not properly authenticated.</p>
 
