@@ -125,8 +125,7 @@ function trackEvent(name){
     const i = new Image(); i.src = u;
   } catch (e) {}
 }
-$('#refbtn').addEventListener('click', async () => {
-  const email = $('#refemail').value.trim().toLowerCase();
+async function doLookup(email) {
   const msg = $('#refmsg');
   if (!email) { msg.style.color = '#fbbf24'; msg.textContent = 'Enter the email you used for an audit.'; return; }
   msg.style.color = 'var(--muted)'; msg.textContent = 'Looking up your link…';
@@ -147,7 +146,17 @@ $('#refbtn').addEventListener('click', async () => {
     msg.style.color = '#f87171';
     msg.textContent = e.message === 'No account found for this email' ? 'No audit found for that email. Run a free audit first, then come back.' : e.message;
   }
+}
+$('#refbtn').addEventListener('click', () => {
+  doLookup($('#refemail').value.trim().toLowerCase());
 });
+// Auto-fill from a just-run audit (same tab/session): skip the email typing
+(function () {
+  try {
+    const e = sessionStorage.getItem('ip_email');
+    if (e) { $('#refemail').value = e; doLookup(e); }
+  } catch (err) {}
+})();
 $('#refcopy').addEventListener('click', async () => {
   const url = $('#reflink').textContent;
   try {
