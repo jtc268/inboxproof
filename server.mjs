@@ -1,5 +1,6 @@
 // Inboxproof — zero-dependency Node server
 // Real deliverability audit engine + email capture + Pro monitoring.
+// Free-lead follow-up sequence: re-audits captured domains at ~48h / ~96h.
 import http from 'node:http';
 import net from 'node:net';
 import dns from 'node:dns/promises';
