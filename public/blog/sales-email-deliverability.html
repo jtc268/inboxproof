@@ -1,0 +1,110 @@
+<!doctype html>
+<html lang="en">
+<head>
+<script>(function(){try{var p=location.pathname||'/';var r=(document.referrer||'').split('/')[2]||'direct';var q=new URLSearchParams(location.search);var ref=q.get('ref')||'';if(ref){try{localStorage.setItem('ip_ref',ref);}catch(e){}}var u='/api/track?page='+encodeURIComponent(p)+'&ref='+encodeURIComponent(r)+(ref?'&team='+encodeURIComponent(ref):'');if(navigator.sendBeacon&&navigator.sendBeacon(u))return;var i=new Image();i.src=u;}catch(e){}})();</script>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Sales email deliverability: how outbound teams keep landing in the inbox | Inboxproof</title>
+<meta name="description" content="The complete setup for sales and outbound email deliverability: dedicated sending domains, SPF, DKIM and DMARC, warm-up, volume rules and monitoring, written for agencies and sales teams.">
+<meta property="og:title" content="Sales email deliverability: how outbound teams keep landing in the inbox">
+<meta property="og:description" content="Dedicated sending domains, authentication, warm-up, volume rules and monitoring: the full setup for outbound email that lands.">
+<meta property="og:type" content="article">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="/styles.css">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' rx='8' fill='%236366f1'/%3E%3Cpath d='M8 16h13M15 10l6 6-6 6' stroke='white' stroke-width='3' fill='none' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E">
+<script type="application/ld+json">{"@context":"https://schema.org","@type":"Article","headline":"Sales email deliverability: how outbound teams keep landing in the inbox","description":"The complete setup for sales and outbound email deliverability: dedicated sending domains, SPF, DKIM and DMARC, warm-up, volume rules and monitoring.","author":{"@type":"Organization","name":"Inboxproof"},"publisher":{"@type":"Organization","name":"Inboxproof"},"datePublished":"2026-08-22","dateModified":"2026-08-22"}</script>
+<link rel="canonical" href="https://inboxproof.email/blog/sales-email-deliverability">
+<meta property="og:url" content="https://inboxproof.email/blog/sales-email-deliverability">
+<meta property="og:image" content="https://inboxproof.email/og.png">
+<meta property="og:image:width" content="1200">
+<meta property="og:image:height" content="630">
+<meta name="twitter:image" content="https://inboxproof.email/og.png">
+</head>
+<body>
+<nav class="nav">
+  <div class="container">
+    <a class="logo" href="/">
+      <span class="mark"><svg viewBox="0 0 24 24" fill="none"><path d="M4 12h11M11 7l5 5-5 5" stroke="#fff" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"/></svg></span>
+      Inboxproof
+    </a>
+    <div class="nav-links"><a href="/blog">All guides</a><a href="/">Run a free audit</a></div>
+  </div>
+</nav>
+
+<div class="container" style="max-width:760px;padding:60px 20px 80px">
+  <div class="kicker">Guide</div>
+  <h1 style="font-size:34px;margin:10px 0 24px">Sales email deliverability: how outbound teams keep landing in the inbox</h1>
+  <div style="opacity:.85;line-height:1.75;font-size:15.5px">
+    <p>Sales email is the hardest category of email to deliver, and the reason is structural. Your recipient does not know you, did not ask for the message, and will not engage with most of them. Gmail and Microsoft read that pattern and filter accordingly. Transactional email from a brand people bought from gets in. Cold outbound from a domain with no history gets filtered, sometimes rejected outright. The teams that win at outbound are not writing better copy first. They are building sending infrastructure that the filters have no reason to distrust.</p>
+    <p>This guide is the full setup, in the order to do it: the domain structure, the authentication records, the warm-up, the volume and list rules, and the monitoring that tells you when something breaks.</p>
+
+    <h2 style="font-size:22px;margin:32px 0 12px">1. Use a dedicated sending domain, never your main domain</h2>
+    <p>The single most important decision. Your brand domain (acme.com) carries your reputation with every human who reads your email. Outbound sending carries a reputation with the filters, and those two reputations should not be mixed. If your outbound gets your domain on a blocklist, your invoices, your password resets and your support email go down with it.</p>
+    <p>The standard setup is a secondary domain (getacme.com or acme-mail.com) that only sends outbound. Keep the brand domain for everything else. The secondary domain is disposable: if it burns, you stop sending from it, let it cool down, and move to the next one. Your brand reputation never takes the hit. <a href="/blog/cold-email-domains">Cold email domains</a> covers the full setup, including which TLDs to buy, how many to keep in reserve, and how to point the sending tool at the new domain.</p>
+
+    <h2 style="font-size:22px;margin:32px 0 12px">2. Authenticate the sending domain completely</h2>
+    <p>Three records, all of them required:</p>
+    <ul style="margin:0 0 12px 20px">
+      <li><strong>SPF</strong>: one TXT record listing the servers allowed to send for the domain. For a sending tool, this is usually a single include. Keep it short. The 10-lookup limit is where most hand-rolled SPF records die. <a href="/blog/how-to-fix-spf-record">How to fix an SPF record</a>.</li>
+      <li><strong>DKIM</strong>: the sending tool generates a key pair, you publish the public key as a TXT record under its selector. This is the record that proves the message was not altered in transit. <a href="/blog/dkim-selector">DKIM selectors</a> explains what the selector is and why rotating it breaks deliverability.</li>
+      <li><strong>DMARC</strong>: the policy record. For a dedicated sending domain, start at <code>p=none</code> with reporting to an address you actually read, confirm in the reports that only your tool is sending, then move to <code>p=quarantine</code> and finally <code>p=reject</code>. Gmail's 2026 requirements for bulk senders expect a policy at quarantine or reject. <a href="/blog/how-to-set-up-dmarc">How to set up DMARC</a> walks the steps, and <a href="/blog/dmarc-report-monitoring">DMARC report monitoring</a> covers reading the weekly XML without drowning in it.</li>
+    </ul>
+    <p>Before you send a single email, verify all three with a real lookup. The <a href="/dmarc-checker">free DMARC checker</a> checks SPF, DKIM, DMARC, MX and TLS for any domain in seconds, and the <a href="/blog/email-deliverability-checklist">full checklist</a> has the acceptance criteria for each record.</p>
+
+    <h2 style="font-size:22px;margin:32px 0 12px">3. Warm up the domain before real volume</h2>
+    <p>A new domain that sends 100 emails on day one and 1,000 on day ten looks like a spam operation, because that is the pattern spam operations use. Warm-up is the process of ramping volume slowly over four to eight weeks so the sending IP and domain build a history of being received, opened and replied to. Most sending tools have built-in warm-up that does this automatically with engagement farming. If you are doing it manually: start at 10 to 20 emails a day per mailbox, increase 10 to 20 percent per week, and watch bounce and complaint rates every day. The moment bounce rate climbs above 2 percent, stop ramping and clean the list. <a href="/blog/cold-email-warm-up">Cold email warm-up</a> has the week-by-week schedule.</p>
+
+    <h2 style="font-size:22px;margin:32px 0 12px">4. Volume and list rules that protect the domain</h2>
+    <p>Four numbers matter more than any other:</p>
+    <ul style="margin:0 0 12px 20px">
+      <li><strong>Bounce rate under 2 percent</strong. Hard bounces kill reputation faster than anything else. Scrub the list before every send and suppress every hard bounce immediately. <a href="/blog/email-bounce-codes">Bounce codes</a> and <a href="/blog/email-list-cleaning">list cleaning</a>.</li>
+      <li><strong>Complaint rate under 0.1 percent</strong. One "report spam" click is worth a hundred opens, in the negative direction. Keep lists current and make the unsubscribe path one click.</li>
+      <li><strong>Per-mailbox volume</strong. For cold outbound, most teams keep individual mailboxes under 30 to 50 sends a day and spread sends across many mailboxes on the sending domain. One mailbox that gets flagged drags the whole domain down with it.</li>
+      <li><strong>Engagement</strong. Send to people who will open. A list of 10,000 addresses where 3 percent open is worse than a list of 2,000 where 15 percent open, because the filters score the domain on the aggregate.</li>
+    </ul>
+    <p><a href="/blog/cold-email-bounce-rate">Cold email bounce rate</a> covers what "good" actually looks like at each stage of the ramp.</p>
+
+    <h2 style="font-size:22px;margin:32px 0 12px">5. Monitor, because the failure is silent</h2>
+    <p>Outbound deliverability does not fail loudly. It fails in a week where open rates drop 30 percent and nobody connects it to the DNS change that happened the day before, or the provider policy update, or the IP that got listed. The monitoring setup that catches these early:</p>
+    <ul style="margin:0 0 12px 20px">
+      <li><strong>Daily record checks</strong>: SPF, DKIM, DMARC, MX and TLS re-verified every 24 hours, with an alert the moment one fails. Records expire, get rotated, and break without anyone noticing.</li>
+      <li><strong>Blocklist checks</strong>: the sending IP tested against the major DNSBLs daily, with an alert on first listing.</li>
+      <li><strong>DMARC reports</strong>: the weekly XML parsed into "who is sending as my domain," so you catch spoofing and misconfigured subdomains early.</li>
+      <li><strong>Score history</strong>: a number per domain per day, so a 20-point drop is visible instead of a vague feeling.</li>
+    </ul>
+    <p><a href="/blog/email-deliverability-monitoring">Email deliverability monitoring</a> covers what to check and how often, and <a href="/blog/email-deliverability-monitoring-api">the monitoring API</a> is for teams that want to build their own dashboard.</p>
+
+    <h2 style="font-size:22px;margin:32px 0 12px">The setup in one page</h2>
+    <ol style="margin:0 0 12px 20px">
+      <li>Buy a dedicated sending domain. Do not use the brand domain.</li>
+      <li>Point the sending tool at it. Publish SPF, DKIM and DMARC. Start DMARC at p=none with reports on.</li>
+      <li>Verify all records with a live lookup before sending anything.</li>
+      <li>Warm up for 4 to 8 weeks at low volume.</li>
+      <li>Ramp in 10 to 20 percent weekly steps while bounce stays under 2 percent.</li>
+      <li>Move DMARC to p=quarantine, then p=reject, once the reports are clean.</li>
+      <li>Monitor daily: records, blocklists, DMARC reports, score.</li>
+    </ol>
+
+    <div style="margin:36px 0;padding:24px;background:#eef2ff;border-radius:14px">
+      <h3 style="margin:0 0 8px;font-size:18px">Check your sending domain before the next send</h3>
+      <p style="opacity:.8;margin:0 0 16px;font-size:14px">The free audit runs the full check on your sending domain: SPF, DKIM, DMARC, MX, TLS and IP reputation, with the exact record to add or fix. No account needed.</p>
+      <a class="btn btn-primary" href="/#audit">Run the free audit</a>
+    </div>
+    <p style="margin-top:28px;padding:18px;background:#f4f4ff;border-radius:12px">Running this for multiple client domains or a whole agency? <a href="/#pricing" style="font-weight:600">Inboxproof Agency</a> monitors every domain in your portfolio and alerts you the moment one breaks. <a href="/#pricing" style="font-weight:600">See pricing →</a></p>
+
+    <div style="margin-top:40px;padding-top:24px;border-top:1px solid #e5e5f0;font-size:14.5px;line-height:1.9">
+      <strong>Related guides</strong><br>
+      <a href="/blog/cold-email-deliverability">Cold email deliverability</a> · <a href="/blog/cold-email-domains">Cold email domains</a> · <a href="/blog/cold-email-warm-up">Cold email warm-up</a> · <a href="/blog/cold-email-infrastructure">Cold email infrastructure</a> · <a href="/blog/email-deliverability-for-agencies">Deliverability for agencies</a> · <a href="/blog/client-email-deliverability-report">Client deliverability reports</a>
+    </div>
+  </div>
+</div>
+
+<footer>
+  <div class="container">
+    <span>© 2026 Inboxproof, Inc.</span>
+    <span><a href="/blog">All guides</a> · <a href="/">Home</a> · <a href="/privacy">Privacy</a> · <a href="https://github.com/jtc268/inboxproof" target="_blank" rel="noopener">GitHub</a></span>
+  </div>
+</footer>
+</body>
+</html>

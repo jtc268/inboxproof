@@ -1,0 +1,98 @@
+<!doctype html>
+<html lang="en">
+<head>
+<script>(function(){try{var p=location.pathname||'/';var r=(document.referrer||'').split('/')[2]||'direct';var q=new URLSearchParams(location.search);var ref=q.get('ref')||'';if(ref){try{localStorage.setItem('ip_ref',ref);}catch(e){}}var u='/api/track?page='+encodeURIComponent(p)+'&ref='+encodeURIComponent(r)+(ref?'&team='+encodeURIComponent(ref):'');if(navigator.sendBeacon&&navigator.sendBeacon(u))return;var i=new Image();i.src=u;}catch(e){}})();</script>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Why your emails are not being delivered: 6 causes and the fix | Inboxproof</title>
+<meta name="description" content="Emails not arriving? The six causes, in order of how often they happen: broken SPF, DKIM or DMARC, provider rejections, blocklists, no domain reputation, and list rot. How to find yours in minutes.">
+<meta property="og:title" content="Why your emails are not being delivered: 6 causes and the fix">
+<meta property="og:description" content="The six causes of undelivered email, in order of how often they happen, and how to find yours in minutes.">
+<meta property="og:type" content="article">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="/styles.css">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' rx='8' fill='%236366f1'/%3E%3Cpath d='M8 16h13M15 10l6 6-6 6' stroke='white' stroke-width='3' fill='none' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E">
+<script type="application/ld+json">{"@context":"https://schema.org","@type":"Article","headline":"Why your emails are not being delivered: 6 causes and the fix","description":"The six causes of undelivered email, in order of how often they happen, and how to find yours in minutes.","author":{"@type":"Organization","name":"Inboxproof"},"publisher":{"@type":"Organization","name":"Inboxproof"},"datePublished":"2026-08-22","dateModified":"2026-08-22"}</script>
+<link rel="canonical" href="https://inboxproof.email/blog/email-not-delivering">
+<meta property="og:url" content="https://inboxproof.email/blog/email-not-delivering">
+<meta property="og:image" content="https://inboxproof.email/og.png">
+<meta property="og:image:width" content="1200">
+<meta property="og:image:height" content="630">
+<meta name="twitter:image" content="https://inboxproof.email/og.png">
+</head>
+<body>
+<nav class="nav">
+  <div class="container">
+    <a class="logo" href="/">
+      <span class="mark"><svg viewBox="0 0 24 24" fill="none"><path d="M4 12h11M11 7l5 5-5 5" stroke="#fff" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"/></svg></span>
+      Inboxproof
+    </a>
+    <div class="nav-links"><a href="/blog">All guides</a><a href="/">Run a free audit</a></div>
+  </div>
+</nav>
+
+<div class="container" style="max-width:760px;padding:60px 20px 80px">
+  <div class="kicker">Guide</div>
+  <h1 style="font-size:34px;margin:10px 0 24px">Why your emails are not being delivered: 6 causes and the fix</h1>
+  <div style="opacity:.85;line-height:1.75;font-size:15.5px">
+    <p>"My emails are not being delivered" is one phrase that covers two different failures. The first is a hard reject: the receiving server reads your message, decides it is not allowed, and bounces it with an error code. The second is a silent route: the server accepts the message and puts it in spam, so you never hear back. The fixes for the two are different, so the first step is always the same: find out which one is happening.</p>
+    <p>If you are getting bounce emails, read the bounce text. It names the cause almost every time. If nothing is bouncing and open rates just collapsed, you are being filtered silently, and the cause is usually reputation or engagement. Here are the six causes in the order they actually show up.</p>
+
+    <h2 style="font-size:22px;margin:32px 0 12px">1. Broken SPF, DKIM or DMARC (the most common cause)</h2>
+    <p>Every major inbox now checks three DNS records before it will accept your mail: SPF says which servers are allowed to send for your domain, DKIM signs each message so the receiver can verify it was not tampered with, and DMARC tells the receiver what to do when the first two fail. If any one of the three is missing, misconfigured, or expired, Gmail, Microsoft and Yahoo will reject or filter your mail. The most common specific failures: an SPF record that exceeds the 10-lookup limit, a DKIM selector that was rotated and the old key removed, and a DMARC record that points at a reporting address that no one reads.</p>
+    <p>Start with <a href="/blog/spf-dkim-dmarc">how SPF, DKIM and DMARC work together</a>, then check the specific failure you suspect: <a href="/blog/spf-not-working">SPF not working</a>, <a href="/blog/dkim-not-signing">DKIM not signing</a>, or <a href="/blog/how-to-set-up-dmarc">how to set up DMARC</a>. The <a href="/dmarc-checker">free DMARC checker</a> looks up all three records for your domain in seconds and tells you the exact record to add or fix.</p>
+
+    <h2 style="font-size:22px;margin:32px 0 12px">2. A provider-specific rejection</h2>
+    <p>Gmail, Microsoft and Yahoo each reject for their own reasons, and each one tells you in the bounce text. The codes you will see most:</p>
+    <ul style="margin:0 0 12px 20px">
+      <li><strong>Gmail: 550 5.7.26</strong> "was sent as a result of a message you received." Your domain is being used for phishing, or your SPF is too broad and someone else is sending as you. Full breakdown: <a href="/blog/gmail-smtp-error-550-5-7-26">Gmail SMTP error 550 5.7.26</a>.</li>
+      <li><strong>Outlook: 550 5.7.1</strong> "message not allowed, not enough information to verify SPF." Usually SPF or DMARC failing on the sending IP. Full breakdown: <a href="/blog/outlook-smtp-error-550-5-7-1">Outlook SMTP error 550 5.7.1</a>.</li>
+      <li><strong>Yahoo: 550 5.7.1</strong> "domain of sending IP has no PTR record." Your sending IP has no reverse DNS. Full breakdown: <a href="/blog/yahoo-smtp-error-550-5-7-1">Yahoo SMTP error 550 5.7.1</a>.</li>
+      <li><strong>Microsoft bulk-sender rejection</strong>: your domain or IP is on Microsoft's blocklist. <a href="/blog/email-rejected-by-microsoft">Email rejected by Microsoft</a> covers the delisting process.</li>
+    </ul>
+    <p>If you are not sure which provider is rejecting you and why, <a href="/blog/how-to-read-email-headers">how to read email headers</a> walks through a real example. The <a href="/header-analyzer">email header analyzer</a> does it for you: paste the raw headers and it tells you whether SPF, DKIM and DMARC passed.</p>
+
+    <h2 style="font-size:22px;margin:32px 0 12px">3. Your IP or domain is on a blocklist</h2>
+    <p>Blocklists (DNSBLs) are the oldest spam filter. If your sending IP was abused, or a spammer forged your domain and enough of it landed on the lists, receiving servers will reject you before they even look at authentication. This one is nasty because it can happen overnight and the bounce text often just says "listed in a blocklist" without naming which one. Check with <a href="/blog/is-my-ip-blacklisted">is my IP blacklisted</a> and <a href="/blog/is-my-domain-blacklisted">is my domain blacklisted</a>. The <a href="/blocklist-checker">IP blocklist checker</a> tests against 9 major lists. If you are listed, <a href="/blog/spamhaus-delisting">Spamhaus delisting</a> covers the request process and what to fix so you do not get relisted.</p>
+
+    <h2 style="font-size:22px;margin:32px 0 12px">4. A new domain with no reputation</h2>
+    <p>Every domain starts at zero. Gmail and Microsoft track sending history per domain and per IP, and a brand new domain that suddenly sends 500 emails a day looks exactly like a spam operation, even if every record is perfect. This is the number one reason new cold email domains fail. The fix is not records, it is behavior: send low volume, to engaged recipients, and ramp up slowly over weeks. <a href="/blog/domain-reputation">Domain reputation</a> explains how the score works, and <a href="/blog/cold-email-warm-up">cold email warm-up</a> is the step-by-step ramp. If you just set up a domain for outbound, <a href="/blog/cold-email-domains">cold email domains</a> covers the full setup including which domain to use for sending and which to keep for your brand.</p>
+
+    <h2 style="font-size:22px;margin:32px 0 12px">5. Bounces: your list is rotting</h2>
+    <p>A bounce is a delivery failure with a reason attached. Hard bounces (no such user, domain no longer exists) tell you the address is dead, and sending to dead addresses is what destroys your reputation. Soft bounces (mailbox full, server down) are temporary. The ratio matters: a bounce rate above 2 to 3 percent is a signal to your providers that your list is dirty, and they will start filtering you even for the good addresses. <a href="/blog/email-bounce-codes">Email bounce codes</a> explains every code you will see, and <a href="/blog/email-list-cleaning">email list cleaning</a> covers how to get the list back to a healthy state without throwing away real customers.</p>
+
+    <h2 style="font-size:22px;margin:32px 0 12px">6. Volume spike or engagement collapse</h2>
+    <p>Even with perfect records, providers filter by behavior. If your volume tripled this week, or your open and reply rates dropped because recipients stopped engaging, the filter score drops and your mail starts landing in spam silently. No bounce, no error, just silence. <a href="/blog/why-email-goes-to-spam">Why email goes to spam</a> covers the full filter logic, and <a href="/blog/email-in-spam">Email in spam</a> covers what to do when you notice the problem from the recipient side.</p>
+
+    <h2 style="font-size:22px;margin:32px 0 12px">How to find your cause in 10 minutes</h2>
+    <ol style="margin:0 0 12px 20px">
+      <li>Send a test email to a Gmail and an Outlook account you control. If it lands, your problem is list-specific (causes 5 and 6). If it bounces or lands in spam, continue.</li>
+      <li>Read the bounce or the headers. The error code names the cause. <a href="/blog/smtp-error-codes">SMTP error codes</a> has the reference table.</li>
+      <li>Check your SPF, DKIM and DMARC records. <a href="/dmarc-checker">The free checker</a> does this in seconds and shows the exact fix.</li>
+      <li>Check your sending IP against blocklists. <a href="/blocklist-checker">The blocklist checker</a> tests 9 major lists.</li>
+      <li>If all of the above is clean and the domain is under 60 days old, treat it as cause 4 and slow down.</li>
+    </ol>
+
+    <div style="margin:36px 0;padding:24px;background:#eef2ff;border-radius:14px">
+      <h3 style="margin:0 0 8px;font-size:18px">Check all six at once</h3>
+      <p style="opacity:.8;margin:0 0 16px;font-size:14px">The free audit runs the full check on your domain: SPF, DKIM, DMARC, MX, TLS and IP reputation, with the exact record to add or fix for anything that fails. No account needed.</p>
+      <a class="btn btn-primary" href="/#audit">Run the free audit</a>
+    </div>
+    <p style="margin-top:28px;padding:18px;background:#f4f4ff;border-radius:12px">Undelivered email is usually a slow leak, not a one-time event. <a href="/#pricing" style="font-weight:600">Inboxproof Pro</a> re-runs the full audit every 24 hours and alerts you the moment a record breaks, expires, or an IP gets listed, so the next outage is a notification instead of a discovery. <a href="/#pricing" style="font-weight:600">See pricing →</a></p>
+
+    <div style="margin-top:40px;padding-top:24px;border-top:1px solid #e5e5f0;font-size:14.5px;line-height:1.9">
+      <strong>Related guides</strong><br>
+      <a href="/blog/why-email-goes-to-spam">Why email goes to spam</a> · <a href="/blog/spf-dkim-dmarc">SPF, DKIM and DMARC in one place</a> · <a href="/blog/smtp-error-codes">SMTP error codes</a> · <a href="/blog/how-to-read-email-headers">How to read email headers</a> · <a href="/blog/email-bounce-codes">Email bounce codes</a> · <a href="/blog/domain-reputation">Domain reputation</a>
+    </div>
+  </div>
+</div>
+
+<footer>
+  <div class="container">
+    <span>© 2026 Inboxproof, Inc.</span>
+    <span><a href="/blog">All guides</a> · <a href="/">Home</a> · <a href="/privacy">Privacy</a> · <a href="https://github.com/jtc268/inboxproof" target="_blank" rel="noopener">GitHub</a></span>
+  </div>
+</footer>
+</body>
+</html>
