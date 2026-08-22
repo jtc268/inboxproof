@@ -139,9 +139,22 @@ async function deleteReport(id) {
   delete reports[id];
 }
 
+function genRefCode() {
+  const abc = 'ABCDEFGHJKLMNPQRSTUVWXYZ23456789'; // no I/O/0/1 to keep codes readable
+  let s = '';
+  for (let i = 0; i < 6; i++) s += abc[crypto.randomInt(abc.length)];
+  return s;
+}
+function findLeadByRefCode(code) {
+  const c = String(code || '').toUpperCase().trim();
+  if (!c) return null;
+  for (const l of Object.values(leads)) if (l.refCode && l.refCode.toUpperCase() === c) return l;
+  return null;
+}
 async function upsertLead(email, domain) {
   const k = String(email).toLowerCase().trim();
-  if (!leads[k]) leads[k] = { id: crypto.randomUUID(), email: k, domain: domain || null, pro: false, proSince: null, createdAt: Date.now(), lastScore: null };
+  if (!leads[k]) leads[k] = { id: crypto.randomUUID(), email: k, domain: domain || null, pro: false, proSince: null, createdAt: Date.now(), lastScore: null, refCode: genRefCode() };
+  if (!leads[k].refCode) leads[k].refCode = genRefCode();
   if (domain) leads[k].domain = domain;
   await persist('leads');
   return leads[k];
@@ -538,6 +551,7 @@ async function handler(req, res) {
         const page = String(u.searchParams.get('page') || req.headers['x-page'] || '/').slice(0, 200);
         const ref = String(u.searchParams.get('ref') || '').trim() || String(req.headers['referer'] || '').split('/')[2] || 'direct';
         const event = String(u.searchParams.get('event') || '').slice(0, 100);
+        const team = String(u.searchParams.get('team') || '').trim().slice(0, 64);
         if (event) {
           stats.byEvent = stats.byEvent || {};
           stats.byEvent[event] = (stats.byEvent[event] || 0) + 1;
@@ -546,6 +560,7 @@ async function handler(req, res) {
           stats.pageViews = (stats.pageViews || 0) + 1;
           stats.byPage[page] = (stats.byPage[page] || 0) + 1;
           if (ref) stats.byRef[ref] = (stats.byRef[ref] || 0) + 1;
+          if (team) { stats.byTeam = stats.byTeam || {}; stats.byTeam[team] = (stats.byTeam[team] || 0) + 1; }
           stats.lastView = new Date().toISOString();
         }
         if (REMOTE) await upSet('stats', JSON.stringify(stats));
@@ -561,6 +576,7 @@ async function handler(req, res) {
           pageViews: stats.pageViews || 0,
           byPage: stats.byPage || {},
           byRef: stats.byRef || {},
+          byTeam: stats.byTeam || {},
           byEvent: stats.byEvent || {},
           lastView: stats.lastView || null,
           lastEvent: stats.lastEvent || null,
@@ -734,10 +750,16 @@ async function handler(req, res) {
       const audit = await auditDomain(domain);
       const reportId = crypto.randomUUID();
       audit.reportId = reportId;
+      const refIn = String(body.ref || '').toUpperCase().trim().slice(0, 16);
       if (email) {
         await upsertLead(email, domain);
         const lead = leads[email];
         if (lead && lead.brand && lead.brand.name) audit.brand = lead.brand;
+        if (refIn && refIn !== lead.refCode && findLeadByRefCode(refIn)) {
+          lead.referredBy = refIn;
+          lead.referredAt = Date.now();
+          await persist('leads');
+        }
       }
       await saveReport(reportId, audit);
       if (email) {
@@ -749,7 +771,7 @@ async function handler(req, res) {
         await persist('leads');
         await maybeSendAuditFollowup(email, domain, audit, reportId);
       }
-      return sendJson(res, 200, { audit, reportId });
+      return sendJson(res, 200, { audit, reportId, refCode: email ? leads[email].refCode : null });
     }
     if (req.method === 'POST' && u.pathname === '/api/attach') {
       const body = await readBody(req);

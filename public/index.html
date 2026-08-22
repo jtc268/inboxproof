@@ -521,7 +521,8 @@ function render(a){
   }
   $('#unlockMsg').textContent = uMsg;
   if (a.reportId) {
-    const link = location.origin + '/r/' + a.reportId;
+    let link = location.origin + '/r/' + a.reportId;
+    if (a.refCode) link += '?ref=' + encodeURIComponent(a.refCode);
     const sl = $('#shareLink');
     sl.textContent = link; sl.href = link;
     $('#shareRow').style.display = 'block';
@@ -583,6 +584,7 @@ form.addEventListener('submit', async e => {
     last = j.audit;
     last.reportId = j.reportId;
     last.email = email;
+    last.refCode = j.refCode || '';
     try{ if(email) sessionStorage.setItem('ip_email', email); if(j.refCode) sessionStorage.setItem('ip_refcode', j.refCode); }catch(e){}
     render(last);
     trackEvent('audit_complete');
