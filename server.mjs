@@ -658,6 +658,8 @@ async function handler(req, res) {
         if (!rep) return sendJson(res, 404, { error: 'Report not found' });
         return sendJson(res, 200, rep);
       }
+      // Public API growth CTA: every free endpoint points back to the full audit.
+      const API_CTA = { url: 'https://inboxproof.email', hint: 'Run the full audit with monitoring and white-label reports' };
       if (u.pathname === '/api/dmarc-check') {
         const domain = cleanDomain(u.searchParams.get('domain'));
         if (!DOMAIN_RE.test(domain)) return sendJson(res, 400, { error: 'Enter a valid domain, e.g. yourdomain.com' });
@@ -667,7 +669,7 @@ async function handler(req, res) {
         const total = Object.values(W).reduce((a, b) => a + b, 0);
         const raw = checks.reduce((s, c) => s + W[c.id] * (c.status === 'pass' ? 1 : c.status === 'warn' ? 0.5 : 0), 0);
         const score = Math.round(raw / total * 100);
-        return sendJson(res, 200, { domain, at: new Date().toISOString(), score, grade: gradeOf(score), checks });
+        return sendJson(res, 200, { domain, at: new Date().toISOString(), score, grade: gradeOf(score), checks, next: API_CTA });
       }
       if (u.pathname === '/api/spam-check') {
         const domain = cleanDomain(u.searchParams.get('domain'));
@@ -684,7 +686,7 @@ async function handler(req, res) {
           : risk <= 60 ? 'This domain has real spam-filter risk. Fix the failing items before sending volume.'
           : 'This domain is at severe spam-filter risk. Mail from it is likely to be rejected or dumped to spam until the failing items are fixed.';
         const failing = checks.filter(c => c.status !== 'pass').map(c => ({ id: c.id, name: c.name, status: c.status, detail: c.detail, fix: c.fix }));
-        return sendJson(res, 200, { domain, at: new Date().toISOString(), risk, riskLabel, deliver, grade: gradeOf(deliver), verdict, checks, failing });
+        return sendJson(res, 200, { domain, at: new Date().toISOString(), risk, riskLabel, deliver, grade: gradeOf(deliver), verdict, checks, failing, next: API_CTA });
       }
       if (u.pathname === '/api/blocklist-check') {
         let ip = String(u.searchParams.get('ip') || '').trim();
@@ -717,7 +719,7 @@ async function handler(req, res) {
         const listed = results.filter(r => r.listed);
         return sendJson(res, 200, {
           ip, at: new Date().toISOString(), listedCount: listed.length, listed,
-          clean: results.filter(r => !r.listed).map(r => r.label), results,
+          clean: results.filter(r => !r.listed).map(r => r.label), results, next: API_CTA,
         });
       }
       if (u.pathname === '/api/mx-check') {
@@ -749,7 +751,7 @@ async function handler(req, res) {
           hasMx: !noMx, mxCount: mxs ? mxs.length : 0,
           mx: mxs ? mxs.map(m => ({ exchange: m.exchange.toLowerCase(), priority: m.priority })) : null,
           fallbackA: noMx,
-          results, allResolve,
+          results, allResolve, next: API_CTA,
         });
       }
       return sendJson(res, 404, { error: 'Not found' });
