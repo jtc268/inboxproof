@@ -1,0 +1,87 @@
+<!doctype html>
+<html lang="en">
+<head>
+<script>(function(){try{var p=location.pathname||"/";var r=(document.referrer||"").split("/")[2]||"direct";var u="/api/track?page="+encodeURIComponent(p)+"&ref="+encodeURIComponent(r);if(navigator.sendBeacon&&navigator.sendBeacon(u))return;var i=new Image();i.src=u;}catch(e){}})();</script>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Email domain reputation: how to check it and how to improve it | Inboxproof</title>
+<meta name="description" content="Your domain can be fully authenticated and still land in spam. What domain reputation is, how mailbox providers build it, how to check yours, and the specific fixes that move it.">
+<meta property="og:title" content="Email domain reputation: how to check it and how to improve it">
+<meta property="og:description" content="Your domain can be fully authenticated and still land in spam. What domain reputation is, how mailbox providers build it, how to check yours, and the specific fixes that move it.">
+<meta property="og:type" content="article">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="/styles.css">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' rx='8' fill='%236366f1'/%3E%3Cpath d='M8 16h13M15 10l6 6-6 6' stroke='white' stroke-width='3' fill='none' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E">
+<script type="application/ld+json">{"@context":"https://schema.org","@type":"Article","headline":"Email domain reputation: how to check it and how to improve it","description":"Your domain can be fully authenticated and still land in spam. What domain reputation is, how mailbox providers build it, how to check yours, and the specific fixes that move it.","author":{"@type":"Organization","name":"Inboxproof"},"publisher":{"@type":"Organization","name":"Inboxproof"},"datePublished":"2026-08-22","dateModified":"2026-08-22"}</script>
+<link rel="canonical" href="https://inboxproof.email/blog/domain-reputation">
+<meta property="og:url" content="https://inboxproof.email/blog/domain-reputation">
+<meta property="og:image" content="https://inboxproof.email/og.png">
+<meta property="og:image:width" content="1200">
+<meta property="og:image:height" content="630">
+<meta name="twitter:image" content="https://inboxproof.email/og.png">
+</head>
+<body>
+<nav class="nav">
+  <div class="container">
+    <a class="logo" href="/">
+      <span class="mark"><svg viewBox="0 0 24 24" fill="none"><path d="M4 12h11M11 7l5 5-5 5" stroke="#fff" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"/></svg></span>
+      Inboxproof
+    </a>
+    <div class="nav-links"><a href="/blog">All guides</a><a href="/">Run a free audit</a></div>
+  </div>
+</nav>
+
+<div class="container" style="max-width:760px;padding:60px 20px 80px">
+  <div class="kicker">Guide</div>
+  <h1 style="font-size:34px;margin:10px 0 24px">Email domain reputation: how to check it and how to improve it</h1>
+  <div style="opacity:.85;line-height:1.75;font-size:15.5px">
+    <p>Your email can be perfectly authenticated and still land in spam. Authentication (SPF, DKIM, DMARC) proves you are who you say you are. Reputation decides whether anyone trusts you. This guide explains what domain reputation is, how mailbox providers build it, how to check yours, and the specific things that move it.</p>
+
+    <h2 style="font-size:22px;margin:34px 0 12px">What domain reputation is, and how it differs from IP reputation</h2>
+    <p>Domain reputation is the standing your sending domain has with mailbox providers like Google, Microsoft, and Apple. It is separate from IP reputation, which is the standing of the IP address that actually delivers the mail. You can have a clean domain on a bad IP, or a clean IP on a domain that has been burned. Most deliverability tools check the IP and ignore the domain, which is why a domain can be quietly poisoned while the IP looks fine.</p>
+    <p>When you send through an ESP, the IP is shared and mostly out of your control. The domain is the reputation you actually own and can repair. That is why a developer who switches ESPs can keep the same deliverability problem if the domain was the real cause all along.</p>
+
+    <h2 style="font-size:22px;margin:34px 0 12px">How mailbox providers build domain reputation</h2>
+    <p>Providers build reputation from observed behavior, not from a form you fill out. They track what happens when mail from your domain arrives: how much of it is opened, how much is marked as spam, how much bounces, and how often it is reported as phishing. A domain that sends mail people want to read and never gets reported builds a good reputation over time. A domain that sends mail people delete or report loses it.</p>
+    <p>The process is slow and cumulative. A fresh domain starts with no reputation and has to earn it, which is why new domains and dormant domains that suddenly send volume get filtered until they prove themselves. This is the reason a domain that sat quiet for a month and then sends 2,000 emails a day gets throttled or listed, no matter how clean the authentication is.</p>
+
+    <h2 style="font-size:22px;margin:34px 0 12px">How to check your domain reputation</h2>
+    <p>You can check your domain reputation in three ways. First, run the <a href="/cold-email-checker">free audit</a>, which checks the authentication records, the blocklists, and the sending signals in one pass and gives you a 0 to 100 score with a plain-English fix list. Second, check whether the domain is on any blocklist, because a listed domain is treated as hostile regardless of how clean the rest of it is. Third, look at the actual delivery data: open rates, spam complaints, and bounce rates.</p>
+    <p>If your open rates are low and your complaint rate is high, your domain reputation is probably the problem, not your copy. The audit points at the exact record or signal to fix first, so you do not have to guess which layer is broken.</p>
+
+    <h2 style="font-size:22px;margin:34px 0 12px">The signals that make up domain reputation</h2>
+    <p>Reputation is not one number. It is a bundle of signals. Authentication: is the domain properly signed with SPF, DKIM, and DMARC? Volume: is the sending volume steady, or does it spike and crash? Engagement: do recipients open and reply, or do they delete and report? Bounce rate: how much of the mail hits invalid addresses? Complaint rate: how many recipients mark the mail as spam?</p>
+    <p>A domain with strong authentication, steady volume, high engagement, low bounces, and near-zero complaints builds a good reputation. A domain that fails any of those loses it. The signals compound, so a single broken record can drag the whole domain down even when everything else is fine.</p>
+
+    <h2 style="font-size:22px;margin:34px 0 12px">How to improve domain reputation</h2>
+    <p>The fixes are boring and they work. Authenticate the domain properly with SPF, DKIM, and DMARC, because an unauthenticated domain is treated as suspicious no matter how good the content is. Clean the list before you send, so you are not sending to dead addresses that inflate the bounce rate. Warm up the domain gradually, ramping volume over weeks instead of blasting it on day one.</p>
+    <p>If you are doing cold outreach, send from a dedicated sending domain so a bad campaign does not poison your main domain. Monitor the complaint rate and stop sending to people who do not want the mail. None of these are fast, but they are the only things that actually move domain reputation. For the ongoing version, <a href="/#pricing">Inboxproof Pro</a> watches the domain daily so a broken record is a five-minute fix, not a week of dead pipeline.</p>
+
+    <h2 style="font-size:22px;margin:34px 0 12px">When domain reputation is the actual problem</h2>
+    <p>If your authentication is clean, your list is clean, and your content is good, but your open rates are still low and your complaint rate is still high, the problem is probably domain reputation. It takes time to build and it is easy to lose. The fastest way to confirm is to run the <a href="/cold-email-checker">free audit</a> on the sending domain and look at the score. If it is not a 90 or higher, that is your first project, not the copy.</p>
+    <p>Work it in this order: delivery, reputation, then copy. Most teams do it backwards, which is why they burn weeks on subject lines while the real problem sits underneath. Once the domain reputation is solid, the rest of the deliverability work you already know how to do will actually pay off.</p>
+
+    <p style="margin-top:28px;padding:18px;background:#f4f4ff;border-radius:12px">Want this checked automatically every day? <a href="/#pricing" style="font-weight:600">Inboxproof Pro</a> monitors your domain around the clock and alerts you the moment a record breaks or an IP gets listed. <a href="/#pricing" style="font-weight:600">See pricing →</a></p>
+
+    <div style="margin-top:24px;padding:20px;border:1px solid rgba(99,102,241,.25);border-radius:12px;background:rgba(99,102,241,.06)">
+      <div style="font-weight:700;font-size:15px;margin-bottom:10px">Related guides</div>
+      <div style="opacity:.8;font-size:14px;line-height:2">
+        <a href="/blog/why-email-goes-to-spam">Why email goes to spam</a><br>
+        <a href="/blog/email-deliverability-checklist">Email deliverability checklist</a><br>
+        <a href="/blog/check-domain-blocklist">Check if your domain is on a blocklist</a><br>
+        <a href="/blog/cold-email-infrastructure">Cold email infrastructure</a><br>
+        <a href="/blog/email-deliverability-for-agencies-developers">Deliverability for agencies and developers</a>
+      </div>
+    </div>
+  </div>
+</div>
+
+<footer>
+  <div class="container">
+    <span>© 2026 Inboxproof, Inc.</span>
+    <span><a href="/blog">All guides</a> · <a href="/">Home</a> · <a href="/privacy">Privacy</a> · <a href="https://github.com/jtc268/inboxproof" target="_blank" rel="noopener">GitHub</a></span>
+  </div>
+</footer>
+</body>
+</html>

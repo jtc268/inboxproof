@@ -29,6 +29,18 @@ tunnel-cf.log
 tunnel-state.json
 tunnel.log
 
+# Local dev utilities that embed live API keys (never publish)
+check-stripe.mjs
+check-stripe-prices.mjs
+check-checkout-session.mjs
+check-sessions.mjs
+check-price.mjs
+resend-domain.mjs
+resend-env.mjs
+test-send.mjs
+env-check.txt
+alert-from.txt
+
 # OS / editor
 .DS_Store
 Thumbs.db

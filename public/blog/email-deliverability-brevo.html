@@ -1,0 +1,76 @@
+<!doctype html>
+<html lang="en">
+<head>
+<script>(function(){try{var p=location.pathname||"/";var r=(document.referrer||"").split("/")[2]||"direct";var u="/api/track?page="+encodeURIComponent(p)+"&ref="+encodeURIComponent(r);if(navigator.sendBeacon&&navigator.sendBeacon(u))return;var i=new Image();i.src=u;}catch(e){}})();</script>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Brevo deliverability: why your emails go to spam and how to fix it | Inboxproof</title>
+<meta name="description" content="Brevo accepted your mail but recipients are not seeing it. The five reasons Brevo deliverability drops, and the exact fix for each one.">
+<meta property="og:title" content="Brevo deliverability: why your emails go to spam and how to fix it">
+<meta property="og:description" content="Brevo accepted your mail but recipients are not seeing it. The five reasons Brevo deliverability drops, and the exact fix for each one.">
+<meta property="og:type" content="article">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="/styles.css">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' rx='8' fill='%236366f1'/%3E%3Cpath d='M8 16h13M15 10l6 6-6 6' stroke='white' stroke-width='3' fill='none' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E">
+<script type="application/ld+json">{"@context":"https://schema.org","@type":"Article","headline":"Brevo deliverability: why your emails go to spam and how to fix it","description":"Brevo accepted your mail but recipients are not seeing it. The five reasons Brevo deliverability drops, and the exact fix for each one.","author":{"@type":"Organization","name":"Inboxproof"},"publisher":{"@type":"Organization","name":"Inboxproof"},"datePublished":"2026-08-22","dateModified":"2026-08-22"}</script>
+<link rel="canonical" href="https://inboxproof.email/blog/email-deliverability-brevo">
+<meta property="og:url" content="https://inboxproof.email/blog/email-deliverability-brevo">
+<meta property="og:image" content="https://inboxproof.email/og.png">
+<meta property="og:image:width" content="1200">
+<meta property="og:image:height" content="630">
+<meta name="twitter:image" content="https://inboxproof.email/og.png">
+</head>
+<body>
+<nav class="nav">
+  <div class="container">
+    <a class="logo" href="/">
+      <span class="mark"><svg viewBox="0 0 24 24" fill="none"><path d="M4 12h11M11 7l5 5-5 5" stroke="#fff" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"/></svg></span>
+      Inboxproof
+    </a>
+    <div class="nav-links"><a href="/blog">All guides</a><a href="/">Run a free audit</a></div>
+  </div>
+</nav>
+
+<div class="container" style="max-width:760px;padding:60px 20px 80px">
+  <div class="kicker">Guide</div>
+  <h1 style="font-size:34px;margin:10px 0 24px">Brevo deliverability: why your emails go to spam and how to fix it</h1>
+  <div style="opacity:.85;line-height:1.75;font-size:15.5px">
+    <p>You send through Brevo, the dashboard says the message was sent, and the bounce report is empty. But the recipient never sees it. It is in spam, or it is not there at all. This is the most common complaint from teams sending through Brevo, and it is almost never Brevo's fault. Brevo is doing exactly what you told it to do. The problem is upstream: the sending domain, the authentication records, the IP reputation, or the list you are sending to. Here are the five reasons Brevo deliverability drops, in order of likelihood, and the exact fix for each one.</p>
+
+    <h2 style="font-size:22px;margin:34px 0 12px">1. Your SPF record is missing the Brevo include</h2>
+    <p>Brevo sends your mail from its own IP range, so your SPF record must include Brevo. Add the Brevo include to your SPF record. For current accounts that is <code>include:brevo.com</code>. If you set up your domain before the rebrand from Sendinblue, you may see <code>include:sendinblue.com</code> instead, which still works but the Brevo dashboard now shows <code>brevo.com</code> as the include to add. Open your DNS, find the SPF record (the TXT record that starts with <code>v=spf1</code>), and add the include. If the include is missing, the SPF check fails and mailboxes treat your mail as unauthenticated. Keep the total number of SPF lookups under ten, because exceeding that limit makes the whole record fail. The Brevo dashboard shows the exact include under your sender or domain settings, so copy it from there rather than typing it by hand.</p>
+
+    <h2 style="font-size:22px;margin:34px 0 12px">2. DKIM is not enabled or the DNS record is missing</h2>
+    <p>Brevo signs your mail with DKIM, but only if you enable it and add the DNS record it generates. In the Brevo dashboard, open your sender or domain settings and turn on DKIM signing. Brevo shows you a record to add, usually a TXT record with a long key. Add it to your DNS exactly as shown. If the record is missing, expired, or points to the wrong value, Brevo cannot sign your mail, and every message you send goes out unsigned. Unsigned mail is one of the strongest spam signals a mailbox sees. If you recently switched DNS providers, this record is the first thing to re-add. After you add the record, wait for it to propagate and then send a test message, because DNS changes can take a few minutes to an hour to take effect.</p>
+
+    <h2 style="font-size:22px;margin:34px 0 12px">3. You are sending from a domain you have not verified in Brevo</h2>
+    <p>Brevo requires you to verify the domain you send from. If the domain is not verified, or if you send from a different domain than the one you verified, Brevo delivers with a lower reputation or rejects the send. Verify the exact domain you send from, not a subdomain, unless you intend to send from that subdomain. A common mistake is verifying <code>mail.example.com</code> and then sending from <code>example.com</code>, which Brevo treats as a different, unverified domain. Check the sender settings in the Brevo dashboard and make sure the domain you send from is the one marked as verified. If you send from more than one domain, verify each one.</p>
+
+    <h2 style="font-size:22px;margin:34px 0 12px">4. Your shared IP pool has a bad reputation, or you have not warmed up</h2>
+    <p>By default, Brevo sends your mail from a pool of shared IPs. Other senders on that pool affect your reputation. If a neighbor is sending spam or has a high complaint rate, your mail can suffer even if your own sending is clean. If you are a new sender or a new domain, use Brevo's warm-up feature to increase your sending volume gradually over a few weeks instead of jumping to full volume. Jumping to full volume on a new domain is one of the fastest ways to get flagged as spam. At higher sending volume you can request a dedicated IP, but you still need to warm it up gradually instead of jumping to full volume. You can watch your sending statistics in the Brevo dashboard, but the dashboard only tells you what happened after the fact. <a href="/" style="font-weight:600">Inboxproof</a> monitors your domain around the clock and alerts you the moment a record breaks or an IP gets listed, so a reputation drop never catches you blind.</p>
+
+    <h2 style="font-size:22px;margin:34px 0 12px">5. Your bounce and complaint rates are too high</h2>
+    <p>Brevo tracks bounces and complaints per sending domain. If your bounce rate climbs or your complaint rate climbs, Brevo degrades your reputation and can suppress your sends. Clean your list before you send, validate addresses, and honor unsubscribes the same day. Brevo maintains a suppression list of addresses that have bounced or complained. If you keep sending to those addresses, you hurt your reputation and waste sends. Remove hard bounces from your list, stop sending to addresses that have not opened your mail in a long time, and keep your engagement healthy so the addresses you do send to actually open the mail. A list that is mostly disengaged addresses is a list that will get you flagged, no matter how clean your DNS is.</p>
+
+    <div style="margin-top:34px;padding:22px;border:1px solid rgba(99,102,241,.25);border-radius:12px;background:rgba(99,102,241,.06)">
+      <div style="font-weight:700;font-size:16px;margin-bottom:10px">Find out which of these is breaking your Brevo deliverability</div>
+      <p style="font-size:14.5px;line-height:1.7;margin:0 0 14px">Run a free audit of your domain. It checks SPF, DKIM, DMARC, MX, TLS, PTR and blocklists in one pass, and tells you exactly which record is wrong and how to fix it. No account needed.</p>
+      <a href="/" style="display:inline-block;background:#6366f1;color:#fff;font-weight:600;font-size:14px;padding:10px 18px;border-radius:9px;text-decoration:none">Run the free audit</a>
+      <p style="font-size:13.5px;line-height:1.7;margin:16px 0 0;opacity:.85">Want to know the moment any of these breaks? <a href="/#pricing" style="font-weight:600">Inboxproof Pro</a> monitors your domain around the clock and alerts you the instant a record changes or an IP gets listed. <a href="/#pricing" style="font-weight:600">See pricing &rarr;</a></p>
+    </div>
+
+    <div style="margin-top:24px;padding:20px;border:1px solid rgba(99,102,241,.25);border-radius:12px;background:rgba(99,102,241,.06)">
+      <div style="font-weight:700;font-size:15px;margin-bottom:10px">Related guides</div>
+      <div style="opacity:.8;font-size:14px;line-height:2">
+        <a href="/blog/email-deliverability-for-agencies-developers.html">Deliverability for agencies and developers</a><br>
+        <a href="/blog/email-deliverability-amazon-ses">Amazon SES deliverability</a><br>
+        <a href="/blog/transactional-email-api-deliverability">Transactional email API deliverability</a><br>
+        <a href="/blog/why-email-goes-to-spam">Why email goes to spam</a><br>
+        <a href="/blog/dkim-not-signing">DKIM not signing emails? How to fix it</a>
+      </div>
+    </div>
+  </div>
+</div>
+</body>
+</html>

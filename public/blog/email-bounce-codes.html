@@ -14,9 +14,7 @@
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="/styles.css">
 <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' rx='8' fill='%236366f1'/%3E%3Cpath d='M8 16h13M15 10l6 6-6 6' stroke='white' stroke-width='3' fill='none' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E">
-<script type="application/ld+json">
-{"@context":"https://schema.org","@type":"Article","headline":"Email Bounce Codes Explained: Hard vs Soft Bounces","description":"What email bounce codes mean and how to fix them: hard bounces (550, 5.1.1, 5.7.1), soft bounces (450, 4.2.1, 4.3.0), and the bounce-rate thresholds that get you delisted.","author":{"@type":"Organization","name":"InboxProof"},"publisher":{"@type":"Organization","name":"InboxProof"}}
-</script>
+<script type="application/ld+json">{"@context":"https://schema.org","@type":"Article","headline":"Email Bounce Codes Explained: Hard vs Soft Bounces","description":"What email bounce codes mean and how to fix them: hard bounces (550, 5.1.1, 5.7.1), soft bounces (450, 4.2.1, 4.3.0), and the bounce-rate thresholds that get you delisted.","author":{"@type":"Organization","name":"InboxProof"},"publisher":{"@type":"Organization","name":"InboxProof"},"datePublished":"2026-08-22","dateModified":"2026-08-22"}</script>
 <meta property="og:url" content="https://inboxproof.email/blog/email-bounce-codes">
 <meta property="og:image" content="https://inboxproof.email/og.png">
 <meta property="og:image:width" content="1200">
@@ -72,7 +70,7 @@
     <tr style="border-bottom:1px solid #222"><td style="padding:8px 10px">450 / 4.7.0</td><td style="padding:8px 10px">Temporary failure / try again later</td><td style="padding:8px 10px">Retry with backoff (1h, 6h, 24h).</td></tr>
     <tr style="border-bottom:1px solid #222"><td style="padding:8px 10px">451 / 4.3.0</td><td style="padding:8px 10px">Mail server busy / DNS timeout</td><td style="padding:8px 10px">Retry later. Check your own DNS health.</td></tr>
     <tr style="border-bottom:1px solid #222"><td style="padding:8px 10px">452 / 4.2.1 / 4.2.2</td><td style="padding:8px 10px">Mailbox full / over quota</td><td style="padding:8px 10px">Retry daily for a few days, then pause.</td></tr>
-    <tr style="border-bottom:1px solid #222"><td style="padding:8px 10px">421</td><td style="padding:8px 10px">Server rate-limited you</td><td style="padding:8px 10px">Slow your send rate; check <a href="/blog/warm-up-calculator">warm-up volume</a>.</td></tr>
+    <tr style="border-bottom:1px solid #222"><td style="padding:8px 10px">421</td><td style="padding:8px 10px">Server rate-limited you</td><td style="padding:8px 10px">Slow your send rate; check <a href="/warm-up-calculator">warm-up volume</a>.</td></tr>
   </table>
 
   <h2 style="font-size:24px;margin:36px 0 12px">Bounce-rate thresholds: when to stop</h2>

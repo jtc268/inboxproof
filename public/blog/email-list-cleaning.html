@@ -1,0 +1,86 @@
+<!doctype html>
+<html lang="en">
+<head>
+<script>(function(){try{var p=location.pathname||"/";var r=(document.referrer||"").split("/")[2]||"direct";var u="/api/track?page="+encodeURIComponent(p)+"&ref="+encodeURIComponent(r);if(navigator.sendBeacon&&navigator.sendBeacon(u))return;var i=new Image();i.src=u;}catch(e){}})();</script>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Email list cleaning: how to remove bad addresses and protect your deliverability | Inboxproof</title>
+<meta name="description" content="A dirty list is the fastest way to tank your deliverability. How to clean an email list, what to remove, how often to clean it, and the tools that do it for you.">
+<meta property="og:title" content="Email list cleaning: how to remove bad addresses and protect your deliverability">
+<meta property="og:description" content="A dirty list is the fastest way to tank your deliverability. How to clean an email list, what to remove, how often to clean it, and the tools that do it for you.">
+<meta property="og:type" content="article">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="/styles.css">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' rx='8' fill='%236366f1'/%3E%3Cpath d='M8 16h13M15 10l6 6-6 6' stroke='white' stroke-width='3' fill='none' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E">
+<script type="application/ld+json">{"@context":"https://schema.org","@type":"Article","headline":"Email list cleaning: how to remove bad addresses and protect your deliverability","description":"A dirty list is the fastest way to tank your deliverability. How to clean an email list, what to remove, how often to clean it, and the tools that do it for you.","author":{"@type":"Organization","name":"Inboxproof"},"publisher":{"@type":"Organization","name":"Inboxproof"},"datePublished":"2026-08-22","dateModified":"2026-08-22"}</script>
+<link rel="canonical" href="https://inboxproof.email/blog/email-list-cleaning">
+<meta property="og:url" content="https://inboxproof.email/blog/email-list-cleaning">
+<meta property="og:image" content="https://inboxproof.email/og.png">
+<meta property="og:image:width" content="1200">
+<meta property="og:image:height" content="630">
+<meta name="twitter:image" content="https://inboxproof.email/og.png">
+</head>
+<body>
+<nav class="nav">
+  <div class="container">
+    <a class="logo" href="/">
+      <span class="mark"><svg viewBox="0 0 24 24" fill="none"><path d="M4 12h11M11 7l5 5-5 5" stroke="#fff" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"/></svg></span>
+      Inboxproof
+    </a>
+    <div class="nav-links"><a href="/blog">All guides</a><a href="/">Run a free audit</a></div>
+  </div>
+</nav>
+
+<div class="container" style="max-width:760px;padding:60px 20px 80px">
+  <div class="kicker">Guide</div>
+  <h1 style="font-size:34px;margin:10px 0 24px">Email list cleaning: how to remove bad addresses and protect your deliverability</h1>
+  <div style="opacity:.85;line-height:1.75;font-size:15.5px">
+    <p>Your email list is only as good as the addresses in it. Every dead address, typo, or inactive subscriber you send to is a signal to mailbox providers that your list is sloppy. This guide explains what list cleaning is, what to remove, how often to clean it, and the tools that do it for you.</p>
+
+    <h2 style="font-size:22px;margin:34px 0 12px">Why list cleaning matters for deliverability</h2>
+    <p>Mailbox providers like Google and Microsoft track your bounce rate, complaint rate, and engagement. When you send to a dead address, the provider records a bounce. When you send to someone who never opens your email, the provider records low engagement. Both signals lower your sender reputation over time.</p>
+    <p>A clean list is not optional. It is the foundation of every other deliverability fix. You can have perfect SPF, DKIM, and DMARC records, but if your list is 30 percent dead addresses, your bounce rate will still tank your reputation. Clean the list first, then worry about the authentication.</p>
+
+    <h2 style="font-size:22px;margin:34px 0 12px">What to remove from your list</h2>
+    <p>Start with the hard bounces. These are addresses that will never work: the domain does not exist, the mailbox does not exist, or the account is full. Remove them immediately. Sending to a hard bounce is the single fastest way to get your IP or domain blacklisted.</p>
+    <p>Next, remove the soft bounces that persist. A soft bounce is usually temporary (mailbox full, server down), but if the same address soft bounces three or more times over a few weeks, it is probably dead. Remove it.</p>
+    <p>Then remove the inactive subscribers. These are people who have not opened or clicked your email in six months or more. They are not going to buy. They are just diluting your engagement rate and training the mailbox provider to send you to spam. Remove them or move them to a re-engagement sequence.</p>
+    <p>Finally, remove the typo addresses. These are addresses that look almost right but are not: gmal.com instead of gmail.com, gmial.com instead of gmail.com. They are usually hard bounces, but they are also a sign that your signup form is not validating properly. Fix the form and clean the list.</p>
+
+    <h2 style="font-size:22px;margin:34px 0 12px">How to clean an email list</h2>
+    <p>The fastest way to clean a list is to use a list hygiene tool. These tools check each address against the mailbox provider, verify that the domain exists, and flag the ones that are dead or risky. They are not perfect, but they are far faster and more accurate than doing it by hand.</p>
+    <p>If you are doing it by hand, start with a bounce check. Send a test email to a sample of your list and see which ones bounce. Remove the hard bounces immediately. Then check the engagement data in your ESP. Remove anyone who has not opened an email in six months.</p>
+    <p>For cold email lists, the process is different. You are not sending to people who opted in, so you cannot rely on engagement data. Instead, you need to verify each address before you send. This is where a verification tool is essential. Check the domain, check the mailbox, and remove the ones that fail.</p>
+
+    <h2 style="font-size:22px;margin:34px 0 12px">How often to clean your list</h2>
+    <p>For marketing email, clean your list before every major campaign and at least once a quarter. If you are sending weekly, clean it monthly. The goal is to keep your bounce rate below two percent and your complaint rate below zero.1 percent.</p>
+    <p>For cold email, verify every address before you send. Do not send to an unverified address. The cost of a few verification credits is far less than the cost of getting your domain blacklisted.</p>
+
+    <h2 style="font-size:22px;margin:34px 0 12px">When list cleaning is the actual problem</h2>
+    <p>If your authentication is clean, your domain reputation is good, and your content is solid, but your open rates are still low and your bounce rate is still high, the problem is probably your list. Run the <a href="/cold-email-checker">free audit</a> on your sending domain and look at the bounce rate. If it is above two percent, that is your first project, not the subject line.</p>
+    <p>Work it in this order: clean the list, fix the authentication, then optimize the content. Most teams do it backwards, which is why they burn weeks on copy while the real problem sits underneath. Once the list is clean, the rest of the deliverability work you already know how to do will actually pay off.</p>
+
+    <p style="margin-top:28px;padding:18px;background:#f4f4ff;border-radius:12px">Want this checked automatically every day? <a href="/#pricing" style="font-weight:600">Inboxproof Pro</a> monitors your domain around the clock and alerts you the moment a record breaks or an IP gets listed. <a href="/#pricing" style="font-weight:600">See pricing →</a></p>
+
+    <div style="margin-top:24px;padding:20px;border:1px solid rgba(99,102,241,.25);border-radius:12px;background:rgba(99,102,241,.06)">
+      <div style="font-weight:700;font-size:15px;margin-bottom:10px">Related guides</div>
+      <div style="opacity:.8;font-size:14px;line-height:2">
+        <a href="/blog/why-email-goes-to-spam">Why email goes to spam</a><br>
+        <a href="/blog/email-deliverability-checklist">Email deliverability checklist</a><br>
+        <a href="/blog/email-bounce-codes">Email bounce codes explained</a><br>
+        <a href="/blog/cold-email-bounce-rate">Cold email bounce rate: what is acceptable</a><br>
+        <a href="/blog/domain-reputation">Email domain reputation</a>
+      </div>
+    </div>
+  </div>
+</div>
+
+<footer>
+  <div class="container">
+    <span>© 2026 Inboxproof, Inc.</span>
+    <span><a href="/blog">All guides</a> · <a href="/">Home</a> · <a href="/privacy">Privacy</a> · <a href="https://github.com/jtc268/inboxproof" target="_blank" rel="noopener">GitHub</a></span>
+  </div>
+</footer>
+</body>
+</html>

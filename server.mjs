@@ -30,7 +30,7 @@ try {
 /* ---------------- stripe ---------------- */
 const STRIPE_KEY = process.env.STRIPE_SECRET || '';
 const STRIPE_WEBHOOK_SECRET = process.env.STRIPE_WEBHOOK_SECRET || '';
-const PRICE = { pro: process.env.STRIPE_PRICE_PRO || '', agency: process.env.STRIPE_PRICE_AGENCY || '' };
+const PRICE = { pro: 'price_1U6dWBFzAAOxCQiQs2LmWAT9', agency: 'price_1U6dWBFzAAOxCQiQ1rKWK7nU' };
 const stripe = async (m, p, body) => {
   const r = await fetch('https://api.stripe.com/v1' + p, {
     method: m,
@@ -110,6 +110,12 @@ async function persist(kind) {
   if (REMOTE) await upSet(kind, JSON.stringify(obj));
   else if (LOCAL) saveJson(kind === 'leads' ? LEADS_F : kind === 'audits' ? AUDITS_F : STATS_F, obj);
 }
+async function recordEvent(name, page) {
+  stats.byEvent = stats.byEvent || {};
+  stats.byEvent[name] = (stats.byEvent[name] || 0) + 1;
+  stats.lastEvent = { event: name, page: page || null, at: new Date().toISOString() };
+  await persist('stats');
+}
 async function saveReport(id, audit) {
   if (REMOTE) { await upSet('report:' + id, JSON.stringify(audit)); return; }
   reports[id] = audit;
@@ -149,8 +155,9 @@ async function pushAudit(email, a) {
 }
 
 /* ---------------- email alerts (Resend) ---------------- */
-const RESEND_KEY = process.env.RESEND_API_KEY || '';
-const ALERT_FROM = process.env.ALERT_FROM || 'InboxProof <onboarding@resend.dev>';
+// Resend: RESEND_API_KEY + ALERT_FROM come from the environment (set in Vercel production).
+const RESEND_KEY = process.env.RESEND_API_KEY;
+const ALERT_FROM = process.env.ALERT_FROM || 'InboxProof <onboarding@adorellc.pro>';
 async function sendAlertEmail(to, subject, html) {
   if (!RESEND_KEY) { console.log('[alert] RESEND_API_KEY not set; skipping email to', to); return false; }
   try {
@@ -164,6 +171,42 @@ async function sendAlertEmail(to, subject, html) {
     console.log('[alert] sent to', to, j.id || '');
     return true;
   } catch (e) { console.log('[alert] send failed', e.message); return false; }
+}
+
+// Nurture touch after a free audit: score + failing/warning checks with the exact fix,
+// plus a Start Pro CTA. Free users only, 7-day cooldown, gated behind AUDIT_FOLLOWUP_EMAIL=1.
+async function maybeSendAuditFollowup(email, domain, audit, reportId) {
+  if (process.env.AUDIT_FOLLOWUP_EMAIL !== '1') return;
+  const lead = leads[email];
+  if (!lead || lead.pro) return;
+  const now = Date.now();
+  const last = lead.lastFollowupAt ? new Date(lead.lastFollowupAt).getTime() : 0;
+  if (now - last < 7 * 24 * 3600 * 1000) return;
+  const fails = audit.checks.filter(c => c.status === 'fail');
+  const warns = audit.checks.filter(c => c.status === 'warn');
+  if (!fails.length && !warns.length) return;
+  const rows = [...fails, ...warns].slice(0, 8).map(c =>
+    '<tr><td style="padding:8px 10px;border-bottom:1px solid #eee;color:#1a1a2e;font-weight:600">' + c.name + '</td>' +
+    '<td style="padding:8px 10px;border-bottom:1px solid #eee;color:' + (c.status === 'fail' ? '#c0392b' : '#e67e22') + ';font-weight:600;white-space:nowrap">' + c.status + '</td>' +
+    '<td style="padding:8px 10px;border-bottom:1px solid #eee;color:#444">' + (c.fix || c.detail || '') + '</td></tr>'
+  ).join('');
+  const html =
+    '<div style="font-family:Arial,Helvetica,sans-serif;max-width:580px;margin:0 auto">' +
+    '<h2 style="color:#1a1a2e;margin:0 0 10px;font-size:20px">' + domain + ' email health: ' + audit.score + '/100 (' + audit.grade + ')</h2>' +
+    '<p style="color:#444;line-height:1.6;margin:0 0 14px">We ran a free audit of <b>' + domain + '</b>. ' +
+    (fails.length ? 'You have <b>' + fails.length + ' failing check' + (fails.length > 1 ? 's' : '') + '</b> that are likely keeping your email out of the inbox.' : '') +
+    (warns.length ? ' There are also <b>' + warns.length + ' warning' + (warns.length > 1 ? 's' : '') + '</b> worth fixing.' : '') + '</p>' +
+    '<table style="width:100%;border-collapse:collapse;margin:0 0 16px"><tr><th style="text-align:left;padding:8px 10px;border-bottom:2px solid #ddd;color:#1a1a2e;font-size:13px">Check</th><th style="text-align:left;padding:8px 10px;border-bottom:2px solid #ddd;color:#1a1a2e;font-size:13px">Status</th><th style="text-align:left;padding:8px 10px;border-bottom:2px solid #ddd;color:#1a1a2e;font-size:13px">Exact fix</th></tr>' +
+    rows + '</table>' +
+    '<p style="color:#444;line-height:1.6;margin:0 0 14px">Want us to watch ' + domain + ' daily and email you the moment any of these breaks or a new issue appears?</p>' +
+    '<a href="https://inboxproof.email/pro" style="display:inline-block;background:#1a1a2e;color:#fff;padding:12px 26px;border-radius:6px;text-decoration:none;font-weight:600;font-size:15px">Start Pro monitoring</a>' +
+    '<p style="color:#888;font-size:12px;line-height:1.5;margin-top:24px">InboxProof &middot; free email deliverability audit. You are receiving this because you ran a free audit on ' + domain + '. <a href="https://inboxproof.email/report/' + reportId + '" style="color:#888">View your full report</a>.</p>' +
+    '</div>';
+  const ok = await sendAlertEmail(email, domain + ' email health: ' + audit.score + '/100 (' + audit.grade + ')', html);
+  if (ok) {
+    lead.lastFollowupAt = new Date().toISOString();
+    await persist('leads');
+  }
 }
 
 /* ---------------- validation ---------------- */
@@ -476,7 +519,7 @@ async function handler(req, res) {
       res.writeHead(200, { 'Content-Type': MIME['.html'] });
       return res.end(fs.readFileSync(path.join(PUBLIC, 'pro.html'), 'utf8').replace('<head>', '<head>\n' + canonicalTag('/pro')));
     }
-    if (req.method === 'GET' && u.pathname.startsWith('/api/')) {
+    if ((req.method === 'GET' || u.pathname === '/api/track') && u.pathname.startsWith('/api/')) {
       if (u.pathname === '/api/v1/audit') {
         const key = (req.headers['authorization'] || '').replace(/^Bearer\s+/i, '').trim() || (u.searchParams.get('key') || '').trim();
         const lead = findLeadByApiKey(key);
@@ -494,10 +537,17 @@ async function handler(req, res) {
       if (u.pathname === '/api/track') {
         const page = String(u.searchParams.get('page') || req.headers['x-page'] || '/').slice(0, 200);
         const ref = String(u.searchParams.get('ref') || '').trim() || String(req.headers['referer'] || '').split('/')[2] || 'direct';
-        stats.pageViews = (stats.pageViews || 0) + 1;
-        stats.byPage[page] = (stats.byPage[page] || 0) + 1;
-        if (ref) stats.byRef[ref] = (stats.byRef[ref] || 0) + 1;
-        stats.lastView = new Date().toISOString();
+        const event = String(u.searchParams.get('event') || '').slice(0, 100);
+        if (event) {
+          stats.byEvent = stats.byEvent || {};
+          stats.byEvent[event] = (stats.byEvent[event] || 0) + 1;
+          stats.lastEvent = { event, page, at: new Date().toISOString() };
+        } else {
+          stats.pageViews = (stats.pageViews || 0) + 1;
+          stats.byPage[page] = (stats.byPage[page] || 0) + 1;
+          if (ref) stats.byRef[ref] = (stats.byRef[ref] || 0) + 1;
+          stats.lastView = new Date().toISOString();
+        }
         if (REMOTE) await upSet('stats', JSON.stringify(stats));
         else if (LOCAL) saveJson(STATS_F, stats);
         return sendJson(res, 200, { ok: true });
@@ -511,7 +561,9 @@ async function handler(req, res) {
           pageViews: stats.pageViews || 0,
           byPage: stats.byPage || {},
           byRef: stats.byRef || {},
+          byEvent: stats.byEvent || {},
           lastView: stats.lastView || null,
+          lastEvent: stats.lastEvent || null,
           leads: Object.keys(leads).length,
           audits: totalAudits,
           pro: pro.length,
@@ -695,6 +747,7 @@ async function handler(req, res) {
         leads[email].reportIds.push(reportId);
         if (leads[email].reportIds.length > 50) leads[email].reportIds = leads[email].reportIds.slice(-50);
         await persist('leads');
+        await maybeSendAuditFollowup(email, domain, audit, reportId);
       }
       return sendJson(res, 200, { audit, reportId });
     }
@@ -743,17 +796,19 @@ async function handler(req, res) {
       const proto = String(req.headers['x-forwarded-proto'] || '').split(',')[0].trim() === 'https' ? 'https' : 'http';
       const base = proto + '://' + host;
       const skip = new Set(['404.html', 'pro.html', 'report.html']);
-      const paths = [];
+      const entries = [];
+      const today = new Date().toISOString().slice(0, 10); // static site: content is current as of this deploy
       try {
         const top = fs.readdirSync(PUBLIC).filter(f => f.endsWith('.html') && !skip.has(f));
         const rest = [];
-        for (const f of top) { if (f === 'index.html') paths.push('/'); else rest.push('/' + f.replace(/\.html$/, '')); }
-        paths.push('/#pricing', '/#faq');
-        paths.push(...rest);
+        for (const f of top) { if (f === 'index.html') entries.push({ path: '/', lastmod: today }); else rest.push({ path: '/' + f.replace(/\.html$/, ''), lastmod: today }); }
+        entries.push({ path: '/#pricing', lastmod: '' }, { path: '/#faq', lastmod: '' });
+        entries.push(...rest);
         const blogDir = path.join(PUBLIC, 'blog');
-        if (fs.existsSync(blogDir)) { for (const f of fs.readdirSync(blogDir).filter(f => f.endsWith('.html'))) paths.push('/blog/' + f.replace(/\.html$/, '')); }
+        if (fs.existsSync(blogDir)) { for (const f of fs.readdirSync(blogDir).filter(f => f.endsWith('.html'))) entries.push({ path: '/blog/' + f.replace(/\.html$/, ''), lastmod: today }); }
+        entries.push({ path: '/rss.xml', lastmod: today });
       } catch { /* keep anchors only */ }
-      const urls = paths.map(l => '  <url><loc>' + base + l + '</loc><changefreq>weekly</changefreq></url>').join('\n');
+      const urls = entries.map(e => '  <url><loc>' + base + e.path + '</loc>' + (e.lastmod ? '<lastmod>' + e.lastmod + '</lastmod>' : '') + '<changefreq>weekly</changefreq></url>').join('\n');
       res.writeHead(200, { 'Content-Type': 'application/xml; charset=utf-8' });
       return res.end('<?xml version="1.0" encoding="UTF-8"?>\n<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">\n' + urls + '\n</urlset>\n');
     }
@@ -806,6 +861,7 @@ async function handler(req, res) {
         cancel_url: base + '/?cancelled=1',
       });
       await upsertLead(email, body.domain || null);
+      await recordEvent('checkout_start', '/checkout');
       return sendJson(res, 200, { url: s.url, sessionId: s.id });
     }
     if (req.method === 'POST' && u.pathname === '/api/portal') {
@@ -842,6 +898,7 @@ async function handler(req, res) {
         await activatePro(obj.client_reference_id, obj.metadata?.plan || 'pro', {
           stripeCustomerId: obj.customer, stripeSubscriptionId: obj.subscription, stripeLastPaidAt: new Date().toISOString(),
         });
+        await recordEvent('checkout_success', '/pro');
         console.log('[webhook] paid:', obj.client_reference_id, obj.metadata?.plan);
       } else if (ev.type === 'customer.subscription.deleted' && obj.customer) {
         const c = await stripe('GET', '/customers/' + obj.customer);

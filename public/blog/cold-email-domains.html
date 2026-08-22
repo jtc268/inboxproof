@@ -13,9 +13,7 @@
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="/styles.css">
 <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' rx='8' fill='%236366f1'/%3E%3Cpath d='M8 16h13M15 10l6 6-6 6' stroke='white' stroke-width='3' fill='none' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E">
-<script type="application/ld+json">
-{"@context":"https://schema.org","@type":"Article","headline":"Cold email domains: how many you need, how to rotate them, and how to keep them out of spam","description":"How many domains a cold email program needs, how to set each one up, when to rotate, and how to keep them out of spam. The setup, the math, and the monitoring.","author":{"@type":"Organization","name":"Inboxproof"},"publisher":{"@type":"Organization","name":"Inboxproof"}}
-</script>
+<script type="application/ld+json">{"@context":"https://schema.org","@type":"Article","headline":"Cold email domains: how many you need, how to rotate them, and how to keep them out of spam","description":"How many domains a cold email program needs, how to set each one up, when to rotate, and how to keep them out of spam. The setup, the math, and the monitoring.","author":{"@type":"Organization","name":"Inboxproof"},"publisher":{"@type":"Organization","name":"Inboxproof"},"datePublished":"2026-08-22","dateModified":"2026-08-22"}</script>
 <link rel="canonical" href="https://inboxproof.email/blog/cold-email-domains">
 <meta property="og:url" content="https://inboxproof.email/blog/cold-email-domains">
 <meta property="og:image" content="https://inboxproof.email/og.png">
@@ -56,7 +54,7 @@
       <li><b>DKIM.</b> The selector your provider uses must have a matching DNS record, and the key must be 2048-bit. <a href="/dkim-checker">Check the DKIM</a>.</li>
       <li><b>DMARC.</b> Start at <code>p=none</code> with reporting, then tighten it as the domain proves itself. <a href="/dmarc-checker">Check the DMARC</a>.</li>
       <li><b>PTR.</b> The sending IP must have a reverse DNS record that matches the forward record. Most ESPs handle this, but if you send from your own IP, set it.</li>
-      <li><b>IP reputation.</b> The sending IP must not be on a blocklist, and it should not be shared with other senders who can drag it down. <a href="/is-my-ip-blacklisted">Check the IP</a>.</li>
+      <li><b>IP reputation.</b> The sending IP must not be on a blocklist, and it should not be shared with other senders who can drag it down. <a href="/blog/is-my-ip-blacklisted">Check the IP</a>.</li>
     </ul>
     <p>The fastest way to verify all of this on a new domain is the <a href="/dmarc-checker">free audit</a>, which scores the whole stack and tells you the exact record to add before you start sending.</p>
 
@@ -72,10 +70,10 @@
     <h2 style="font-size:22px;margin:34px 0 12px">How to keep the pool out of spam</h2>
     <p>The pool is only as strong as its weakest domain. One flagged domain can hurt the whole program if the domains share an IP or if the rotation is sloppy.</p>
     <ul style="line-height:1.85">
-      <li><b>Warm up every domain before it takes volume.</b> No exceptions. A domain that skips warm-up starts with a low reputation and gets filtered. See the <a href="/cold-email-warm-up">warm-up guide</a>.</li>
-      <li><b>Keep the list clean.</b> Bounces and complaints poison the domain. Prune the list and honor unsubscribes the same day. <a href="/cold-email-bounce-rate">What a bad bounce rate means</a>.</li>
+      <li><b>Warm up every domain before it takes volume.</b> No exceptions. A domain that skips warm-up starts with a low reputation and gets filtered. See the <a href="/blog/cold-email-warm-up">warm-up guide</a>.</li>
+      <li><b>Keep the list clean.</b> Bounces and complaints poison the domain. Prune the list and honor unsubscribes the same day. <a href="/blog/cold-email-bounce-rate">What a bad bounce rate means</a>.</li>
       <li><b>Isolate the sending IP.</b> If you can, send from an IP that is not shared with other senders. A shared IP means other senders can drag your reputation down.</li>
-      <li><b>Check the domains and IPs regularly.</b> A blocklist hit or a broken record will not announce itself. <a href="/is-my-domain-blacklisted">Check the domain</a> and <a href="/is-my-ip-blacklisted">check the IP</a> on a schedule.</li>
+      <li><b>Check the domains and IPs regularly.</b> A blocklist hit or a broken record will not announce itself. <a href="/blog/is-my-domain-blacklisted">Check the domain</a> and <a href="/blog/is-my-ip-blacklisted">check the IP</a> on a schedule.</li>
     </ul>
 
     <h2 style="font-size:22px;margin:34px 0 12px">How to monitor the pool</h2>

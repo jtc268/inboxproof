@@ -1,0 +1,73 @@
+<!doctype html>
+<html lang="en">
+<head>
+<script>(function(){try{var p=location.pathname||"/";var r=(document.referrer||"").split("/")[2]||"direct";var u="/api/track?page="+encodeURIComponent(p)+"&ref="+encodeURIComponent(r);if(navigator.sendBeacon&&navigator.sendBeacon(u))return;var i=new Image();i.src=u;}catch(e){}})();</script>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Email deliverability for MSPs: keep every client's mail flowing | Inboxproof</title>
+<meta name="description" content="MSPs manage mail for dozens of client domains. A broken SPF record or expired DKIM key silently kills mail. Here is the stack that catches it before the client notices: per-domain authentication, daily monitoring, and client-ready reports.">
+<meta property="og:title" content="Email deliverability for MSPs: keep every client's mail flowing">
+<meta property="og:description" content="The deliverability stack for MSPs: per-domain authentication, daily monitoring of every client domain, and client-ready reports you can hand over.">
+<meta property="og:type" content="article">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="/styles.css">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' rx='8' fill='%236366f1'/%3E%3Cpath d='M8 16h13M15 10l6 6-6 6' stroke='white' stroke-width='3' fill='none' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E">
+<script type="application/ld+json">{"@context":"https://schema.org","@type":"Article","headline":"Email deliverability for MSPs: keep every client's mail flowing","description":"The deliverability stack for MSPs: per-domain authentication, daily monitoring of every client domain, and client-ready reports you can hand over.","author":{"@type":"Organization","name":"Inboxproof"},"publisher":{"@type":"Organization","name":"Inboxproof"},"datePublished":"2026-08-22","dateModified":"2026-08-22"}</script>
+<link rel="canonical" href="https://inboxproof.email/blog/email-deliverability-for-msps">
+<meta property="og:url" content="https://inboxproof.email/blog/email-deliverability-for-msps">
+<meta property="og:image" content="https://inboxproof.email/og.png">
+<meta property="og:image:width" content="1200">
+<meta property="og:image:height" content="630">
+<meta name="twitter:image" content="https://inboxproof.email/og.png">
+</head>
+<body>
+<nav class="nav">
+  <div class="container">
+    <a class="logo" href="/">
+      <span class="mark"><svg viewBox="0 0 24 24" fill="none"><path d="M4 12h11M11 7l5 5-5 5" stroke="#fff" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"/></svg></span>
+      Inboxproof
+    </a>
+    <div class="nav-links"><a href="/blog">All guides</a><a href="/">Run a free audit</a></div>
+  </div>
+</nav>
+
+<div class="container" style="max-width:760px;padding:60px 20px 80px">
+  <div class="kicker">Guide</div>
+  <h1 style="font-size:34px;margin:10px 0 24px">Email deliverability for MSPs: keep every client's mail flowing</h1>
+  <div style="opacity:.85;line-height:1.75;font-size:15.5px">
+    <p>If you manage IT for multiple clients, email is one of the systems you are on the hook for. A broken SPF record, an expired DKIM key, or a domain that lands on a blocklist does not announce itself. It just quietly stops working, and the client finds out first, usually at the worst possible time. The difference between an MSP that keeps client mail flowing and one that constantly firefight is a boring, repeatable system: authenticate every domain, monitor every domain daily, and be able to show the client exactly what is happening. Here is that system.</p>
+
+    <h2 style="font-size:22px;margin:34px 0 12px">What breaks client mail, and how</h2>
+    <p>Most deliverability failures at the MSP scale are not exotic. They are the same handful of things, repeated across dozens of domains:</p>
+    <ul style="margin:14px 0 14px 20px">
+      <li style="margin:6px 0"><strong>A broken SPF record.</strong> A new mail service gets added, the SPF record is not updated, and the domain fails authentication. The mail still sends, but it lands in spam or gets rejected.</li>
+      <li style="margin:6px 0"><strong>An expired or rotated DKIM key.</strong> The key changes, the selector stops matching, and signatures fail. The client does not notice until their mail starts bouncing.</li>
+      <li style="margin:6px 0"><strong>A domain on a blocklist.</strong> A client's IP or domain lands on Spamhaus or another list, and every message from that domain gets rejected or filtered.</li>
+      <li style="margin:6px 0"><strong>A missing or misconfigured DMARC record.</strong> Without it, the domain is spoofable, and large receivers treat it as low trust.</li>
+      <li style="margin:6px 0"><strong>A broken reverse DNS (PTR) record.</strong> The sending IP does not match the domain, and receivers flag it as suspicious.</li>
+    </ul>
+    <p>None of these are hard to fix. The problem is that you cannot fix what you do not know is broken. If you are checking each client domain by hand, you will miss things. If you are not checking at all, you will find out from the client.</p>
+
+    <h2 style="font-size:22px;margin:34px 0 12px">The stack that keeps every client domain inbox-ready</h2>
+    <p>Here is the system, in order:</p>
+    <p><strong>1. Authenticate every domain.</strong> Every client domain should have a valid SPF record, a working DKIM signature, and a DMARC record. If a domain is missing any of these, fix it before you start monitoring. A monitoring tool that tells you a domain is failing because it has no SPF record is not useful. The point is to catch the breakage after the setup is correct.</p>
+    <p><strong>2. Monitor every domain daily.</strong> Once the setup is correct, the risk is drift. A new service gets added, a key rotates, a domain lands on a blocklist. A daily re-audit across every client domain catches these before they become client-facing problems. This is the part that is impossible to do by hand at scale.</p>
+    <p><strong>3. Alert on the things that matter.</strong> Not every change is urgent. A blocklist hit is urgent. A missing SPF record is urgent. A minor DMARC policy change is not. The monitoring should surface the things that will actually break mail, not every tiny change.</p>
+    <p><strong>4. Report to the client.</strong> Your clients do not care about the details of SPF or DKIM. They care that their mail is working. A client-ready report that says "your domain is healthy, here is what we checked, here is what we fixed" is worth more than a wall of technical detail. It turns a background task into a visible service.</p>
+
+    <h2 style="font-size:22px;margin:34px 0 12px">How to run it without drowning in it</h2>
+    <p>The trap at the MSP scale is that the monitoring becomes a second job. If you have to log into a dashboard, click through each domain, and read a report for every client, you will stop doing it. The system has to be cheap to run. Set it up once, let it run daily, and only look at it when it tells you something is wrong. That is the difference between a system that survives and one that quietly dies.</p>
+    <p>Start with one client domain. Run a free check on it right now and see the seven-check score and the exact fixes: <a href="/cold-email-checker">cold email deliverability checker</a>. When you are ready to monitor the whole book and hand over branded reports, that is what the <a href="/#pricing">Agency tier</a> is for.</p>
+    <p>For the full playbook across every client domain, see <a href="/blog/email-deliverability-for-agencies.html">email deliverability for agencies</a> and <a href="/blog/email-deliverability-monitoring.html">email deliverability monitoring</a>.</p>
+  </div>
+</div>
+
+<footer>
+  <div class="container">
+    <span>© 2026 Inboxproof, Inc.</span>
+    <span><a href="/blog">All guides</a> · <a href="/">Home</a> · <a href="/privacy">Privacy</a> · <a href="https://github.com/jtc268/inboxproof" target="_blank" rel="noopener">GitHub</a></span>
+  </div>
+</footer>
+</body>
+</html>

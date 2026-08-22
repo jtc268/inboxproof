@@ -13,9 +13,7 @@
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="/styles.css">
 <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' rx='8' fill='%236366f1'/%3E%3Cpath d='M8 16h13M15 10l6 6-6 6' stroke='white' stroke-width='3' fill='none' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E">
-<script type="application/ld+json">
-{"@context":"https://schema.org","@type":"Article","headline":"Why is my email going to spam? The five causes and the fix for each","description":"Email lands in spam for a small set of reasons. Here are the five that account for most of it, how to tell which one is yours, and the exact fix for each.","author":{"@type":"Organization","name":"Inboxproof"},"publisher":{"@type":"Organization","name":"Inboxproof"}}
-</script>
+<script type="application/ld+json">{"@context":"https://schema.org","@type":"Article","headline":"Why is my email going to spam? The five causes and the fix for each","description":"Email lands in spam for a small set of reasons. Here are the five that account for most of it, how to tell which one is yours, and the exact fix for each.","author":{"@type":"Organization","name":"Inboxproof"},"publisher":{"@type":"Organization","name":"Inboxproof"},"datePublished":"2026-08-22","dateModified":"2026-08-22"}</script>
 <link rel="canonical" href="https://inboxproof.email/blog/why-email-goes-to-spam">
 <meta property="og:url" content="https://inboxproof.email/blog/why-email-goes-to-spam">
 <meta property="og:image" content="https://inboxproof.email/og.png">
@@ -52,16 +50,16 @@
     <h2 style="font-size:22px;margin:34px 0 12px">2. The IP or domain has a bad reputation</h2>
     <p>Even with perfect authentication, a mailbox will hold your mail if the sending IP or the domain itself is on a blocklist, or if it has no history at all. This is the cause that surprises people the most, because nothing in their own setup is wrong.</p>
     <ul style="line-height:1.85">
-      <li><b>The sending IP is listed.</b> One hit on Spamhaus, or a handful of other lists, and most mailboxes will quarantine you. <a href="/is-my-ip-blacklisted">Check the IP against the major lists</a>.</li>
-      <li><b>The domain is listed.</b> The domain can be flagged even when the IP is clean, usually because of a past abuse report. <a href="/is-my-domain-blacklisted">Check the domain</a>.</li>
-      <li><b>The IP is cold.</b> A brand new IP with no sending history starts with a low reputation and gets filtered until it earns trust. If you just moved to a new IP or a new provider, this is likely the cause. See the <a href="/cold-email-warm-up">warm-up guide</a>.</li>
+      <li><b>The sending IP is listed.</b> One hit on Spamhaus, or a handful of other lists, and most mailboxes will quarantine you. <a href="/blog/is-my-ip-blacklisted">Check the IP against the major lists</a>.</li>
+      <li><b>The domain is listed.</b> The domain can be flagged even when the IP is clean, usually because of a past abuse report. <a href="/blog/is-my-domain-blacklisted">Check the domain</a>.</li>
+      <li><b>The IP is cold.</b> A brand new IP with no sending history starts with a low reputation and gets filtered until it earns trust. If you just moved to a new IP or a new provider, this is likely the cause. See the <a href="/blog/cold-email-warm-up">warm-up guide</a>.</li>
       <li><b>You are on a shared IP.</b> On a shared IP, other senders can drag the reputation down with you. Know which you are on, and whether the provider isolates your traffic.</li>
     </ul>
 
     <h2 style="font-size:22px;margin:34px 0 12px">3. The list you send to is dirty</h2>
     <p>A clean list is the cheapest deliverability win available. The receiver watches your bounce and complaint rates, and a bad list quietly poisons your reputation even when every record is correct.</p>
     <ul style="line-height:1.85">
-      <li><b>Bounce rate is above 2%.</b> Hard bounces tell the receiver you are sending to addresses that do not exist. <a href="/cold-email-bounce-rate">What a bad bounce rate means</a> and how to bring it down.</li>
+      <li><b>Bounce rate is above 2%.</b> Hard bounces tell the receiver you are sending to addresses that do not exist. <a href="/blog/cold-email-bounce-rate">What a bad bounce rate means</a> and how to bring it down.</li>
       <li><b>You are sending to a purchased or scraped list.</b> This is the fastest way to get reported as spam and to lose the domain's reputation. Stop, and prune the list.</li>
       <li><b>Complaints are not near zero.</b> A spam complaint is the strongest negative signal a mailbox uses. Keep the rate under 0.1%, and honor unsubscribes the same day.</li>
       <li><b>Engagement is low.</b> Recipients who never open mark your domain as low quality. Prune the cold segment or re-engage it before the next send.</li>
@@ -80,7 +78,7 @@
     <h2 style="font-size:22px;margin:34px 0 12px">5. Something changed and you did not notice</h2>
     <p>Deliverability is a state, not a one-time setup. Records rot, IPs get listed, and providers change their rules. A lot of "my email suddenly went to spam" is a change that happened somewhere and nobody re-ran the check after it.</p>
     <ul style="line-height:1.85">
-      <li><b>A provider rotated your sending IP.</b> Transactional and ESP providers rotate IPs without telling you. The new IP may be cold or listed. <a href="/is-my-ip-blacklisted">Check the current IP</a>.</li>
+      <li><b>A provider rotated your sending IP.</b> Transactional and ESP providers rotate IPs without telling you. The new IP may be cold or listed. <a href="/blog/is-my-ip-blacklisted">Check the current IP</a>.</li>
       <li><b>A DNS record expired or was edited.</b> A DKIM key rotation, an SPF change, or a DMARC edit can break alignment. <a href="/dmarc-checker">Re-check the stack</a>.</li>
       <li><b>You added a new sender and did not add it to SPF.</b> A new tool or a new team sending from the domain, without its IP in the SPF record.</li>
       <li><b>You are not reading your DMARC reports.</b> They tell you who is sending as your domain and what is failing. The <a href="/dmarc-report-parser">report parser</a> turns them into a who-is-sending-as-you list.</li>
@@ -95,6 +93,7 @@
       <div style="opacity:.8;font-size:14px;line-height:2">
         <a href="/blog/email-deliverability-by-platform">Email deliverability by platform</a><br>
         <a href="/blog/email-deliverability-checklist">Email deliverability checklist</a><br>
+        <a href="/blog/domain-reputation">Email domain reputation: how to check and improve it</a><br>
         <a href="/blog/cold-email-deliverability">Cold email deliverability: how to stay out of spam</a><br>
         <a href="/blog/transactional-email-api-deliverability">Transactional email API deliverability</a><br>
         <a href="/blog/cold-email-infrastructure">Cold email infrastructure that keeps domains alive</a>

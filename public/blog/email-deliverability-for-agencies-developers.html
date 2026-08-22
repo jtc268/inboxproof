@@ -1,0 +1,177 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Email Deliverability for Agencies and Developers: The Complete Guide | Inboxproof</title>
+<meta name="description" content="The complete guide to email deliverability for agencies and developers. Learn how to fix SPF, DKIM, DMARC, and IP reputation issues across multiple client domains. Free audit, no account needed.">
+<link rel="canonical" href="https://inboxproof.email/blog/email-deliverability-for-agencies-developers.html">
+<meta property="og:title" content="Email Deliverability for Agencies and Developers">
+<meta property="og:description" content="How to keep every client domain in the inbox. The complete deliverability playbook for agencies and developers.">
+<meta property="og:type" content="article">
+<meta property="og:url" content="https://inboxproof.email/blog/email-deliverability-for-agencies-developers.html">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:title" content="Email Deliverability for Agencies and Developers">
+<meta name="twitter:description" content="The complete deliverability playbook for agencies and developers.">
+<script>
+(function(){try{var p=location.pathname||'/';var r=(document.referrer||'').split('/')[2]||'direct';var q=new URLSearchParams(location.search);var ref=q.get('ref')||'';if(ref){try{localStorage.setItem('ip_ref',ref);}catch(e){}}var u='/api/track?page='+encodeURIComponent(p)+'&ref='+encodeURIComponent(r)+(ref?'&team='+encodeURIComponent(ref):'');if(navigator.sendBeacon&&navigator.sendBeacon(u))return;var i=new Image();i.src=u;}catch(e){}})();
+window.trackEvent=function(ev){try{var p=location.pathname||'/';var u='/api/track?page='+encodeURIComponent(p)+'&event='+encodeURIComponent(ev);if(navigator.sendBeacon&&navigator.sendBeacon(u))return;var i=new Image();i.src=u;}catch(e){}};
+</script>
+<script type="application/ld+json">{"@context":"https://schema.org","@type":"Article","headline":"Email Deliverability for Agencies and Developers","description":"The complete guide to email deliverability for agencies and developers. Learn how to fix SPF, DKIM, DMARC, and IP reputation issues across multiple client domains.","author":{"@type":"Organization","name":"Inboxproof"},"publisher":{"@type":"Organization","name":"Inboxproof"},"datePublished":"2026-08-22","mainEntityOfPage":"https://inboxproof.email/blog/email-deliverability-for-agencies-developers.html","dateModified":"2026-08-22"}</script>
+<script type="application/ld+json">
+{"@context":"https://schema.org","@type":"FAQPage","mainEntity":[
+{"@type":"Question","name":"Why is email deliverability harder for agencies that manage many domains?","acceptedAnswer":{"@type":"Answer","text":"When you manage many client domains across different providers, you cannot memorize the DNS records. The most common failures are stale SPF records after a provider switch, missing DKIM CNAMEs, DMARC set to p=none, shared IP reputation, and no monitoring."}},
+{"@type":"Question","name":"What does a deliverability audit check?","acceptedAnswer":{"@type":"Answer","text":"Seven checks run against live DNS and mail servers: MX records, SPF, DKIM, DMARC, TLS/STARTTLS, PTR reverse DNS, and IP reputation. DMARC and MX carry the most weight because they decide delivery first."}},
+{"@type":"Question","name":"How often should I check the deliverability of client domains?","acceptedAnswer":{"@type":"Answer","text":"Daily. DNS records change, providers rotate DKIM keys, and IPs get blacklisted. Continuous monitoring catches regressions the day they happen instead of days later when a client complains."}},
+{"@type":"Question","name":"What are the most common deliverability mistakes agencies make?","acceptedAnswer":{"@type":"Answer","text":"Forgetting to update SPF after a provider switch, leaving DMARC at p=none, not monitoring after the fix, assuming one domain's config works for all, and ignoring shared IP reputation."}},
+{"@type":"Question","name":"Can developers use the Inboxproof API to check deliverability?","acceptedAnswer":{"@type":"Answer","text":"Yes. Inboxproof has a REST API. Run an audit on any domain and get the score and checks as JSON. No account is needed for the free tier."}}
+]}
+</script>
+<style>
+:root{--bg:#0a0a0a;--fg:#e8e8e8;--mut:#9a9a9a;--acc:#34d399;--card:#141414;--border:#2a2a2a}
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif;background:var(--bg);color:var(--fg);line-height:1.7;font-size:16px}
+.container{max-width:800px;margin:0 auto;padding:0 20px}
+header{padding:20px 0;border-bottom:1px solid var(--border)}
+header .container{display:flex;justify-content:space-between;align-items:center}
+.logo{font-weight:700;font-size:18px;color:var(--acc);text-decoration:none}
+nav a{color:var(--mut);text-decoration:none;font-size:14px;margin-left:20px}
+nav a:hover{color:var(--fg)}
+.btn{display:inline-block;padding:10px 20px;border-radius:8px;font-size:14px;font-weight:600;text-decoration:none;cursor:pointer;border:none}
+.btn-primary{background:var(--acc);color:#000}
+.btn-primary:hover{opacity:.9}
+.btn-ghost{background:transparent;color:var(--fg);border:1px solid var(--border)}
+.btn-ghost:hover{border-color:var(--acc)}
+.btn-sm{padding:6px 14px;font-size:13px}
+main{padding:40px 0}
+h1{font-size:32px;line-height:1.3;margin-bottom:16px}
+h2{font-size:24px;margin:32px 0 12px}
+h3{font-size:18px;margin:20px 0 8px}
+p{margin-bottom:16px;color:var(--mut)}
+ul,ol{margin:0 0 16px 24px;color:var(--mut)}
+li{margin-bottom:8px}
+code{background:#1a1a1a;padding:2px 6px;border-radius:4px;font-size:14px;font-family:'SF Mono',Monaco,Consolas,monospace}
+pre{background:#1a1a1a;padding:16px;border-radius:8px;overflow-x:auto;margin:16px 0}
+pre code{background:none;padding:0}
+.kicker{font-size:13px;text-transform:uppercase;letter-spacing:1px;color:var(--acc);margin-bottom:8px}
+.cta-box{background:var(--card);border:1px solid var(--border);border-radius:12px;padding:24px;margin:32px 0;text-align:center}
+.cta-box h3{margin-bottom:8px}
+.cta-box p{margin-bottom:16px}
+footer{padding:20px 0;border-top:1px solid var(--border);text-align:center;font-size:13px;color:var(--mut)}
+.related{margin-top:32px}
+.related a{color:var(--acc);text-decoration:none}
+.related a:hover{text-decoration:underline}
+</style>
+</head>
+<body>
+<header>
+  <div class="container">
+    <a class="logo" href="/">Inboxproof</a>
+    <nav>
+      <a href="/#pricing">Pricing</a>
+      <a href="/developers">Developers</a>
+      <a href="/#audit" class="btn btn-primary btn-sm">Run a free audit</a>
+    </nav>
+  </div>
+</header>
+<main>
+  <div class="container">
+    <div class="kicker">Guide</div>
+    <h1>Email Deliverability for Agencies and Developers</h1>
+    <p>You manage multiple domains. Each one has its own SPF, DKIM, DMARC, and IP reputation. One misconfigured record and your client's invoices land in spam. This guide covers the exact checklist to keep every domain in the inbox.</p>
+
+    <h2>Why deliverability is harder when you manage many domains</h2>
+    <p>When you run one domain, you can memorize the DNS records. When you manage ten client domains across five different email providers, you need a system. The most common failure modes for agencies and developers:</p>
+    <ul>
+      <li><b>Stale SPF records.</b> A client switches from Mailchimp to Brevo but the SPF record still includes the old provider. Now you're over the 10-DNS-lookup limit and SPF fails entirely.</li>
+      <li><b>Missing DKIM signatures.</b> The email provider signs with DKIM, but the CNAME record was never added to the client's DNS. Receivers see unsigned mail and flag it.</li>
+      <li><b>DMARC policy at none.</b> The client has a DMARC record but it's set to <code>p=none</code>. That means no enforcement, no reporting, and no protection against spoofing.</li>
+      <li><b>Shared IP reputation.</b> The client uses a shared sending IP that another user burned. The client's mail now lands in spam even though their own records are perfect.</li>
+      <li><b>No monitoring.</b> Someone changes a DNS record, a provider rotates their DKIM key, or an IP gets blacklisted. The client finds out three days later when their customer says "I never got your email."</li>
+    </ul>
+
+    <h2>The 7-check deliverability audit</h2>
+    <p>Every domain needs these seven checks, run against live DNS and mail servers:</p>
+    <ol>
+      <li><b>MX records.</b> Does the domain have valid MX records pointing to a reachable mail server? No MX means no mail delivery at all.</li>
+      <li><b>SPF.</b> Does the SPF record include every sending provider? Is it under the 10-DNS-lookup limit? Does it end with <code>-all</code> or <code>~all</code>?</li>
+      <li><b>DKIM.</b> Is DKIM enabled at the provider? Is the CNAME record published in DNS? Is the key length at least 1024 bits?</li>
+      <li><b>DMARC.</b> Is there a DMARC record? Is the policy <code>p=reject</code> or <code>p=quarantine</code>? Are reports being sent to a monitored address?</li>
+      <li><b>TLS/STARTTLS.</b> Does the mail server support TLS? Is it using a valid certificate? Is the certificate not expired?</li>
+      <li><b>PTR / reverse DNS.</b> Does the sending IP have a PTR record that matches the hostname? Does the hostname resolve back to the IP (forward-confirmed reverse DNS)?</li>
+      <li><b>IP reputation.</b> Is the sending IP on any major blacklist (Spamhaus, Barracuda, SpamCop)? What's its reputation score?</li>
+    </ol>
+    <p>Each check has a weight. DMARC and MX carry the most because they decide delivery first. A domain can't score well by fixing only the easy checks.</p>
+
+    <h2>The agency workflow</h2>
+    <p>Here's the workflow that keeps every client domain in the inbox:</p>
+    <h3>1. Onboard every domain</h3>
+    <p>When a new client comes in, run a full audit on their domain. This takes 30 seconds. You get a 0-100 score and a list of exact records to fix. No account needed, no DNS changes required.</p>
+    <h3>2. Fix the records</h3>
+    <p>Each failure comes with the exact TXT record to paste into the client's DNS. Copy, paste, verify. Most clients need 2-4 records added or updated.</p>
+    <h3>3. Monitor continuously</h3>
+    <p>DNS records change. Providers rotate DKIM keys. IPs get blacklisted. You need daily monitoring to catch regressions the day they happen, not three days later when the client calls.</p>
+    <h3>4. Report to the client</h3>
+    <p>Every audit is stored with a public link. You can share the report with the client, show them the score, and track the fix over time.</p>
+
+    <h2>The developer workflow</h2>
+    <p>If you're a developer building an email-sending product, deliverability is part of your API surface. Your users will blame your product when their mail lands in spam.</p>
+    <h3>1. Verify the sending domain</h3>
+    <p>Before your user sends their first email, verify their domain. Check SPF, DKIM, and DMARC. If any check fails, tell them exactly what to fix before they send.</p>
+    <h3>2. Check IP reputation before sending</h3>
+    <p>If you're using a shared IP pool, check the IP reputation before each send. If the IP is on a blacklist, route to a different IP or hold the send.</p>
+    <h3>3. Expose deliverability in your dashboard</h3>
+    <p>Your users should see their deliverability score in your dashboard. If the score drops, alert them. This turns a silent failure into a visible, fixable problem.</p>
+    <h3>4. Use the API</h3>
+    <p>Inboxproof has a REST API. Run an audit on any domain, get the score and checks as JSON, and build it into your product. No account needed for the free tier.</p>
+
+    <h2>Common mistakes that burn agencies and developers</h2>
+    <ul>
+      <li><b>Forgetting to update SPF after a provider switch.</b> The client moves from SendGrid to Resend. The SPF record still includes <code>include:sendgrid.net</code>. Now you're one DNS lookup over the limit.</li>
+      <li><b>Using <code>p=none</code> for DMARC.</b> You added the record but left the policy at none. That means no enforcement. Set it to <code>p=quarantine</code> at minimum.</li>
+      <li><b>Not monitoring after the fix.</b> You fixed the records, the score went to 95, and you moved on. Two weeks later the provider rotated their DKIM key and the score dropped to 60. You didn't know until the client complained.</li>
+      <li><b>Assuming one domain's config works for all.</b> Each domain has its own DNS zone. You can't copy-paste records between domains without checking that the values are correct for each one.</li>
+      <li><b>Ignoring shared IP reputation.</b> Your client uses a shared IP pool. Another user on the same IP sent spam. Now your client's mail lands in spam. You need to check IP reputation and route around bad IPs.</li>
+    </ul>
+
+    <h2>How to keep every domain in the inbox</h2>
+    <p>The system is simple:</p>
+    <ol>
+      <li>Run a 30-second audit on every domain you manage.</li>
+      <li>Fix the records the audit tells you to fix.</li>
+      <li>Monitor daily so you catch regressions the day they happen.</li>
+      <li>Share the report with your client so they can see the score.</li>
+    </ol>
+    <p>That's it. No XML forwarding. No sales call. No setup.</p>
+
+    <div class="cta-box">
+      <h3>Run a free audit on any domain</h3>
+      <p>30 seconds. No account. No DNS changes. Get a 0-100 score and the exact records to fix.</p>
+      <a href="/#audit" class="btn btn-primary" onclick="trackEvent('seo_cta_click')">Run my free audit</a>
+    </div>
+
+    <div class="related">
+      <h2>Related resources</h2>
+      <ul>
+        <li><a href="/blog/email-deliverability-for-agencies.html">Email deliverability for agencies</a></li>
+        <li><a href="/blog/email-deliverability-for-developers.html">Email deliverability for developers</a></li>
+        <li><a href="/blog/email-deliverability-amazon-ses.html">Amazon SES deliverability</a></li>
+        <li><a href="/blog/amazon-ses-vs-sendgrid">Amazon SES vs SendGrid: which one to pick</a></li>
+        <li><a href="/blog/email-deliverability-brevo.html">Brevo deliverability</a></li>
+        <li><a href="/blog/email-deliverability-mailjet.html">Mailjet deliverability</a></li>
+        <li><a href="/blog/spf-record-checker.html">SPF record checker</a></li>
+        <li><a href="/blog/how-to-set-up-dmarc.html">How to set up DMARC</a></li>
+        <li><a href="/blog/check-domain-blocklist.html">Check if your domain is on a blocklist</a></li>
+        <li><a href="/blog/domain-reputation">Email domain reputation: how to check and improve it</a></li>
+        <li><a href="/blog/email-deliverability-monitoring.html">Email deliverability monitoring</a></li>
+      </ul>
+    </div>
+  </div>
+</main>
+<footer>
+  <div class="container">
+    <span>&copy; 2026 Inboxproof, Inc. &middot; The deliverability score for the AI era.</span>
+  </div>
+</footer>
+</body>
+</html>

@@ -13,9 +13,7 @@
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="/styles.css">
 <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' rx='8' fill='%236366f1'/%3E%3Cpath d='M8 16h13M15 10l6 6-6 6' stroke='white' stroke-width='3' fill='none' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E">
-<script type="application/ld+json">
-{"@context":"https://schema.org","@type":"Article","headline":"Email deliverability software: what to look for in 2026","description":"What to look for in email deliverability software in 2026: the checks that matter, what to pay for, and how to tell a real tool from a marketing page.","author":{"@type":"Organization","name":"Inboxproof"},"publisher":{"@type":"Organization","name":"Inboxproof"}}
-</script>
+<script type="application/ld+json">{"@context":"https://schema.org","@type":"Article","headline":"Email deliverability software: what to look for in 2026","description":"What to look for in email deliverability software in 2026: the checks that matter, what to pay for, and how to tell a real tool from a marketing page.","author":{"@type":"Organization","name":"Inboxproof"},"publisher":{"@type":"Organization","name":"Inboxproof"},"datePublished":"2026-08-22","dateModified":"2026-08-22"}</script>
 <link rel="canonical" href="https://inboxproof.email/blog/email-deliverability-software">
 <meta property="og:url" content="https://inboxproof.email/blog/email-deliverability-software">
 <meta property="og:image" content="https://inboxproof.email/og.png">
@@ -44,7 +42,7 @@
     <p>A useful tool shows you the actual <b>SPF, DKIM, DMARC, and MX records</b>, not just a number. A score without the underlying records is a black box: when something breaks, you need to see which record is the problem. Look for a tool that shows the exact TXT value, flags the specific issue (a missing <code>-all</code>, a weak DKIM key, an SPF lookup over the limit), and tells you the fix. The <a href="/dmarc-checker">DMARC checker</a> and <a href="/spf-checker">SPF checker</a> do exactly this: they show the record and point at the problem.</p>
 
     <h2 style="font-size:22px;margin:34px 0 12px">It must check IP and domain reputation</h2>
-    <p>Authentication is the floor, but <b>reputation</b> is what decides the inbox. A real tool checks the sending IP and the domain against the major blocklists and shows which lists you are on, plus the delisting path. If a tool only checks DNS records and ignores blocklists, it will tell you "you are fine" the day before your IP gets listed. The <a href="/is-my-ip-blacklisted">IP blacklist checker</a> and <a href="/blocklist-checker">blocklist checker</a> cover this, and the <a href="/spamhaus-delisting">Spamhaus delisting guide</a> covers the hardest case.</p>
+    <p>Authentication is the floor, but <b>reputation</b> is what decides the inbox. A real tool checks the sending IP and the domain against the major blocklists and shows which lists you are on, plus the delisting path. If a tool only checks DNS records and ignores blocklists, it will tell you "you are fine" the day before your IP gets listed. The <a href="/blog/is-my-ip-blacklisted">IP blacklist checker</a> and <a href="/blocklist-checker">blocklist checker</a> cover this, and the <a href="/blog/spamhaus-delisting">Spamhaus delisting guide</a> covers the hardest case.</p>
 
     <h2 style="font-size:22px;margin:34px 0 12px">It must check TLS, not just the records</h2>
     <p>Modern mailboxes verify the <b>TLS certificate</b> on your mail server. An expired or misconfigured certificate is a quiet deliverability killer that most "checkers" never look at. A serious tool verifies the certificate and flags anything that would make a receiver distrust the connection. The <a href="/tls-checker">TLS checker</a> does this.</p>

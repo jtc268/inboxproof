@@ -1,4 +1,4 @@
-﻿<!doctype html>
+<!doctype html>
 <html lang="en">
 <head>
 <script>(function(){try{var p=location.pathname||"/";var r=(document.referrer||"").split("/")[2]||"direct";var u="/api/track?page="+encodeURIComponent(p)+"&ref="+encodeURIComponent(r);if(navigator.sendBeacon&&navigator.sendBeacon(u))return;var i=new Image();i.src=u;}catch(e){}})();</script>
@@ -13,9 +13,7 @@
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="/styles.css">
 <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' rx='8' fill='%236366f1'/%3E%3Cpath d='M8 16h13M15 10l6 6-6 6' stroke='white' stroke-width='3' fill='none' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E">
-<script type="application/ld+json">
-{"@context":"https://schema.org","@type":"Article","headline":"SendGrid deliverability: why your emails go to spam and how to fix it","description":"SendGrid is accepting your mail but recipients are not seeing it. The five reasons SendGrid deliverability drops, and the exact fix for each one.","author":{"@type":"Organization","name":"Inboxproof"},"publisher":{"@type":"Organization","name":"Inboxproof"}}
-</script>
+<script type="application/ld+json">{"@context":"https://schema.org","@type":"Article","headline":"SendGrid deliverability: why your emails go to spam and how to fix it","description":"SendGrid is accepting your mail but recipients are not seeing it. The five reasons SendGrid deliverability drops, and the exact fix for each one.","author":{"@type":"Organization","name":"Inboxproof"},"publisher":{"@type":"Organization","name":"Inboxproof"},"datePublished":"2026-08-22","dateModified":"2026-08-22"}</script>
 <link rel="canonical" href="https://inboxproof.email/blog/sendgrid-deliverability">
 <meta property="og:url" content="https://inboxproof.email/blog/sendgrid-deliverability">
 <meta property="og:image" content="https://inboxproof.email/og.png">
@@ -54,7 +52,7 @@
 
     <h2 style="font-size:22px;margin:34px 0 12px">4. Your sending IP is listed on a blocklist</h2>
     <p>SendGrid uses shared IPs by default. If another sender on that IP has been flagged for spam, your mail can be affected too. Even on a dedicated IP, a blocklist hit will not announce itself: the mail is still "delivered" by SendGrid, but the receiving server rejects it at the SMTP level.</p>
-    <p>The fix: check your sending IP against the major blocklists. Run the <a href="/is-my-ip-blacklisted">IP blocklist checker</a> on your sending IP. If it is listed, request delisting from the blocklist operator. If you are on a shared IP and your deliverability is inconsistent, consider moving to a dedicated IP in SendGrid.</p>
+    <p>The fix: check your sending IP against the major blocklists. Run the <a href="/blog/is-my-ip-blacklisted">IP blocklist checker</a> on your sending IP. If it is listed, request delisting from the blocklist operator. If you are on a shared IP and your deliverability is inconsistent, consider moving to a dedicated IP in SendGrid.</p>
 
     <h2 style="font-size:22px;margin:34px 0 12px">5. Your list is dirty or your volume spiked</h2>
     <p>The last two causes are on your side, not SendGrid's. A list full of hard bounces and cold recipients poisons your reputation. A sudden 10x spike in send volume trips spam filters. Both of these show up as a sudden drop in deliverability with no obvious cause in your infrastructure.</p>
@@ -70,6 +68,7 @@
         <a href="/blog/transactional-email-api-deliverability">Transactional email API deliverability</a><br>
         <a href="/blog/why-email-goes-to-spam">Why email goes to spam</a><br>
         <a href="/blog/email-deliverability-checklist">Email deliverability checklist</a><br>
+        <a href="/blog/amazon-ses-vs-sendgrid">Amazon SES vs SendGrid: which one to pick</a><br>
         <a href="/blog/dkim-not-signing">DKIM not signing emails? How to fix it</a>
       </div>
     </div>

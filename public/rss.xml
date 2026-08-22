@@ -1,0 +1,753 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
+<channel>
+  <title>Inboxproof Blog</title>
+  <link>https://inboxproof.email/blog</link>
+  <description>Email deliverability, SPF, DKIM, DMARC, and cold email infrastructure guides for agencies and developers.</description>
+  <language>en-us</language>
+  <lastBuildDate>2026-08-22T08:15:54.378Z</lastBuildDate>
+  <atom:link href="https://inboxproof.email/rss.xml" rel="self" type="application/rss+xml"/>
+  <item>
+    <title>Amazon SES vs SendGrid: the raw pipe vs the full platform | Inboxproof</title>
+    <link>https://inboxproof.email/blog/amazon-ses-vs-sendgrid</link>
+    <guid>https://inboxproof.email/blog/amazon-ses-vs-sendgrid</guid>
+    <pubDate>Sat, 22 Aug 2026 00:00:00 GMT</pubDate>
+    <description>Amazon SES is the cheapest way to send email at scale. SendGrid is the easiest. Here is how they compare on deliverability, pricing, and the failure modes that actually matter for your app.</description>
+  </item>
+  <item>
+    <title>Check If Your Domain Is on a Blocklist: How to Find Out and Get Delisted</title>
+    <link>https://inboxproof.email/blog/check-domain-blocklist</link>
+    <guid>https://inboxproof.email/blog/check-domain-blocklist</guid>
+    <pubDate>Sat, 22 Aug 2026 00:00:00 GMT</pubDate>
+    <description>Your domain might be on a blocklist. Here&apos;s how to check if your domain is on a blocklist, and how to get it delisted. No signup required.</description>
+  </item>
+  <item>
+    <title>Check If Your Email Is in Spam: 5 Ways to Find Out</title>
+    <link>https://inboxproof.email/blog/check-email-in-spam</link>
+    <guid>https://inboxproof.email/blog/check-email-in-spam</guid>
+    <pubDate>Sat, 22 Aug 2026 00:00:00 GMT</pubDate>
+    <description>Your email might be landing in spam without you knowing. Here are 5 ways to check, from DNS record lookups to free deliverability tests. No signup required.</description>
+  </item>
+  <item>
+    <title>Cold email bounce rate: what&apos;s a good number and how to fix it | Inboxproof</title>
+    <link>https://inboxproof.email/blog/cold-email-bounce-rate</link>
+    <guid>https://inboxproof.email/blog/cold-email-bounce-rate</guid>
+    <pubDate>Sat, 22 Aug 2026 00:00:00 GMT</pubDate>
+    <description>What counts as a good cold email bounce rate, why it matters for deliverability, and the exact steps to bring a high bounce rate back under control.</description>
+  </item>
+  <item>
+    <title>Cold email deliverability: how to send without landing in spam | Inboxproof</title>
+    <link>https://inboxproof.email/blog/cold-email-deliverability</link>
+    <guid>https://inboxproof.email/blog/cold-email-deliverability</guid>
+    <pubDate>Sat, 22 Aug 2026 00:00:00 GMT</pubDate>
+    <description>Cold email lives or dies on deliverability. The setup that keeps cold outreach in the primary inbox: a dedicated sending domain, correct SPF/DKIM/DMARC, slow warmup, clean lists, and monitoring.</description>
+  </item>
+  <item>
+    <title>Cold email domains: how many you need, how to rotate them, and how to keep them out of spam | Inboxproof</title>
+    <link>https://inboxproof.email/blog/cold-email-domains</link>
+    <guid>https://inboxproof.email/blog/cold-email-domains</guid>
+    <pubDate>Sat, 22 Aug 2026 00:00:00 GMT</pubDate>
+    <description>How many domains a cold email program needs, how to set each one up, when to rotate, and how to keep them out of spam. The setup, the math, and the monitoring.</description>
+  </item>
+  <item>
+    <title>Cold email infrastructure: domains, IPs, warm-up and rotation that survive 2026 | Inboxproof</title>
+    <link>https://inboxproof.email/blog/cold-email-infrastructure</link>
+    <guid>https://inboxproof.email/blog/cold-email-infrastructure</guid>
+    <pubDate>Sat, 22 Aug 2026 00:00:00 GMT</pubDate>
+    <description>The cold email infrastructure that keeps your domains alive: how many sending domains you need, how to authenticate each one, warm-up, rotation, and the monitoring that catches a broken record before it burns a domain.</description>
+  </item>
+  <item>
+    <title>How to improve your cold email reply rate, starting with the layer that decides it | Inboxproof</title>
+    <link>https://inboxproof.email/blog/cold-email-reply-rate</link>
+    <guid>https://inboxproof.email/blog/cold-email-reply-rate</guid>
+    <pubDate>Sat, 22 Aug 2026 00:00:00 GMT</pubDate>
+    <description>Cold email reply rate is decided before your first word of copy: by whether the email reaches the primary inbox. Here is how to lift reply rate, starting with deliverability.</description>
+  </item>
+  <item>
+    <title>Best cold email tools in 2026, and the deliverability layer they all miss | Inboxproof</title>
+    <link>https://inboxproof.email/blog/cold-email-tools</link>
+    <guid>https://inboxproof.email/blog/cold-email-tools</guid>
+    <pubDate>Sat, 22 Aug 2026 00:00:00 GMT</pubDate>
+    <description>A practical comparison of the main cold email tools (Instantly, Smartlead, Lemlist, Woodpecker, Reply.io and more) and the layer they all assume you have: a sending domain that is actually ready.</description>
+  </item>
+  <item>
+    <title>How to Warm Up a New Email Domain for Cold Outreach | InboxProof</title>
+    <link>https://inboxproof.email/blog/cold-email-warm-up</link>
+    <guid>https://inboxproof.email/blog/cold-email-warm-up</guid>
+    <pubDate>Sat, 22 Aug 2026 00:00:00 GMT</pubDate>
+    <description>A step-by-step cold email warm-up plan: how many days, how many emails per day, how to ramp, what to avoid, and how to know when your domain is ready for real outreach.</description>
+  </item>
+  <item>
+    <title>What is a good email deliverability score? A practical guide | InboxProof</title>
+    <link>https://inboxproof.email/blog/deliverability-score</link>
+    <guid>https://inboxproof.email/blog/deliverability-score</guid>
+    <pubDate>Sat, 22 Aug 2026 00:00:00 GMT</pubDate>
+    <description>What a deliverability score means, what 90+ / 70-89 / 50-69 / below 50 actually tells you, and how to move your score up. A practical guide for small teams.</description>
+  </item>
+  <item>
+    <title>DKIM not signing emails? How to fix it | InboxProof</title>
+    <link>https://inboxproof.email/blog/dkim-not-signing</link>
+    <guid>https://inboxproof.email/blog/dkim-not-signing</guid>
+    <pubDate>Sat, 22 Aug 2026 00:00:00 GMT</pubDate>
+    <description>Why your DKIM signature might not be working, the most common causes (missing record, wrong selector, weak key, misalignment), and how to fix them.</description>
+  </item>
+  <item>
+    <title>How DKIM Selectors Work: Finding, Rotating and Troubleshooting Your DKIM Key | InboxProof</title>
+    <link>https://inboxproof.email/blog/dkim-selector</link>
+    <guid>https://inboxproof.email/blog/dkim-selector</guid>
+    <pubDate>Sat, 22 Aug 2026 00:00:00 GMT</pubDate>
+    <description>What a DKIM selector is, how to find yours in DNS, how providers name theirs (s1, s2, google, k1), how to rotate a leaked or compromised key, and the selector mistakes that break DKIM for your whole domain.</description>
+  </item>
+  <item>
+    <title>What is DMARC? A practical guide | Inboxproof</title>
+    <link>https://inboxproof.email/blog/dmarc</link>
+    <guid>https://inboxproof.email/blog/dmarc</guid>
+    <pubDate>Sat, 22 Aug 2026 00:00:00 GMT</pubDate>
+    <description>How DMARC works, what p=none really does, and the minimum DMARC setup that stops your domain being used for mail you didn&apos;t authorize.</description>
+  </item>
+  <item>
+    <title>DMARC p=none vs p=quarantine vs p=reject: which should you use? | Inboxproof</title>
+    <link>https://inboxproof.email/blog/dmarc-policies</link>
+    <guid>https://inboxproof.email/blog/dmarc-policies</guid>
+    <pubDate>Sat, 22 Aug 2026 00:00:00 GMT</pubDate>
+    <description>What each DMARC policy actually does, when to use p=none, p=quarantine or p=reject, and the safe order to move from one to the next without breaking your own mail.</description>
+  </item>
+  <item>
+    <title>How to create a DMARC record (step by step, with the exact TXT) | Inboxproof</title>
+    <link>https://inboxproof.email/blog/dmarc-record</link>
+    <guid>https://inboxproof.email/blog/dmarc-record</guid>
+    <pubDate>Sat, 22 Aug 2026 00:00:00 GMT</pubDate>
+    <description>The exact steps to create and publish a DMARC record: what the TXT looks like, where it goes in your DNS, which policy to start with, and how to confirm it is live.</description>
+  </item>
+  <item>
+    <title>How to monitor DMARC reports: a practical guide | InboxProof</title>
+    <link>https://inboxproof.email/blog/dmarc-report-monitoring</link>
+    <guid>https://inboxproof.email/blog/dmarc-report-monitoring</guid>
+    <pubDate>Sat, 22 Aug 2026 00:00:00 GMT</pubDate>
+    <description>What DMARC aggregate and forensic reports are, how to read them, and how to set up monitoring so you catch authentication failures before they hurt your deliverability.</description>
+  </item>
+  <item>
+    <title>Email domain reputation: how to check it and how to improve it | Inboxproof</title>
+    <link>https://inboxproof.email/blog/domain-reputation</link>
+    <guid>https://inboxproof.email/blog/domain-reputation</guid>
+    <pubDate>Sat, 22 Aug 2026 00:00:00 GMT</pubDate>
+    <description>Your domain can be fully authenticated and still land in spam. What domain reputation is, how mailbox providers build it, how to check yours, and the specific fixes that move it.</description>
+  </item>
+  <item>
+    <title>Email authentication for startups: the 2026 checklist | InboxProof</title>
+    <link>https://inboxproof.email/blog/email-authentication-startups</link>
+    <guid>https://inboxproof.email/blog/email-authentication-startups</guid>
+    <pubDate>Sat, 22 Aug 2026 00:00:00 GMT</pubDate>
+    <description>The complete 2026 checklist for email authentication for startups: SPF, DKIM, DMARC, and the other records you need to get into the inbox.</description>
+  </item>
+  <item>
+    <title>Email Bounce Codes Explained: Hard vs Soft Bounces | InboxProof</title>
+    <link>https://inboxproof.email/blog/email-bounce-codes</link>
+    <guid>https://inboxproof.email/blog/email-bounce-codes</guid>
+    <pubDate>Sat, 22 Aug 2026 00:00:00 GMT</pubDate>
+    <description>What email bounce codes mean and how to fix them: hard bounces (550, 5.1.1, 5.7.1), soft bounces (450, 4.2.1, 4.3.0), and the bounce-rate thresholds that get you delisted.</description>
+  </item>
+  <item>
+    <title>Email compliance: CAN-SPAM, GDPR and the rules that keep you out of spam | Inboxproof</title>
+    <link>https://inboxproof.email/blog/email-compliance</link>
+    <guid>https://inboxproof.email/blog/email-compliance</guid>
+    <pubDate>Sat, 22 Aug 2026 00:00:00 GMT</pubDate>
+    <description>Email compliance is not optional. CAN-SPAM, GDPR, CASL and the rules that keep your domain out of spam. What each one requires, what happens when you get it wrong, and how to stay compliant.</description>
+  </item>
+  <item>
+    <title>Email deliverability for ActiveCampaign: keep your campaigns out of spam</title>
+    <link>https://inboxproof.email/blog/email-deliverability-activecampaign</link>
+    <guid>https://inboxproof.email/blog/email-deliverability-activecampaign</guid>
+    <pubDate>Sat, 22 Aug 2026 00:00:00 GMT</pubDate>
+    <description>ActiveCampaign users lose engagement when campaigns and transactional emails land in spam. Learn the 6 DNS records that decide delivery, the ActiveCampaign-specific gotchas, and how to monitor them.</description>
+  </item>
+  <item>
+    <title>Amazon SES deliverability: why your emails go to spam and how to fix it | Inboxproof</title>
+    <link>https://inboxproof.email/blog/email-deliverability-amazon-ses</link>
+    <guid>https://inboxproof.email/blog/email-deliverability-amazon-ses</guid>
+    <pubDate>Sat, 22 Aug 2026 00:00:00 GMT</pubDate>
+    <description>Amazon SES accepted your mail but recipients are not seeing it. The five reasons SES deliverability drops, and the exact fix for each one.</description>
+  </item>
+  <item>
+    <title>What an email deliverability audit tool actually checks (and what to look for) | Inboxproof</title>
+    <link>https://inboxproof.email/blog/email-deliverability-audit-tool</link>
+    <guid>https://inboxproof.email/blog/email-deliverability-audit-tool</guid>
+    <pubDate>Sat, 22 Aug 2026 00:00:00 GMT</pubDate>
+    <description>What a real email deliverability audit tool checks: MX, SPF, DKIM, DMARC, TLS, PTR, IP reputation. What to look for in a tool, and how to tell a real audit from a marketing page.</description>
+  </item>
+  <item>
+    <title>Email deliverability for B2B: what works when you are sending to business inboxes | Inboxproof</title>
+    <link>https://inboxproof.email/blog/email-deliverability-b2b</link>
+    <guid>https://inboxproof.email/blog/email-deliverability-b2b</guid>
+    <pubDate>Sat, 22 Aug 2026 00:00:00 GMT</pubDate>
+    <description>B2B email deliverability is different from B2C. Business inboxes have stricter filters, higher bounce rates, and different engagement patterns. What to check, what to fix, and how to keep your domain out of spam.</description>
+  </item>
+  <item>
+    <title>Brevo deliverability: why your emails go to spam and how to fix it | Inboxproof</title>
+    <link>https://inboxproof.email/blog/email-deliverability-brevo</link>
+    <guid>https://inboxproof.email/blog/email-deliverability-brevo</guid>
+    <pubDate>Sat, 22 Aug 2026 00:00:00 GMT</pubDate>
+    <description>Brevo accepted your mail but recipients are not seeing it. The five reasons Brevo deliverability drops, and the exact fix for each one.</description>
+  </item>
+  <item>
+    <title>Email deliverability by audience: guides for agencies, developers, e-commerce, and SaaS</title>
+    <link>https://inboxproof.email/blog/email-deliverability-by-audience</link>
+    <guid>https://inboxproof.email/blog/email-deliverability-by-audience</guid>
+    <pubDate>Sat, 22 Aug 2026 00:00:00 GMT</pubDate>
+    <description>Email deliverability guides organized by audience: agencies, developers, e-commerce, and SaaS. Find the guide that matches your use case and fix the DNS records that decide delivery.</description>
+  </item>
+  <item>
+    <title>Email deliverability by platform: Shopify, WordPress, Klaviyo, and more</title>
+    <link>https://inboxproof.email/blog/email-deliverability-by-platform</link>
+    <guid>https://inboxproof.email/blog/email-deliverability-by-platform</guid>
+    <pubDate>Sat, 22 Aug 2026 00:00:00 GMT</pubDate>
+    <description>Email deliverability problems look different on every platform. Find the guide for your stack: Shopify, WordPress, WooCommerce, Squarespace, Wix, HubSpot, Salesforce, Mailchimp, or Klaviyo.</description>
+  </item>
+  <item>
+    <title>Email deliverability checklist: 24 things to check before you send | Inboxproof</title>
+    <link>https://inboxproof.email/blog/email-deliverability-checklist</link>
+    <guid>https://inboxproof.email/blog/email-deliverability-checklist</guid>
+    <pubDate>Sat, 22 Aug 2026 00:00:00 GMT</pubDate>
+    <description>A 24-point email deliverability checklist: DNS records, sending infrastructure, list hygiene, content, and monitoring. Run it before every send.</description>
+  </item>
+  <item>
+    <title>Email deliverability for ConvertKit: keep your campaigns out of spam</title>
+    <link>https://inboxproof.email/blog/email-deliverability-convertkit</link>
+    <guid>https://inboxproof.email/blog/email-deliverability-convertkit</guid>
+    <pubDate>Sat, 22 Aug 2026 00:00:00 GMT</pubDate>
+    <description>ConvertKit users lose engagement when campaigns and automated emails land in spam. Learn the 6 DNS records that decide delivery, the ConvertKit-specific gotchas, and how to monitor them.</description>
+  </item>
+  <item>
+    <title>Email Deliverability for E-commerce: SPF, DKIM, DMARC for Online Stores | Inboxproof</title>
+    <link>https://inboxproof.email/blog/email-deliverability-ecommerce</link>
+    <guid>https://inboxproof.email/blog/email-deliverability-ecommerce</guid>
+    <pubDate>Sat, 22 Aug 2026 00:00:00 GMT</pubDate>
+    <description>Why order confirmations and marketing emails from your online store land in spam, and the exact SPF, DKIM, DMARC and sender-reputation fixes for Shopify, WooCommerce and headless stores.</description>
+  </item>
+  <item>
+    <title>Email deliverability for agencies: monitor every client domain | Inboxproof</title>
+    <link>https://inboxproof.email/blog/email-deliverability-for-agencies</link>
+    <guid>https://inboxproof.email/blog/email-deliverability-for-agencies</guid>
+    <pubDate>Sat, 22 Aug 2026 00:00:00 GMT</pubDate>
+    <description>Agencies run cold email for many clients on many domains. Here is the deliverability stack that keeps every client inbox-ready: per-domain authentication, daily monitoring, and white-label reports you can hand over.</description>
+  </item>
+  <item>
+    <title>Email Deliverability for Agencies and Developers: The Complete Guide | Inboxproof</title>
+    <link>https://inboxproof.email/blog/email-deliverability-for-agencies-developers</link>
+    <guid>https://inboxproof.email/blog/email-deliverability-for-agencies-developers</guid>
+    <pubDate>Sat, 22 Aug 2026 00:00:00 GMT</pubDate>
+    <description>The complete guide to email deliverability for agencies and developers. Learn how to fix SPF, DKIM, DMARC, and IP reputation issues across multiple client domains. Free audit, no account needed.</description>
+  </item>
+  <item>
+    <title>Email deliverability for developers: make sure your product&apos;s email actually lands | Inboxproof</title>
+    <link>https://inboxproof.email/blog/email-deliverability-for-developers</link>
+    <guid>https://inboxproof.email/blog/email-deliverability-for-developers</guid>
+    <pubDate>Sat, 22 Aug 2026 00:00:00 GMT</pubDate>
+    <description>Email deliverability is a product problem, not just an ops problem. The records and reputation signals that decide whether your transactional and notification email lands in the inbox, and how to monitor them so a broken record never silently kills your user experience.</description>
+  </item>
+  <item>
+    <title>Email deliverability for MSPs: keep every client&apos;s mail flowing | Inboxproof</title>
+    <link>https://inboxproof.email/blog/email-deliverability-for-msps</link>
+    <guid>https://inboxproof.email/blog/email-deliverability-for-msps</guid>
+    <pubDate>Sat, 22 Aug 2026 00:00:00 GMT</pubDate>
+    <description>MSPs manage mail for dozens of client domains. A broken SPF record or expired DKIM key silently kills mail. Here is the stack that catches it before the client notices: per-domain authentication, daily monitoring, and client-ready reports.</description>
+  </item>
+  <item>
+    <title>Email deliverability for GetResponse: keep your campaigns out of spam</title>
+    <link>https://inboxproof.email/blog/email-deliverability-getresponse</link>
+    <guid>https://inboxproof.email/blog/email-deliverability-getresponse</guid>
+    <pubDate>Sat, 22 Aug 2026 00:00:00 GMT</pubDate>
+    <description>GetResponse users lose engagement when campaigns and automated emails land in spam. Learn the 6 DNS records that decide delivery, the GetResponse-specific gotchas, and how to monitor them.</description>
+  </item>
+  <item>
+    <title>Email Deliverability for HubSpot: SPF, DKIM, DMARC for HubSpot CRM | Inboxproof</title>
+    <link>https://inboxproof.email/blog/email-deliverability-hubspot</link>
+    <guid>https://inboxproof.email/blog/email-deliverability-hubspot</guid>
+    <pubDate>Sat, 22 Aug 2026 00:00:00 GMT</pubDate>
+    <description>How to fix email deliverability for HubSpot: the exact DNS records, platform gotchas, and monitoring setup you need to keep your HubSpot emails out of spam.</description>
+  </item>
+  <item>
+    <title>Email Deliverability for Klaviyo: SPF, DKIM, DMARC for Klaviyo Campaigns | Inboxproof</title>
+    <link>https://inboxproof.email/blog/email-deliverability-klaviyo</link>
+    <guid>https://inboxproof.email/blog/email-deliverability-klaviyo</guid>
+    <pubDate>Sat, 22 Aug 2026 00:00:00 GMT</pubDate>
+    <description>How to fix email deliverability for Klaviyo: the exact DNS records, platform gotchas, and monitoring setup you need to keep your Klaviyo campaigns out of spam.</description>
+  </item>
+  <item>
+    <title>Email Deliverability for Mailchimp: SPF, DKIM, DMARC for Mailchimp Campaigns | Inboxproof</title>
+    <link>https://inboxproof.email/blog/email-deliverability-mailchimp</link>
+    <guid>https://inboxproof.email/blog/email-deliverability-mailchimp</guid>
+    <pubDate>Sat, 22 Aug 2026 00:00:00 GMT</pubDate>
+    <description>How to fix email deliverability for Mailchimp: the exact DNS records, platform gotchas, and monitoring setup you need to keep your Mailchimp campaigns out of spam.</description>
+  </item>
+  <item>
+    <title>Mailjet deliverability: why Mailjet accepted your mail but it lands in spam</title>
+    <link>https://inboxproof.email/blog/email-deliverability-mailjet</link>
+    <guid>https://inboxproof.email/blog/email-deliverability-mailjet</guid>
+    <pubDate>Sat, 22 Aug 2026 00:00:00 GMT</pubDate>
+    <description>Mailjet accepted your send, so the problem is not the API. It is the receiving mailbox. Here are the five reasons Mailjet mail lands in spam, and the exact DNS and account fixes for each.</description>
+  </item>
+  <item>
+    <title>Email deliverability monitoring: catch broken records before campaigns die | Inboxproof</title>
+    <link>https://inboxproof.email/blog/email-deliverability-monitoring</link>
+    <guid>https://inboxproof.email/blog/email-deliverability-monitoring</guid>
+    <pubDate>Sat, 22 Aug 2026 00:00:00 GMT</pubDate>
+    <description>A one-time SPF/DKIM/DMARC check is not enough. Here is how to monitor every sending domain daily so a rotated key, a missing SPF include, or a tightened DMARC policy gets caught before your next campaign dies in the spam folder.</description>
+  </item>
+  <item>
+    <title>Email Deliverability for SaaS: Keep Your Users Receiving Password Resets | Inboxproof</title>
+    <link>https://inboxproof.email/blog/email-deliverability-saas</link>
+    <guid>https://inboxproof.email/blog/email-deliverability-saas</guid>
+    <pubDate>Sat, 22 Aug 2026 00:00:00 GMT</pubDate>
+    <description>Your SaaS sends transactional and notification email through a provider. When deliverability breaks, your users miss password resets and onboarding emails. Here&apos;s how to catch it before your users do.</description>
+  </item>
+  <item>
+    <title>Email Deliverability for Salesforce: SPF, DKIM, DMARC for Salesforce Marketing Cloud | Inboxproof</title>
+    <link>https://inboxproof.email/blog/email-deliverability-salesforce</link>
+    <guid>https://inboxproof.email/blog/email-deliverability-salesforce</guid>
+    <pubDate>Sat, 22 Aug 2026 00:00:00 GMT</pubDate>
+    <description>How to fix email deliverability for Salesforce Marketing Cloud: the exact DNS records, platform gotchas, and monitoring setup you need to keep your Salesforce emails out of spam.</description>
+  </item>
+  <item>
+    <title>Email deliverability for Shopify: keep order confirmations out of spam</title>
+    <link>https://inboxproof.email/blog/email-deliverability-shopify</link>
+    <guid>https://inboxproof.email/blog/email-deliverability-shopify</guid>
+    <pubDate>Sat, 22 Aug 2026 00:00:00 GMT</pubDate>
+    <description>Shopify merchants lose sales when order confirmations land in spam. Learn the 6 DNS records that decide delivery, how to check them in 30 seconds, and how to monitor them so a broken record never costs you a customer.</description>
+  </item>
+  <item>
+    <title>Email deliverability software: what to look for in 2026 | Inboxproof</title>
+    <link>https://inboxproof.email/blog/email-deliverability-software</link>
+    <guid>https://inboxproof.email/blog/email-deliverability-software</guid>
+    <pubDate>Sat, 22 Aug 2026 00:00:00 GMT</pubDate>
+    <description>What to look for in email deliverability software in 2026: the checks that matter, what to pay for, and how to tell a real tool from a marketing page.</description>
+  </item>
+  <item>
+    <title>Email deliverability for Squarespace: keep your form emails out of spam</title>
+    <link>https://inboxproof.email/blog/email-deliverability-squarespace</link>
+    <guid>https://inboxproof.email/blog/email-deliverability-squarespace</guid>
+    <pubDate>Sat, 22 Aug 2026 00:00:00 GMT</pubDate>
+    <description>Squarespace sites lose leads when contact form emails and password resets land in spam. Learn the DNS records that decide delivery, the Squarespace-specific gotchas, and how to check your domain in 30 seconds.</description>
+  </item>
+  <item>
+    <title>Email Deliverability Test: Check Your Domain in 30 Seconds</title>
+    <link>https://inboxproof.email/blog/email-deliverability-test</link>
+    <guid>https://inboxproof.email/blog/email-deliverability-test</guid>
+    <pubDate>Sat, 22 Aug 2026 00:00:00 GMT</pubDate>
+    <description>Run a free email deliverability test on your domain. Check SPF, DKIM, DMARC, TLS, PTR and IP reputation. Get a spam-risk score and the exact record to fix. No signup required.</description>
+  </item>
+  <item>
+    <title>Best Email Deliverability Tools in 2026: 7 Options Compared</title>
+    <link>https://inboxproof.email/blog/email-deliverability-tools</link>
+    <guid>https://inboxproof.email/blog/email-deliverability-tools</guid>
+    <pubDate>Sat, 22 Aug 2026 00:00:00 GMT</pubDate>
+    <description>The 7 best email deliverability tools in 2026, compared. Check SPF, DKIM, DMARC, TLS, PTR and IP reputation. Free options and paid options. No signup required for the free test.</description>
+  </item>
+  <item>
+    <title>Email deliverability for Wix: keep your form emails out of spam</title>
+    <link>https://inboxproof.email/blog/email-deliverability-wix</link>
+    <guid>https://inboxproof.email/blog/email-deliverability-wix</guid>
+    <pubDate>Sat, 22 Aug 2026 00:00:00 GMT</pubDate>
+    <description>Wix sites lose leads when contact form emails and password resets land in spam. Learn the DNS records that decide delivery, the Wix-specific gotchas, and how to check your domain in 30 seconds.</description>
+  </item>
+  <item>
+    <title>Email deliverability for WooCommerce: keep order confirmations out of spam</title>
+    <link>https://inboxproof.email/blog/email-deliverability-woocommerce</link>
+    <guid>https://inboxproof.email/blog/email-deliverability-woocommerce</guid>
+    <pubDate>Sat, 22 Aug 2026 00:00:00 GMT</pubDate>
+    <description>WooCommerce stores lose sales when order confirmations and shipping updates land in spam. Learn the DNS records that decide delivery, the WooCommerce-specific gotchas, and how to check your domain in 30 seconds.</description>
+  </item>
+  <item>
+    <title>Email deliverability for WordPress: stop your contact form emails going to spam</title>
+    <link>https://inboxproof.email/blog/email-deliverability-wordpress</link>
+    <guid>https://inboxproof.email/blog/email-deliverability-wordpress</guid>
+    <pubDate>Sat, 22 Aug 2026 00:00:00 GMT</pubDate>
+    <description>WordPress sites lose leads when contact form emails and password resets land in spam. Learn the DNS records that decide delivery, the WordPress-specific gotchas, and how to check your domain in 30 seconds.</description>
+  </item>
+  <item>
+    <title>Why is my email in spam? The 7 causes, in order of likelihood | Inboxproof</title>
+    <link>https://inboxproof.email/blog/email-in-spam</link>
+    <guid>https://inboxproof.email/blog/email-in-spam</guid>
+    <pubDate>Sat, 22 Aug 2026 00:00:00 GMT</pubDate>
+    <description>Email landing in spam is almost always one of seven concrete causes. Work through them in this order: authentication, alignment, sender reputation, list quality, content signals, warmup, and blacklist.</description>
+  </item>
+  <item>
+    <title>Email list cleaning: how to remove bad addresses and protect your deliverability | Inboxproof</title>
+    <link>https://inboxproof.email/blog/email-list-cleaning</link>
+    <guid>https://inboxproof.email/blog/email-list-cleaning</guid>
+    <pubDate>Sat, 22 Aug 2026 00:00:00 GMT</pubDate>
+    <description>A dirty list is the fastest way to tank your deliverability. How to clean an email list, what to remove, how often to clean it, and the tools that do it for you.</description>
+  </item>
+  <item>
+    <title>Email not delivering to Outlook: the 4-step diagnosis | Inboxproof</title>
+    <link>https://inboxproof.email/blog/email-not-delivering-to-outlook</link>
+    <guid>https://inboxproof.email/blog/email-not-delivering-to-outlook</guid>
+    <pubDate>Sat, 22 Aug 2026 00:00:00 GMT</pubDate>
+    <description>Outlook is not receiving your email. The four causes in order of likelihood, and the exact check for each one.</description>
+  </item>
+  <item>
+    <title>Why your email is not landing in Gmail&apos;s inbox in 2026 | Inboxproof</title>
+    <link>https://inboxproof.email/blog/email-not-landing-gmail</link>
+    <guid>https://inboxproof.email/blog/email-not-landing-gmail</guid>
+    <pubDate>Sat, 22 Aug 2026 00:00:00 GMT</pubDate>
+    <description>The concrete requirements Gmail enforces for bulk senders in 2026: SPF, DKIM, DMARC, spam rates, one-click unsubscribe, and volume limits. How to check each one.</description>
+  </item>
+  <item>
+    <title>Email not landing in Yahoo: the 4-step diagnosis | Inboxproof</title>
+    <link>https://inboxproof.email/blog/email-not-landing-yahoo</link>
+    <guid>https://inboxproof.email/blog/email-not-landing-yahoo</guid>
+    <pubDate>Sat, 22 Aug 2026 00:00:00 GMT</pubDate>
+    <description>Yahoo is not receiving your email. The four causes in order of likelihood, and the exact check for each one.</description>
+  </item>
+  <item>
+    <title>Email rejected by Microsoft: the 5 causes and the fix for each | Inboxproof</title>
+    <link>https://inboxproof.email/blog/email-rejected-by-microsoft</link>
+    <guid>https://inboxproof.email/blog/email-rejected-by-microsoft</guid>
+    <pubDate>Sat, 22 Aug 2026 00:00:00 GMT</pubDate>
+    <description>Microsoft is rejecting your email. The five causes in order of likelihood, the exact check for each one, and the fix that actually works.</description>
+  </item>
+  <item>
+    <title>Email Spam Test: Check Your Domain&apos;s Spam Risk in 30 Seconds</title>
+    <link>https://inboxproof.email/blog/email-spam-test</link>
+    <guid>https://inboxproof.email/blog/email-spam-test</guid>
+    <pubDate>Sat, 22 Aug 2026 00:00:00 GMT</pubDate>
+    <description>Run a free email spam test on your domain. Check SPF, DKIM, DMARC, TLS, PTR and IP reputation to find out your spam risk. Get the exact record to fix. No signup required.</description>
+  </item>
+  <item>
+    <title>How to get out of the spam folder, and keep it there | Inboxproof</title>
+    <link>https://inboxproof.email/blog/get-out-of-spam-folder</link>
+    <guid>https://inboxproof.email/blog/get-out-of-spam-folder</guid>
+    <pubDate>Sat, 22 Aug 2026 00:00:00 GMT</pubDate>
+    <description>A step-by-step checklist for getting email out of the spam folder: fix authentication, clear blocklists, warm up sending, and monitor so it never happens again.</description>
+  </item>
+  <item>
+    <title>Gmail Postmaster Tools, explained: what the metrics actually mean | Inboxproof</title>
+    <link>https://inboxproof.email/blog/gmail-postmaster-tools</link>
+    <guid>https://inboxproof.email/blog/gmail-postmaster-tools</guid>
+    <pubDate>Sat, 22 Aug 2026 00:00:00 GMT</pubDate>
+    <description>Gmail Postmaster Tools shows your domain&apos;s reputation with Gmail. Here is what each metric means, how to read it, and what to do when a number moves the wrong way.</description>
+  </item>
+  <item>
+    <title>Gmail SMTP error 550-5.7.26: how to fix it | InboxProof</title>
+    <link>https://inboxproof.email/blog/gmail-smtp-error-550-5-7-26</link>
+    <guid>https://inboxproof.email/blog/gmail-smtp-error-550-5-7-26</guid>
+    <pubDate>Sat, 22 Aug 2026 00:00:00 GMT</pubDate>
+    <description>Why Gmail rejects your email with SMTP error 550-5.7.26, and how to fix it by configuring SPF, DKIM, and DMARC correctly.</description>
+  </item>
+  <item>
+    <title>How to set up SPF, DKIM, and DMARC for Google Workspace | InboxProof</title>
+    <link>https://inboxproof.email/blog/google-workspace-spf-dkim-dmarc</link>
+    <guid>https://inboxproof.email/blog/google-workspace-spf-dkim-dmarc</guid>
+    <pubDate>Sat, 22 Aug 2026 00:00:00 GMT</pubDate>
+    <description>Step-by-step guide to configuring SPF, DKIM, and DMARC for Google Workspace so your email authenticates correctly and reaches the inbox.</description>
+  </item>
+  <item>
+    <title>How to check email deliverability (and what the results mean) | Inboxproof</title>
+    <link>https://inboxproof.email/blog/how-to-check-email-deliverability</link>
+    <guid>https://inboxproof.email/blog/how-to-check-email-deliverability</guid>
+    <pubDate>Sat, 22 Aug 2026 00:00:00 GMT</pubDate>
+    <description>How to check email deliverability in a few minutes: the DNS records to look up, what each result means, and the order to check them in.</description>
+  </item>
+  <item>
+    <title>How to Fix Your SPF Record: 5 Common Mistakes and How to Solve Them</title>
+    <link>https://inboxproof.email/blog/how-to-fix-spf-record</link>
+    <guid>https://inboxproof.email/blog/how-to-fix-spf-record</guid>
+    <pubDate>Sat, 22 Aug 2026 00:00:00 GMT</pubDate>
+    <description>Your SPF record might be broken. Here are the 5 most common SPF mistakes and how to fix them, step by step. No signup required.</description>
+  </item>
+  <item>
+    <title>How to Read Email Headers: SPF, DKIM and DMARC Results Explained | Inboxproof</title>
+    <link>https://inboxproof.email/blog/how-to-read-email-headers</link>
+    <guid>https://inboxproof.email/blog/how-to-read-email-headers</guid>
+    <pubDate>Sat, 22 Aug 2026 00:00:00 GMT</pubDate>
+    <description>Learn to read raw email headers: where the SPF, DKIM and DMARC results live, what each value means, and how to tell a legitimate email from a spoof in under a minute.</description>
+  </item>
+  <item>
+    <title>How to Set Up DMARC: Step-by-Step Guide for 2026</title>
+    <link>https://inboxproof.email/blog/how-to-set-up-dmarc</link>
+    <guid>https://inboxproof.email/blog/how-to-set-up-dmarc</guid>
+    <pubDate>Sat, 22 Aug 2026 00:00:00 GMT</pubDate>
+    <description>Set up DMARC on your domain in 5 steps. Learn what DMARC does, how to choose the right policy, and how to monitor your DMARC reports. No signup required.</description>
+  </item>
+  <item>
+    <title>Inbox Placement Test: Check Where Your Email Lands</title>
+    <link>https://inboxproof.email/blog/inbox-placement-test</link>
+    <guid>https://inboxproof.email/blog/inbox-placement-test</guid>
+    <pubDate>Sat, 22 Aug 2026 00:00:00 GMT</pubDate>
+    <description>Run a free inbox placement test on your domain. Check SPF, DKIM, DMARC, TLS, PTR and IP reputation to find out if your email lands in the inbox or spam. No signup required.</description>
+  </item>
+  <item>
+    <title>Is my domain blacklisted? How to check your IP reputation | InboxProof</title>
+    <link>https://inboxproof.email/blog/is-my-domain-blacklisted</link>
+    <guid>https://inboxproof.email/blog/is-my-domain-blacklisted</guid>
+    <pubDate>Sat, 22 Aug 2026 00:00:00 GMT</pubDate>
+    <description>How to check if your domain or sending IP is on a blocklist, what blocklisting means for deliverability, and how to get delisted fast.</description>
+  </item>
+  <item>
+    <title>Is my IP blacklisted? How to check and get delisted | InboxProof</title>
+    <link>https://inboxproof.email/blog/is-my-ip-blacklisted</link>
+    <guid>https://inboxproof.email/blog/is-my-ip-blacklisted</guid>
+    <pubDate>Sat, 22 Aug 2026 00:00:00 GMT</pubDate>
+    <description>How to check if your sending IP is on a blocklist, what a listing means for deliverability, and how to get delisted from Spamhaus, SpamCop, and Barracuda.</description>
+  </item>
+  <item>
+    <title>Mailgun alternatives: when the shared-IP workhorse stops fitting | Inboxproof</title>
+    <link>https://inboxproof.email/blog/mailgun-alternatives</link>
+    <guid>https://inboxproof.email/blog/mailgun-alternatives</guid>
+    <pubDate>Sat, 22 Aug 2026 00:00:00 GMT</pubDate>
+    <description>Mailgun is cheap and flexible, but shared-IP reputation and the lack of marketing focus are real limits. Here are the alternatives and the safe migration path.</description>
+  </item>
+  <item>
+    <title>Mailgun deliverability: why your emails go to spam and how to fix it | Inboxproof</title>
+    <link>https://inboxproof.email/blog/mailgun-deliverability</link>
+    <guid>https://inboxproof.email/blog/mailgun-deliverability</guid>
+    <pubDate>Sat, 22 Aug 2026 00:00:00 GMT</pubDate>
+    <description>Mailgun accepts your mail but recipients never see it. The five reasons Mailgun deliverability drops, and the exact fix for each one.</description>
+  </item>
+  <item>
+    <title>Can you use Mailgun for cold email? Risky, and here is the minimum setup | Inboxproof</title>
+    <link>https://inboxproof.email/blog/mailgun-for-cold-email</link>
+    <guid>https://inboxproof.email/blog/mailgun-for-cold-email</guid>
+    <pubDate>Sat, 22 Aug 2026 00:00:00 GMT</pubDate>
+    <description>Mailgun is more permissive than Postmark but its shared IPs and terms still make cold email risky. The minimum viable setup if you do it anyway.</description>
+  </item>
+  <item>
+    <title>Mailgun vs Postmark: shared IP pool or reputation-first sending | Inboxproof</title>
+    <link>https://inboxproof.email/blog/mailgun-vs-postmark</link>
+    <guid>https://inboxproof.email/blog/mailgun-vs-postmark</guid>
+    <pubDate>Sat, 22 Aug 2026 00:00:00 GMT</pubDate>
+    <description>Mailgun gives you a flexible, cheap shared-IP workhorse. Postmark gives you a reputation-first transactional service. Here is what the difference costs and buys.</description>
+  </item>
+  <item>
+    <title>Mailgun vs Resend: the flexible workhorse versus the developer-first API | Inboxproof</title>
+    <link>https://inboxproof.email/blog/mailgun-vs-resend</link>
+    <guid>https://inboxproof.email/blog/mailgun-vs-resend</guid>
+    <pubDate>Sat, 22 Aug 2026 00:00:00 GMT</pubDate>
+    <description>Mailgun is the flexible, cheap shared-IP workhorse. Resend is the developer-first transactional API. Here is how they differ and which one fits.</description>
+  </item>
+  <item>
+    <title>How to set up SPF, DKIM, and DMARC for Microsoft 365 | InboxProof</title>
+    <link>https://inboxproof.email/blog/microsoft-365-spf-dkim-dmarc</link>
+    <guid>https://inboxproof.email/blog/microsoft-365-spf-dkim-dmarc</guid>
+    <pubDate>Sat, 22 Aug 2026 00:00:00 GMT</pubDate>
+    <description>Step-by-step guide to configuring SPF, DKIM, and DMARC for Microsoft 365 so your email authenticates correctly and reaches the inbox.</description>
+  </item>
+  <item>
+    <title>MX Records Explained: How Mail Finds Your Domain | Inboxproof</title>
+    <link>https://inboxproof.email/blog/mx-records</link>
+    <guid>https://inboxproof.email/blog/mx-records</guid>
+    <pubDate>Sat, 22 Aug 2026 00:00:00 GMT</pubDate>
+    <description>What MX records are, how priorities work, and the five MX mistakes that cause mail to bounce. Check your domain&apos;s MX records, IPs and PTR in seconds, free.</description>
+  </item>
+  <item>
+    <title>Outlook SMTP error 550 5.7.1: what it means and how to fix it | Inboxproof</title>
+    <link>https://inboxproof.email/blog/outlook-smtp-error-550-5-7-1</link>
+    <guid>https://inboxproof.email/blog/outlook-smtp-error-550-5-7-1</guid>
+    <pubDate>Sat, 22 Aug 2026 00:00:00 GMT</pubDate>
+    <description>Outlook returns 550 5.7.1 when it does not trust the sender. What the code means, the three records to check, and the order to fix it.</description>
+  </item>
+  <item>
+    <title>Postmark alternatives: when to leave a reputation-first provider | Inboxproof</title>
+    <link>https://inboxproof.email/blog/postmark-alternatives</link>
+    <guid>https://inboxproof.email/blog/postmark-alternatives</guid>
+    <pubDate>Sat, 22 Aug 2026 00:00:00 GMT</pubDate>
+    <description>Postmark users usually stay for deliverability. Here is when switching makes sense, what the alternatives are, and the migration checklist that keeps your domain clean.</description>
+  </item>
+  <item>
+    <title>Postmark deliverability: why your emails go to spam and how to fix it | Inboxproof</title>
+    <link>https://inboxproof.email/blog/postmark-deliverability</link>
+    <guid>https://inboxproof.email/blog/postmark-deliverability</guid>
+    <pubDate>Sat, 22 Aug 2026 00:00:00 GMT</pubDate>
+    <description>Postmark accepts your mail but recipients never see it. The five reasons Postmark deliverability drops, and the exact fix for each one.</description>
+  </item>
+  <item>
+    <title>Can you use Postmark for cold email? No, and the terms say so | Inboxproof</title>
+    <link>https://inboxproof.email/blog/postmark-for-cold-email</link>
+    <guid>https://inboxproof.email/blog/postmark-for-cold-email</guid>
+    <pubDate>Sat, 22 Aug 2026 00:00:00 GMT</pubDate>
+    <description>Postmark is transactional-only by design and its terms prohibit unsolicited bulk mail. Why cold email on Postmark is a bad idea, and what to use instead.</description>
+  </item>
+  <item>
+    <title>Resend alternatives: when the lean transactional API is not enough | Inboxproof</title>
+    <link>https://inboxproof.email/blog/resend-alternatives</link>
+    <guid>https://inboxproof.email/blog/resend-alternatives</guid>
+    <pubDate>Sat, 22 Aug 2026 00:00:00 GMT</pubDate>
+    <description>Resend is the cleanest developer experience in transactional email, but it is young and narrow. Here are the alternatives and when each one makes sense.</description>
+  </item>
+  <item>
+    <title>Resend deliverability: why your emails go to spam and how to fix it | Inboxproof</title>
+    <link>https://inboxproof.email/blog/resend-deliverability</link>
+    <guid>https://inboxproof.email/blog/resend-deliverability</guid>
+    <pubDate>Sat, 22 Aug 2026 00:00:00 GMT</pubDate>
+    <description>Resend accepts your mail but recipients never see it. The five reasons Resend deliverability drops, and the exact fix for each one.</description>
+  </item>
+  <item>
+    <title>Can you use Resend for cold email? No, it is a transactional API | Inboxproof</title>
+    <link>https://inboxproof.email/blog/resend-for-cold-email</link>
+    <guid>https://inboxproof.email/blog/resend-for-cold-email</guid>
+    <pubDate>Sat, 22 Aug 2026 00:00:00 GMT</pubDate>
+    <description>Resend is transactional-only by design, its terms restrict unsolicited mail, and its shared IPs are new. Why cold email on Resend fails, and what to use instead.</description>
+  </item>
+  <item>
+    <title>Resend vs Postmark: developer-first simplicity versus reputation-first sending | Inboxproof</title>
+    <link>https://inboxproof.email/blog/resend-vs-postmark</link>
+    <guid>https://inboxproof.email/blog/resend-vs-postmark</guid>
+    <pubDate>Sat, 22 Aug 2026 00:00:00 GMT</pubDate>
+    <description>Resend is the new developer-first transactional API. Postmark is the reputation-first veteran. Both are transactional-only, but they optimize for different things.</description>
+  </item>
+  <item>
+    <title>Reverse DNS (PTR) for Mail Servers: Why Your Sending IP Needs One | InboxProof</title>
+    <link>https://inboxproof.email/blog/reverse-dns-ptr-email</link>
+    <guid>https://inboxproof.email/blog/reverse-dns-ptr-email</guid>
+    <pubDate>Sat, 22 Aug 2026 00:00:00 GMT</pubDate>
+    <description>What a reverse DNS (PTR) record is, why receiving mail servers require it, what forward-confirmed PTR means, and how to check and fix your sending IP&apos;s PTR record.</description>
+  </item>
+  <item>
+    <title>SendGrid alternatives: when to switch and how to move without breaking deliverability | Inboxproof</title>
+    <link>https://inboxproof.email/blog/sendgrid-alternatives</link>
+    <guid>https://inboxproof.email/blog/sendgrid-alternatives</guid>
+    <pubDate>Sat, 22 Aug 2026 00:00:00 GMT</pubDate>
+    <description>The real SendGrid alternatives, who should actually switch, and the migration checklist that keeps your domain out of spam during the move.</description>
+  </item>
+  <item>
+    <title>SendGrid deliverability: why your emails go to spam and how to fix it | Inboxproof</title>
+    <link>https://inboxproof.email/blog/sendgrid-deliverability</link>
+    <guid>https://inboxproof.email/blog/sendgrid-deliverability</guid>
+    <pubDate>Sat, 22 Aug 2026 00:00:00 GMT</pubDate>
+    <description>SendGrid is accepting your mail but recipients are not seeing it. The five reasons SendGrid deliverability drops, and the exact fix for each one.</description>
+  </item>
+  <item>
+    <title>Can you use SendGrid for cold email? Short answer: no, and here is why | Inboxproof</title>
+    <link>https://inboxproof.email/blog/sendgrid-for-cold-email</link>
+    <guid>https://inboxproof.email/blog/sendgrid-for-cold-email</guid>
+    <pubDate>Sat, 22 Aug 2026 00:00:00 GMT</pubDate>
+    <description>SendGrid shared IPs, its terms, and why cold outreach from the platform lands in spam. What actually works for cold email, and how to set it up.</description>
+  </item>
+  <item>
+    <title>SendGrid vs Mailgun: two shared-IP workhorses, different trade-offs | Inboxproof</title>
+    <link>https://inboxproof.email/blog/sendgrid-vs-mailgun</link>
+    <guid>https://inboxproof.email/blog/sendgrid-vs-mailgun</guid>
+    <pubDate>Sat, 22 Aug 2026 00:00:00 GMT</pubDate>
+    <description>SendGrid and Mailgun both send from shared IP pools, but they differ on marketing features, pricing and ecosystem. Here is how to choose between them.</description>
+  </item>
+  <item>
+    <title>SendGrid vs Postmark: which transactional email provider actually delivers | Inboxproof</title>
+    <link>https://inboxproof.email/blog/sendgrid-vs-postmark</link>
+    <guid>https://inboxproof.email/blog/sendgrid-vs-postmark</guid>
+    <pubDate>Sat, 22 Aug 2026 00:00:00 GMT</pubDate>
+    <description>SendGrid and Postmark both send transactional email, but their IP models are opposites. What that means for your deliverability, and which one to pick.</description>
+  </item>
+  <item>
+    <title>SendGrid vs Resend: mature full-stack email versus the lean transactional API | Inboxproof</title>
+    <link>https://inboxproof.email/blog/sendgrid-vs-resend</link>
+    <guid>https://inboxproof.email/blog/sendgrid-vs-resend</guid>
+    <pubDate>Sat, 22 Aug 2026 00:00:00 GMT</pubDate>
+    <description>SendGrid is the mature full-stack email platform. Resend is the lean developer-first transactional API. Here is how the two differ and which fits your product.</description>
+  </item>
+  <item>
+    <title>Gmail SMTP error 421 4.7.0: too many connections, how to fix it | InboxProof</title>
+    <link>https://inboxproof.email/blog/smtp-error-421-4-7-0</link>
+    <guid>https://inboxproof.email/blog/smtp-error-421-4-7-0</guid>
+    <pubDate>Sat, 22 Aug 2026 00:00:00 GMT</pubDate>
+    <description>Gmail SMTP error 421 4.7.0 means you are opening too many connections from one IP. How to slow down, warm up, and spread volume to stop the rate limit.</description>
+  </item>
+  <item>
+    <title>SMTP error 550 5.1.1: user unknown, how to fix it | InboxProof</title>
+    <link>https://inboxproof.email/blog/smtp-error-550-5-1-1</link>
+    <guid>https://inboxproof.email/blog/smtp-error-550-5-1-1</guid>
+    <pubDate>Sat, 22 Aug 2026 00:00:00 GMT</pubDate>
+    <description>SMTP error 550 5.1.1 means the recipient mailbox does not exist. How to tell a hard bounce from a typo, and how to stop sending to dead addresses.</description>
+  </item>
+  <item>
+    <title>SMTP error 550 5.7.1: what it means and how to fix it | InboxProof</title>
+    <link>https://inboxproof.email/blog/smtp-error-550-5-7-1</link>
+    <guid>https://inboxproof.email/blog/smtp-error-550-5-7-1</guid>
+    <pubDate>Sat, 22 Aug 2026 00:00:00 GMT</pubDate>
+    <description>SMTP error 550 5.7.1 is a permanent policy rejection. What causes it (blocklisted IP, failed SPF/DKIM/DMARC, spam content) and how to fix it.</description>
+  </item>
+  <item>
+    <title>SMTP Error Codes Explained: 250, 450, 550, 554 and More | InboxProof</title>
+    <link>https://inboxproof.email/blog/smtp-error-codes</link>
+    <guid>https://inboxproof.email/blog/smtp-error-codes</guid>
+    <pubDate>Sat, 22 Aug 2026 00:00:00 GMT</pubDate>
+    <description>What SMTP error codes mean and how to fix them: 250 accepted, 450/451/452 temporary failures, 550 mailbox unavailable, 554 relay denied, and the codes that predict spam placement.</description>
+  </item>
+  <item>
+    <title>How to delist from Spamhaus (step by step) | InboxProof</title>
+    <link>https://inboxproof.email/blog/spamhaus-delisting</link>
+    <guid>https://inboxproof.email/blog/spamhaus-delisting</guid>
+    <pubDate>Sat, 22 Aug 2026 00:00:00 GMT</pubDate>
+    <description>Your IP is on the Spamhaus SBL or XBL? Here&apos;s exactly how to get delisted, step by step. Check your IP first, then follow the delisting process.</description>
+  </item>
+  <item>
+    <title>SPF vs DKIM vs DMARC: which one do you need? | Inboxproof</title>
+    <link>https://inboxproof.email/blog/spf-dkim-dmarc</link>
+    <guid>https://inboxproof.email/blog/spf-dkim-dmarc</guid>
+    <pubDate>Sat, 22 Aug 2026 00:00:00 GMT</pubDate>
+    <description>What each email authentication record proves, what breaks when one is missing, and the order to fix them in, with the exact TXT records to start from.</description>
+  </item>
+  <item>
+    <title>SPF 10-Lookup Limit: Why Your SPF Record Is Failing | InboxProof</title>
+    <link>https://inboxproof.email/blog/spf-lookup-limit</link>
+    <guid>https://inboxproof.email/blog/spf-lookup-limit</guid>
+    <pubDate>Sat, 22 Aug 2026 00:00:00 GMT</pubDate>
+    <description>Why SPF records are limited to 10 DNS lookups, how to count them, and how to fix a &apos;too many DNS lookups&apos; permerror by flattening and consolidating your includes.</description>
+  </item>
+  <item>
+    <title>SPF record not working? How to fix common SPF syntax errors | InboxProof</title>
+    <link>https://inboxproof.email/blog/spf-not-working</link>
+    <guid>https://inboxproof.email/blog/spf-not-working</guid>
+    <pubDate>Sat, 22 Aug 2026 00:00:00 GMT</pubDate>
+    <description>Why your SPF record might not be working, the most common syntax errors, and how to fix them. A practical guide for small teams.</description>
+  </item>
+  <item>
+    <title>SPF Record Checker: Verify Your Domain&apos;s SPF in 30 Seconds</title>
+    <link>https://inboxproof.email/blog/spf-record-checker</link>
+    <guid>https://inboxproof.email/blog/spf-record-checker</guid>
+    <pubDate>Sat, 22 Aug 2026 00:00:00 GMT</pubDate>
+    <description>Check your domain&apos;s SPF record for free. See if your SPF is valid, whether it&apos;s causing email deliverability problems, and exactly what to fix. No signup required.</description>
+  </item>
+  <item>
+    <title>Is your domain being spoofed? Check in 30 seconds | Inboxproof</title>
+    <link>https://inboxproof.email/blog/spoofing</link>
+    <guid>https://inboxproof.email/blog/spoofing</guid>
+    <pubDate>Sat, 22 Aug 2026 00:00:00 GMT</pubDate>
+    <description>The three DNS lookups that tell you whether someone can send &apos;from&apos; your domain and get it delivered, and what to do if the answer is yes.</description>
+  </item>
+  <item>
+    <title>SendGrid, Postmark, Mailgun, Resend: why your transactional email lands (or doesn&apos;t) | Inboxproof</title>
+    <link>https://inboxproof.email/blog/transactional-email-api-deliverability</link>
+    <guid>https://inboxproof.email/blog/transactional-email-api-deliverability</guid>
+    <pubDate>Sat, 22 Aug 2026 00:00:00 GMT</pubDate>
+    <description>Transactional email deliverability for developers: what actually decides whether your app&apos;s emails land, how to check your sending domain&apos;s SPF, DKIM, DMARC, TLS and IP reputation, and how to catch a broken record before your users stop receiving password resets.</description>
+  </item>
+  <item>
+    <title>Transactional Email Deliverability: The Complete Guide (2026)</title>
+    <link>https://inboxproof.email/blog/transactional-email-deliverability</link>
+    <guid>https://inboxproof.email/blog/transactional-email-deliverability</guid>
+    <pubDate>Sat, 22 Aug 2026 00:00:00 GMT</pubDate>
+    <description>Transactional emails (password resets, order confirmations, receipts) must land in the inbox, not spam. Here is exactly how to keep them out of spam: SPF, DKIM, DMARC, IP warming, and monitoring.</description>
+  </item>
+  <item>
+    <title>Why is my email going to spam? The five causes and the fix for each | Inboxproof</title>
+    <link>https://inboxproof.email/blog/why-email-goes-to-spam</link>
+    <guid>https://inboxproof.email/blog/why-email-goes-to-spam</guid>
+    <pubDate>Sat, 22 Aug 2026 00:00:00 GMT</pubDate>
+    <description>Email lands in spam for a small set of reasons. Here are the five that account for most of it, how to tell which one is yours, and the exact fix for each.</description>
+  </item>
+  <item>
+    <title>Yahoo email in spam: what Yahoo checks and how to get out | Inboxproof</title>
+    <link>https://inboxproof.email/blog/yahoo-email-in-spam</link>
+    <guid>https://inboxproof.email/blog/yahoo-email-in-spam</guid>
+    <pubDate>Sat, 22 Aug 2026 00:00:00 GMT</pubDate>
+    <description>Yahoo is sending your email to spam. What Yahoo actually checks, the records it requires, and the order to fix it.</description>
+  </item>
+  <item>
+    <title>Yahoo 550 5.7.1 error: what it means and how to fix it | Inboxproof</title>
+    <link>https://inboxproof.email/blog/yahoo-smtp-error-550-5-7-1</link>
+    <guid>https://inboxproof.email/blog/yahoo-smtp-error-550-5-7-1</guid>
+    <pubDate>Sat, 22 Aug 2026 00:00:00 GMT</pubDate>
+    <description>Yahoo rejects your email with 550 5.7.1. What the code means, the five causes in order of likelihood, and the exact fix for each one.</description>
+  </item>
+</channel>
+</rss>

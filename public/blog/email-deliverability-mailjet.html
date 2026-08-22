@@ -1,0 +1,122 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Mailjet deliverability: why Mailjet accepted your mail but it lands in spam</title>
+<meta name="description" content="Mailjet accepted your send, so the problem is not the API. It is the receiving mailbox. Here are the five reasons Mailjet mail lands in spam, and the exact DNS and account fixes for each.">
+<meta property="og:title" content="Mailjet deliverability: why Mailjet accepted your mail but it lands in spam">
+<meta property="og:description" content="The five reasons Mailjet mail lands in spam, and the exact DNS and account fixes for each.">
+<meta property="og:type" content="article">
+<meta property="og:url" content="https://inboxproof.email/blog/email-deliverability-mailjet">
+<link rel="canonical" href="https://inboxproof.email/blog/email-deliverability-mailjet">
+<script type="application/ld+json">{"@context":"https://schema.org","@type":"Article","headline":"Mailjet deliverability: why Mailjet accepted your mail but it lands in spam","description":"The five reasons Mailjet mail lands in spam, and the exact DNS and account fixes for each.","author":{"@type":"Organization","name":"InboxProof"},"publisher":{"@type":"Organization","name":"InboxProof"},"mainEntityOfPage":"https://inboxproof.email/blog/email-deliverability-mailjet","datePublished":"2026-08-22","dateModified":"2026-08-22"}</script>
+<style>
+:root{--bg:#0b0e14;--panel:#12151d;--panel2:#171b25;--line:#232838;--text:#e8ebf2;--muted:#9aa3b5;--accent:#4f8cff;--accent2:#7aa7ff;--good:#3fb96b;--bad:#e05252;--warn:#e0a53f;--radius:10px;--maxw:980px}
+*{box-sizing:border-box}
+html{scroll-behavior:smooth}
+body{margin:0;background:var(--bg);color:var(--text);font:16px/1.65 -apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Helvetica,Arial,sans-serif;-webkit-font-smoothing:antialiased}
+a{color:var(--accent2);text-decoration:none}
+a:hover{text-decoration:underline}
+.wrap{max-width:var(--maxw);margin:0 auto;padding:0 20px}
+header{border-bottom:1px solid var(--line);background:rgba(11,14,20,.8);backdrop-filter:blur(8px);position:sticky;top:0;z-index:10}
+.nav{display:flex;align-items:center;justify-content:space-between;height:60px}
+.logo{font-weight:700;font-size:18px;color:var(--text);letter-spacing:-.01em}
+.logo span{color:var(--accent)}
+.nav-links{display:flex;gap:22px;align-items:center}
+.nav-links a{color:var(--muted);font-size:14px}
+.nav-links a:hover{color:var(--text);text-decoration:none}
+.btn{display:inline-block;background:var(--accent);color:#fff;padding:9px 18px;border-radius:8px;font-size:14px;font-weight:600}
+.btn:hover{background:var(--accent2);text-decoration:none}
+.btn-ghost{background:transparent;border:1px solid var(--line);color:var(--text)}
+.btn-ghost:hover{border-color:var(--accent);background:transparent}
+.hero{padding:64px 0 40px}
+.hero h1{font-size:38px;line-height:1.15;margin:0 0 16px;letter-spacing:-.02em;max-width:760px}
+.hero p.sub{color:var(--muted);font-size:18px;max-width:640px;margin:0 0 28px}
+.hero .cta-row{display:flex;gap:12px;flex-wrap:wrap}
+article{padding:24px 0 64px;max-width:760px}
+article h2{font-size:26px;margin:44px 0 12px;letter-spacing:-.01em}
+article h2 .num{color:var(--accent);font-variant-numeric:tabular-nums;margin-right:8px}
+article p{margin:0 0 14px}
+article ul{margin:0 0 14px;padding-left:22px}
+article li{margin:0 0 8px}
+code{background:var(--panel2);border:1px solid var(--line);border-radius:5px;padding:1px 6px;font-size:13.5px;font-family:ui-monospace,SFMono-Regular,Menlo,Consolas,monospace;color:var(--accent2)}
+pre{background:var(--panel2);border:1px solid var(--line);border-radius:var(--radius);padding:14px 16px;overflow-x:auto;font-size:13.5px;line-height:1.55;margin:0 0 14px}
+pre code{background:none;border:none;padding:0;color:var(--text)}
+.callout{background:var(--panel);border:1px solid var(--line);border-left:3px solid var(--accent);border-radius:8px;padding:14px 16px;margin:18px 0}
+.callout.good{border-left-color:var(--good)}
+.callout.bad{border-left-color:var(--bad)}
+.callout p{margin:0}
+.cta-box{background:linear-gradient(135deg,var(--panel),var(--panel2));border:1px solid var(--line);border-radius:var(--radius);padding:28px;margin:48px 0 0;text-align:center}
+.cta-box h3{margin:0 0 8px;font-size:22px}
+.cta-box p{color:var(--muted);margin:0 0 18px}
+.related{margin-top:40px;padding-top:24px;border-top:1px solid var(--line)}
+.related h4{margin:0 0 12px;font-size:14px;text-transform:uppercase;letter-spacing:.06em;color:var(--muted)}
+.related ul{list-style:none;padding:0;margin:0;display:grid;gap:8px}
+.related li a{display:block;padding:10px 14px;background:var(--panel);border:1px solid var(--line);border-radius:8px;font-size:14.5px}
+.related li a:hover{border-color:var(--accent);text-decoration:none}
+footer{border-top:1px solid var(--line);padding:32px 0;color:var(--muted);font-size:13.5px}
+footer .wrap{display:flex;justify-content:space-between;flex-wrap:wrap;gap:12px}
+@media(max-width:640px){.hero h1{font-size:30px}.nav-links{gap:14px}}
+</style>
+</head>
+<body>
+<header>
+<div class="wrap nav">
+<a class="logo" href="/">Inbox<span>Proof</span></a>
+<div class="nav-links"><a href="/blog">All guides</a><a class="btn" href="/">Run a free audit</a></div>
+</div>
+</header>
+<main>
+<div class="wrap hero">
+<h1>Mailjet accepted your mail, so why does it land in spam?</h1>
+<p class="sub">Mailjet's API returned success, which means Mailjet did its job. The problem is downstream: the receiving mailbox decided your mail was not worth keeping. Here are the five reasons that happens with Mailjet, and the exact fix for each.</p>
+<div class="cta-row">
+<a class="btn" href="/">Run a free deliverability audit</a>
+<a class="btn btn-ghost" href="/developers">Read the docs</a>
+</div>
+</div>
+<article>
+<p>Mailjet is a French email platform that handles both transactional and marketing mail. When Mailjet accepts a message, it has passed Mailjet's own checks. But acceptance at the sender is not the same thing as delivery to the inbox. The receiving provider (Gmail, Outlook, Yahoo) makes the final call based on your domain's authentication, your sending reputation, and the content of the message.</p>
+<p>Here are the five most common reasons Mailjet mail lands in spam, in order of how often they show up.</p>
+<h2><span class="num">1</span>Your SPF record is missing the Mailjet include</h2>
+<p>Mailjet sends from its own IP ranges, so your SPF record must authorize Mailjet. If your SPF record does not include Mailjet, receiving servers see your mail as coming from an unauthorized source and flag it.</p>
+<p>The fix is to add the Mailjet include to your SPF record. For most accounts that is <code>include:mailjet.online</code>. If you send from a specific region, the Mailjet dashboard shows the exact include to add.</p>
+<pre><code>v=spf1 include:mailjet.online ~all</code></pre>
+<p>Open your DNS provider, find the SPF record for the domain you send from, and add the Mailjet include. If you already have an SPF record, add the include to the existing record rather than creating a second one. Only one SPF record is allowed per domain, and a second one causes a permerror that hurts deliverability.</p>
+<div class="callout bad"><p>Check: run <code>dig TXT yourdomain.com</code> and confirm the SPF record includes the Mailjet include. If it does not, add it and wait for DNS propagation (usually under an hour with a low TTL).</p></div>
+<h2><span class="num">2</span>DKIM is not enabled, or the CNAME record is missing</h2>
+<p>DKIM proves to the receiver that the message was actually sent by your domain and not altered in transit. Mailjet signs your mail with DKIM, but only if you have published the DKIM record in your DNS.</p>
+<p>Mailjet's DKIM setup uses a CNAME record. The Mailjet dashboard gives you the exact CNAME value to add. It looks something like a selector name pointing to a Mailjet CNAME host. Without that record, DKIM verification fails and the mail is treated as unauthenticated.</p>
+<div class="callout"><p>Fix: go to Mailjet, open the sending domain settings, copy the DKIM CNAME record, and add it to your DNS. Then verify with <code>dig CNAME selector.yourdomain.com</code> that the record resolves.</p></div>
+<h2><span class="num">3</span>You are sending from a domain that is not verified in Mailjet</h2>
+<p>Mailjet requires you to verify each sending domain before it will send mail from it. Verification means proving you control the domain by adding a TXT record to your DNS. If the domain is not verified, Mailjet will either refuse to send or send with degraded authentication, and receiving providers will notice.</p>
+<p>The fix is to complete domain verification in the Mailjet dashboard. Mailjet gives you a TXT record to add to your DNS. Once that record is live, Mailjet marks the domain as verified and your mail carries proper authentication.</p>
+<div class="callout good"><p>Check: in the Mailjet dashboard, your sending domain should show as "verified". If it shows "pending" or "unverified", the TXT record has not propagated yet or was added incorrectly. Verify with <code>dig TXT yourdomain.com</code>.</p></div>
+<h2><span class="num">4</span>Shared IP reputation and no warm-up</h2>
+<p>By default, Mailjet sends from shared IP addresses. That means your mail shares the same IP reputation as every other Mailjet customer. If another customer on the same IP has a high spam rate, your mail suffers too, even if your own sending is clean.</p>
+<p>Two fixes help here. First, warm up your sending volume gradually. Start with a small number of recipients per day and increase over 2 to 4 weeks. Sudden spikes in volume trigger spam filters. Second, if you send at scale, consider a dedicated IP from Mailjet, which gives you a reputation that is yours alone.</p>
+<div class="callout"><p>Rule of thumb: never send to more than 2x your previous day's volume. If you were sending 100 emails a day, do not jump to 1000 overnight. Ramp up gradually and watch your bounce and complaint rates.</p></div>
+<h2><span class="num">5</span>Bounce and complaint rates are too high</h2>
+<p>Receiving providers track how often your mail bounces (the recipient no longer exists) and how often recipients mark your mail as spam. If your bounce rate is above 2% or your complaint rate is above 0.1%, providers will start filtering your mail to spam or blocking it entirely.</p>
+<p>The fix is to clean your list. Remove addresses that have not opened your mail in 6 months, and suppress addresses that have bounced or complained. Mailjet's dashboard shows your bounce and complaint rates. If they are high, clean the list before sending again.</p>
+<div class="callout bad"><p>Hard bounce rate above 5% will get your IP or domain blocked by major providers. If you see a hard bounce spike, stop sending immediately and clean the list.</p></div>
+<div class="cta-box">
+<h3>Check your actual deliverability</h3>
+<p>Run a free audit on the domain you send from with Mailjet. It checks SPF, DKIM, DMARC, and reputation, and tells you exactly what is broken.</p>
+<a class="btn" href="/">Run the free audit</a>
+</div>
+<div class="related">
+<h4>Related guides</h4>
+<ul>
+<li><a href="/blog/email-deliverability-for-agencies-developers.html">Deliverability for agencies and developers: the complete playbook</a></li>
+<li><a href="/blog/email-deliverability-brevo">Brevo deliverability: why Brevo accepted your mail but it lands in spam</a></li>
+<li><a href="/blog/email-deliverability-amazon-ses">Amazon SES deliverability: why SES accepted your mail but it lands in spam</a></li>
+<li><a href="/blog/email-deliverability-saas">Email deliverability for SaaS: the complete setup guide</a></li>
+<li><a href="/spf-generator">SPF record generator</a></li>
+</ul>
+</div>
+</article>
+</main>
+</body>
+</html>

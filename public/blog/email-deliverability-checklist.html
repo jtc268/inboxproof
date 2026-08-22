@@ -13,9 +13,7 @@
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="/styles.css">
 <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' rx='8' fill='%236366f1'/%3E%3Cpath d='M8 16h13M15 10l6 6-6 6' stroke='white' stroke-width='3' fill='none' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E">
-<script type="application/ld+json">
-{"@context":"https://schema.org","@type":"Article","headline":"Email deliverability checklist: 24 things to check before you send","description":"A 24-point email deliverability checklist: DNS records, sending infrastructure, list hygiene, content, and monitoring.","author":{"@type":"Organization","name":"Inboxproof"},"publisher":{"@type":"Organization","name":"Inboxproof"}}
-</script>
+<script type="application/ld+json">{"@context":"https://schema.org","@type":"Article","headline":"Email deliverability checklist: 24 things to check before you send","description":"A 24-point email deliverability checklist: DNS records, sending infrastructure, list hygiene, content, and monitoring.","author":{"@type":"Organization","name":"Inboxproof"},"publisher":{"@type":"Organization","name":"Inboxproof"},"datePublished":"2026-08-22","dateModified":"2026-08-22"}</script>
 <link rel="canonical" href="https://inboxproof.email/blog/email-deliverability-checklist">
 <meta property="og:url" content="https://inboxproof.email/blog/email-deliverability-checklist">
 <meta property="og:image" content="https://inboxproof.email/og.png">
@@ -54,9 +52,9 @@
     <h2 style="font-size:22px;margin:34px 0 12px">2. Sending infrastructure</h2>
     <p>The records prove identity. The infrastructure determines whether the receiver trusts the connection.</p>
     <ul style="line-height:1.85">
-      <li><b>IP reputation is clean.</b> Test the sending IP against the major blocklists. One hit on Spamhaus and you are in the spam folder. <a href="/is-my-ip-blacklisted">Check the IP</a>.</li>
-      <li><b>Domain reputation is clean.</b> The domain itself can be listed even when the IP is not. <a href="/is-my-domain-blacklisted">Check the domain</a>.</li>
-      <li><b>You are on a warm IP.</b> A fresh IP with no sending history starts with a low reputation. Warm it up gradually before volume. See the <a href="/cold-email-warm-up">warm-up guide</a>.</li>
+      <li><b>IP reputation is clean.</b> Test the sending IP against the major blocklists. One hit on Spamhaus and you are in the spam folder. <a href="/blog/is-my-ip-blacklisted">Check the IP</a>.</li>
+      <li><b>Domain reputation is clean.</b> The domain itself can be listed even when the IP is not. <a href="/blog/is-my-domain-blacklisted">Check the domain</a>.</li>
+      <li><b>You are on a warm IP.</b> A fresh IP with no sending history starts with a low reputation. Warm it up gradually before volume. See the <a href="/blog/cold-email-warm-up">warm-up guide</a>.</li>
       <li><b>Volume is ramped, not spiked.</b> A sudden 10x jump in volume trips spam filters. Increase send volume in steps over days.</li>
       <li><b>Shared vs dedicated IP is a known choice.</b> On a shared IP, other senders can drag your reputation down. Know which you are on and what that means.</li>
     </ul>
@@ -64,7 +62,7 @@
     <h2 style="font-size:22px;margin:34px 0 12px">3. List hygiene</h2>
     <p>A clean list is the cheapest deliverability win available. Bad addresses and dead recipients hurt your reputation more than any record.</p>
     <ul style="line-height:1.85">
-      <li><b>Bounce rate is under 2%.</b> Hard bounces above that tell the receiver you are sending to a bad list. <a href="/cold-email-bounce-rate">What a bad bounce rate means</a>.</li>
+      <li><b>Bounce rate is under 2%.</b> Hard bounces above that tell the receiver you are sending to a bad list. <a href="/blog/cold-email-bounce-rate">What a bad bounce rate means</a>.</li>
       <li><b>No purchased or scraped lists.</b> These are the fastest way to get reported as spam and to lose the domain's reputation.</li>
       <li><b>Engagement is real.</b> Recipients who never open get your domain marked as low-quality. Prune or re-engage the cold segment.</li>
       <li><b>Unsubscribes are honored instantly.</b> A working one-click unsubscribe and honoring it the same day is a deliverability signal, not just a legal one.</li>
@@ -87,7 +85,7 @@
     <ul style="line-height:1.85">
       <li><b>You read your DMARC reports.</b> They tell you who is sending as your domain and what is failing. The <a href="/dmarc-report-parser">report parser</a> turns them into a who-is-sending-as-you list.</li>
       <li><b>You check blocklists on a schedule.</b> A listing you do not know about is a listing you cannot delist. The <a href="/blocklist-checker">blocklist checker</a> covers domain and IP.</li>
-      <li><b>You watch the provider dashboards.</b> Gmail Postmaster Tools and the Microsoft equivalents show your reputation and complaints directly. See <a href="/gmail-postmaster-tools">how to read Gmail's</a>.</li>
+      <li><b>You watch the provider dashboards.</b> Gmail Postmaster Tools and the Microsoft equivalents show your reputation and complaints directly. See <a href="/blog/gmail-postmaster-tools">how to read Gmail's</a>.</li>
       <li><b>You re-run the audit after any change.</b> A new ESP, a new IP, a new domain. Re-run the full check after every infrastructure change.</li>
     </ul>
 
@@ -114,7 +112,7 @@
         <a href="/blog/why-email-goes-to-spam">Why email goes to spam</a><br>
         <a href="/blog/cold-email-infrastructure">Cold email infrastructure that keeps domains alive</a><br>
         <a href="/blog/transactional-email-api-deliverability">Transactional email API deliverability</a><br>
-        <a href="/blog/dmarc-record-setup">How to set up a DMARC record</a>
+        <a href="/blog/dmarc-record">How to set up a DMARC record</a>
       </div>
     </div>
   </div>

@@ -14,9 +14,7 @@
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="/styles.css">
 <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' rx='8' fill='%236366f1'/%3E%3Cpath d='M8 16h13M15 10l6 6-6 6' stroke='white' stroke-width='3' fill='none' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E">
-<script type="application/ld+json">
-{"@context":"https://schema.org","@type":"Article","headline":"SMTP Error Codes Explained: 250, 450, 550, 554 and More","description":"What SMTP error codes mean and how to fix them: 250 accepted, 450/451/452 temporary failures, 550 mailbox unavailable, 554 relay denied, and the codes that predict spam placement.","author":{"@type":"Organization","name":"InboxProof"},"publisher":{"@type":"Organization","name":"InboxProof"}}
-</script>
+<script type="application/ld+json">{"@context":"https://schema.org","@type":"Article","headline":"SMTP Error Codes Explained: 250, 450, 550, 554 and More","description":"What SMTP error codes mean and how to fix them: 250 accepted, 450/451/452 temporary failures, 550 mailbox unavailable, 554 relay denied, and the codes that predict spam placement.","author":{"@type":"Organization","name":"InboxProof"},"publisher":{"@type":"Organization","name":"InboxProof"},"datePublished":"2026-08-22","dateModified":"2026-08-22"}</script>
 <meta property="og:url" content="https://inboxproof.email/blog/smtp-error-codes">
 <meta property="og:image" content="https://inboxproof.email/og.png">
 <meta property="og:image:width" content="1200">
@@ -68,6 +66,14 @@
   <p>The receiving server refused to relay your message. Common causes: your server's PTR record does not match its IP, your IP is on a blocklist, or you are sending from a residential IP that is not allowed to relay. If you see this code, check your PTR record and your blocklist status.</p>
   <h3>554 5.0.0 / 554 5.1.1 Message rejected / spam policy</h3>
   <p>The receiving server rejected the message based on its spam policy. This is the code you see when your email is being treated as spam at the SMTP level, before it even reaches the inbox. It usually means your sending reputation is poor, your content triggered a filter, or your domain lacks proper authentication.</p>
+
+  <h2 style="font-size:24px;margin:36px 0 12px">Deep-dive guides for the codes that hurt</h2>
+  <p>When a specific code keeps showing up, start with the dedicated guide for it:</p>
+  <ul style="font-size:16px;line-height:1.8">
+    <li><a href="/blog/smtp-error-550-5-7-1">550 5.7.1</a>: policy or security rejection. Usually a blocklisted IP or a failed SPF, DKIM or DMARC record.</li>
+    <li><a href="/blog/smtp-error-421-4-7-0">421 4.7.0</a>: Gmail connection rate limit. Too many concurrent connections from one IP.</li>
+    <li><a href="/blog/smtp-error-550-5-1-1">550 5.1.1</a>: hard bounce. The recipient mailbox does not exist.</li>
+  </ul>
 
   <h2 style="font-size:24px;margin:36px 0 12px">How to diagnose a delivery problem</h2>
   <p>When a batch of email is failing, work through the codes in this order:</p>

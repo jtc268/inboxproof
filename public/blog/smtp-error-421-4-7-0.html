@@ -1,0 +1,71 @@
+<!doctype html>
+<html lang="en">
+<head>
+<script>(function(){try{var p=location.pathname||"/";var r=(document.referrer||"").split("/")[2]||"direct";var u="/api/track?page="+encodeURIComponent(p)+"&ref="+encodeURIComponent(r);if(navigator.sendBeacon&&navigator.sendBeacon(u))return;var i=new Image();i.src=u;}catch(e){}})();</script>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Gmail SMTP error 421 4.7.0: too many connections, how to fix it | InboxProof</title>
+<meta name="description" content="Gmail SMTP error 421 4.7.0 means you are opening too many connections from one IP. How to slow down, warm up, and spread volume to stop the rate limit.">
+<link rel="canonical" href="https://inboxproof.email/blog/smtp-error-421-4-7-0">
+<meta property="og:title" content="Gmail SMTP error 421 4.7.0: too many connections, how to fix it">
+<meta property="og:description" content="Gmail SMTP error 421 4.7.0 means you are opening too many connections from one IP. How to slow down, warm up, and spread volume to stop the rate limit.">
+<meta property="og:type" content="article">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="/styles.css">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' rx='8' fill='%236366f1'/%3E%3Cpath d='M8 16h13M15 10l6 6-6 6' stroke='white' stroke-width='3' fill='none' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E">
+<script type="application/ld+json">{"@context":"https://schema.org","@type":"Article","headline":"Gmail SMTP error 421 4.7.0: too many connections, how to fix it","description":"Gmail SMTP error 421 4.7.0 means you are opening too many connections from one IP. How to slow down, warm up, and spread volume to stop the rate limit.","author":{"@type":"Organization","name":"InboxProof"},"publisher":{"@type":"Organization","name":"InboxProof"},"datePublished":"2026-08-22","dateModified":"2026-08-22"}</script>
+<meta property="og:url" content="https://inboxproof.email/blog/smtp-error-421-4-7-0">
+<meta property="og:image" content="https://inboxproof.email/og.png">
+<meta property="og:image:width" content="1200">
+<meta property="og:image:height" content="630">
+<meta name="twitter:image" content="https://inboxproof.email/og.png">
+</head>
+<body>
+<nav class="nav">
+  <div class="container">
+    <a class="logo" href="/">
+      <span class="mark"><svg viewBox="0 0 24 24" fill="none"><path d="M4 12h11M11 7l5 5-5 5" stroke="#fff" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"/></svg></span>
+      Inboxproof
+    </a>
+    <div class="nav-links"><a href="/">Run a free audit</a></div>
+  </div>
+</nav>
+
+<div class="container" style="max-width:760px;padding:60px 20px 80px">
+  <div class="kicker">Troubleshooting</div>
+  <h1 style="font-size:34px;margin:10px 0 12px">Gmail SMTP error 421 4.7.0: too many connections, how to fix it</h1>
+  <p style="opacity:.8;font-size:16px;margin-bottom:36px">If Gmail is dropping your connections with &quot;421 4.7.0&quot;, it is rate-limiting your IP. You are opening too many SMTP connections from one address in a short window. The good news: this is a temporary failure, not a permanent block. Slow down, and the errors stop. Here is how to do that without losing volume.</p>
+
+  <div class="card" style="margin-bottom:28px;background:#eef2ff;border-color:#c7d2fe">
+    <h3 style="margin-top:0">Check your setup in seconds</h3>
+    <p style="opacity:.8;margin-bottom:14px">The <a href="/">free InboxProof audit</a> runs a 7-point check (MX, SPF, DKIM, DMARC, TLS, PTR, and IP reputation) and returns a 0-100 score with a plain-English fix list. No signup.</p>
+    <a class="btn btn-primary" href="/">Run the free check</a>
+  </div>
+
+  <h2 style="font-size:24px;margin:36px 0 12px">What 421 4.7.0 means</h2>
+  <p>The first digit, 4, means a temporary failure: the connection was dropped and the server is asking you to try again later. The enhanced code 4.7.0 is a delivery rate limit. Gmail is not blocking your IP permanently; it is telling you that your address is opening too many SMTP connections at once and to back off.</p>
+
+  <h2 style="font-size:24px;margin:36px 0 12px">The three causes you will actually hit</h2>
+    <p style="margin:0 0 14px">1. Too many concurrent connections. Opening dozens of SMTP sessions from one IP at the same time trips Gmail's connection rate limit.</p>
+    <p style="margin:0 0 14px">2. Sending too fast. A burst of high volume in a short window looks like an attack, even when the mail is completely legitimate.</p>
+    <p style="margin:0 0 14px">3. A cold IP sending high volume. A brand new IP with no sending history that suddenly sends thousands of messages gets rate limited.</p>
+
+  <h2 style="font-size:24px;margin:36px 0 12px">How to fix it</h2>
+    <p style="margin:0 0 14px">1. Cap your concurrent connections. Keep the number of simultaneous SMTP sessions per IP low and let your mailer queue the rest instead of opening everything at once.</p>
+    <p style="margin:0 0 14px">2. Warm up the IP. Start with low volume and increase gradually over days or weeks so the reputation builds before you push hard.</p>
+    <p style="margin:0 0 14px">3. Spread volume across IPs. Use multiple sending IPs or domains so no single address hits the rate limit on its own.</p>
+    <p style="margin:0 0 14px">4. Use an ESP that manages rate limits. Reputable ESPs throttle sending automatically and rotate IPs for you, which removes the problem entirely.</p>
+
+  <div style="margin-top:24px;padding:16px;background:#f4f4ff;border-radius:12px">Want this checked automatically every day? <a href="/#pricing" style="font-weight:600">Inboxproof Pro</a> monitors your domain around the clock and alerts you the moment a record breaks or an IP gets listed. <a href="/#pricing" style="font-weight:600">See pricing &rarr;</a></div>
+  <p style="opacity:.6;font-size:13px;margin-top:28px">Related: <a href="/blog/smtp-error-codes">SMTP error codes explained</a> &middot; <a href="/blog/gmail-smtp-error-550-5-7-26">Gmail SMTP error 550-5.7.26</a> &middot; <a href="/blog/cold-email-deliverability">Cold email deliverability</a> &middot; <a href="/blog/email-in-spam">Why email lands in spam</a></p>
+</div>
+
+<footer>
+  <div class="container">
+    <span>&copy; 2026 Inboxproof, Inc.</span>
+    <span><a href="/">Home</a> &middot; <a href="/privacy">Privacy</a> &middot; <a href="https://github.com/jtc268/inboxproof" target="_blank" rel="noopener">GitHub</a></span>
+  </div>
+</footer>
+</body>
+</html>

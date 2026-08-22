@@ -5,6 +5,7 @@
 <meta name="viewport" content="width=device-width,initial-scale=1">
 <title>Inboxproof | Know if your email actually lands</title>
 <meta name="description" content="Inboxproof runs a real deliverability audit on your domain in 30 seconds: MX, SPF, DKIM, DMARC, TLS and IP reputation. Get a score, the exact records to fix, and daily monitoring. Built for the AI-era inbox.">
+<link rel="canonical" href="https://inboxproof.email/">
 <meta property="og:title" content="Inboxproof | Know if your email actually lands">
 <meta property="og:description" content="Free 30-second deliverability audit: MX, SPF, DKIM, DMARC, TLS, IP reputation. Get a score, the exact records to fix, and continuous monitoring.">
 <meta property="og:url" content="https://inboxproof.email">
@@ -20,6 +21,7 @@
 <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' rx='8' fill='%236366f1'/%3E%3Cpath d='M8 16h13M15 10l6 6-6 6' stroke='white' stroke-width='3' fill='none' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E">
 <script>
 (function(){try{var p=location.pathname||'/';var r=(document.referrer||'').split('/')[2]||'direct';var q=new URLSearchParams(location.search);var ref=q.get('ref')||'';if(ref){try{localStorage.setItem('ip_ref',ref);}catch(e){}}var u='/api/track?page='+encodeURIComponent(p)+'&ref='+encodeURIComponent(r)+(ref?'&team='+encodeURIComponent(ref):'');if(navigator.sendBeacon&&navigator.sendBeacon(u))return;var i=new Image();i.src=u;}catch(e){}})();
+window.trackEvent=function(ev){try{var p=location.pathname||'/';var u='/api/track?page='+encodeURIComponent(p)+'&event='+encodeURIComponent(ev);if(navigator.sendBeacon&&navigator.sendBeacon(u))return;var i=new Image();i.src=u;}catch(e){}};
 </script>
 <script type="application/ld+json">
 {"@context":"https://schema.org","@type":"SoftwareApplication","name":"Inboxproof","applicationCategory":"BusinessApplication","operatingSystem":"Web","description":"Free email deliverability audit: MX, SPF, DKIM, DMARC, TLS, PTR and IP reputation with a 0-100 score, exact fix records, and daily monitoring on Pro.","offers":{"@type":"Offer","price":"0","priceCurrency":"USD","description":"Free audit"},"featureList":["MX record check","SPF check","DKIM check","DMARC check","TLS/STARTTLS check","PTR / reverse DNS check","IP reputation check","Daily monitoring (Pro)"]}
@@ -28,7 +30,7 @@
 {"@context":"https://schema.org","@type":"FAQPage","mainEntity":[
 {"@type":"Question","name":"Is the Inboxproof audit free?","acceptedAnswer":{"@type":"Answer","text":"Yes. The full deliverability audit (MX, SPF, DKIM, DMARC, TLS, PTR, IP reputation) is free forever. You only pay if you want daily monitoring and alerts on Pro."}},
 {"@type":"Question","name":"Do I need to change my DNS to run an audit?","acceptedAnswer":{"@type":"Answer","text":"No. Inboxproof queries your live DNS read-only. No account, no DNS changes, nothing to install."}},
-{"@type":"Question","name":"What does Pro cost?","acceptedAnswer":{"@type":"Answer","text":"Pro is $29/month for up to 5 domains with daily re-checks and email alerts. Agency is $99/month for up to 25 domains."}},
+{"@type":"Question","name":"What does Pro cost?","acceptedAnswer":{"@type":"Answer","text":"Pro is $14.50/month for up to 5 domains with daily re-checks and email alerts. Agency is $49.50/month for up to 25 domains."}},
 {"@type":"Question","name":"How often does Pro re-check my domain?","acceptedAnswer":{"@type":"Answer","text":"Every 24 hours. You get an email the moment a record breaks, expires, or a provider changes your sending IP."}}
 ]}
 </script>
@@ -166,7 +168,8 @@
       <div class="plan hot">
         <div class="tag">MOST POPULAR</div>
         <h3>Pro</h3>
-        <div class="price"><s style="font-size:22px;font-weight:600;opacity:.5;margin-right:8px">$29</s>$14.50<small> / month</small></div>
+        <div class="price"><s style="opacity:.55;font-size:.7em;margin-right:6px">$29</s>$14.50<small> / month</small></div>
+        <div style="font-size:12px;font-weight:700;letter-spacing:.04em;color:#0a7a4d;margin-bottom:8px">LAUNCH PRICE, 50% OFF</div>
         <div class="desc">For founders and teams whose revenue rides on email.</div>
         <ul>
           <li>Everything in Free</li>
@@ -179,7 +182,8 @@
       </div>
       <div class="plan">
         <h3>Agency</h3>
-        <div class="price"><s style="font-size:22px;font-weight:600;opacity:.5;margin-right:8px">$99</s>$49.50<small> / month</small></div>
+        <div class="price"><s style="opacity:.55;font-size:.7em;margin-right:6px">$99</s>$49.50<small> / month</small></div>
+        <div style="font-size:12px;font-weight:700;letter-spacing:.04em;color:#0a7a4d;margin-bottom:8px">LAUNCH PRICE, 50% OFF</div>
         <div class="desc">For MSPs and agencies managing client inboxes.</div>
         <ul>
           <li>Everything in Pro</li>
@@ -190,7 +194,7 @@
         <button class="btn btn-ghost" data-buy="agency">Get Agency: $49.50/mo</button>
       </div>
     </div>
-    <p style="text-align:center;margin-top:18px;font-size:14px;opacity:.75">Launch offer: 50% off your first month, applied automatically at checkout. Cancel anytime from your dashboard, no lock-in. Backed by a 30-day money-back guarantee.</p>
+    <p style="text-align:center;margin-top:18px;font-size:14px;opacity:.75">No lock-in. Cancel anytime from your dashboard. Backed by a 30-day money-back guarantee.</p>
   </div>
 </section>
 
@@ -249,6 +253,10 @@
       <p>Short, practical explainers. No fluff, no fake stats. Every claim is something you can verify with a DNS lookup.</p>
     </div>
     <div class="grid">
+      <a class="card" href="/blog/email-deliverability-for-agencies-developers.html" style="text-decoration:none;color:inherit">
+        <h3>Deliverability for agencies and developers</h3>
+        <p>The complete playbook for keeping every client domain in the inbox. The 7-check audit, the agency and developer workflows, and the 5 mistakes that burn you.</p>
+      </a>
       <a class="card" href="/blog/dmarc" style="text-decoration:none;color:inherit">
         <h3>What is DMARC?</h3>
         <p>What p=none actually does, alignment, and the safe order to go from monitoring to enforcement.</p>
@@ -467,6 +475,7 @@ $('#captureForm').addEventListener('submit', async e => {
     $('#unlockEmail').textContent = email;
     $('#leadCapture').style.display = 'none';
     $('#proState').textContent = 'Saved to ' + email + '. Your report and score history are linked to this address.';
+    trackEvent('lead_captured');
   }catch(ex){
     capErr.textContent = ex.message;
   }finally{
@@ -490,6 +499,7 @@ form.addEventListener('submit', async e => {
   if(!/^[a-z0-9.-]+\.[a-z]{2,}$/i.test(domain)){ err.textContent = 'Enter a valid domain, e.g. yourdomain.com'; return; }
   const btn = $('#auditBtn');
   btn.disabled = true; btn.innerHTML = '<span class="spinner"></span>Auditing live DNS…';
+  trackEvent('audit_start');
   try{
     let ref='';try{ref=localStorage.getItem('ip_ref')||'';}catch(e){}
     const r = await fetch('/api/audit', {method:'POST', headers:{'Content-Type':'application/json'}, body: JSON.stringify({domain, email, ref})});
@@ -500,6 +510,7 @@ form.addEventListener('submit', async e => {
     last.email = email;
     try{ if(email) sessionStorage.setItem('ip_email', email); if(j.refCode) sessionStorage.setItem('ip_refcode', j.refCode); }catch(e){}
     render(last);
+    trackEvent('audit_complete');
   }catch(ex){
     err.textContent = ex.message;
   }finally{
@@ -519,6 +530,7 @@ async function buy(plan, btn){
     const r = await fetch('/api/checkout', {method:'POST', headers:{'Content-Type':'application/json'}, body: JSON.stringify({plan, email, domain: last && last.domain})});
     const j = await r.json();
     if(!r.ok) throw new Error(j.error || 'Could not start checkout');
+    trackEvent('checkout_started');
     location.href = j.url;
   }catch(ex){
     if(btn){ btn.disabled = false; btn.textContent = old; }

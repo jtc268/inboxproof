@@ -1,0 +1,77 @@
+<!doctype html>
+<html lang="en">
+<head>
+<script>(function(){try{var p=location.pathname||"/";var r=(document.referrer||"").split("/")[2]||"direct";var u="/api/track?page="+encodeURIComponent(p)+"&ref="+encodeURIComponent(r);if(navigator.sendBeacon&&navigator.sendBeacon(u))return;var i=new Image();i.src=u;}catch(e){}})();</script>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Amazon SES deliverability: why your emails go to spam and how to fix it | Inboxproof</title>
+<meta name="description" content="Amazon SES accepted your mail but recipients are not seeing it. The five reasons SES deliverability drops, and the exact fix for each one.">
+<meta property="og:title" content="Amazon SES deliverability: why your emails go to spam and how to fix it">
+<meta property="og:description" content="Amazon SES accepted your mail but recipients are not seeing it. The five reasons SES deliverability drops, and the exact fix for each one.">
+<meta property="og:type" content="article">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="/styles.css">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' rx='8' fill='%236366f1'/%3E%3Cpath d='M8 16h13M15 10l6 6-6 6' stroke='white' stroke-width='3' fill='none' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E">
+<script type="application/ld+json">{"@context":"https://schema.org","@type":"Article","headline":"Amazon SES deliverability: why your emails go to spam and how to fix it","description":"Amazon SES accepted your mail but recipients are not seeing it. The five reasons SES deliverability drops, and the exact fix for each one.","author":{"@type":"Organization","name":"Inboxproof"},"publisher":{"@type":"Organization","name":"Inboxproof"},"datePublished":"2026-08-22","dateModified":"2026-08-22"}</script>
+<link rel="canonical" href="https://inboxproof.email/blog/email-deliverability-amazon-ses">
+<meta property="og:url" content="https://inboxproof.email/blog/email-deliverability-amazon-ses">
+<meta property="og:image" content="https://inboxproof.email/og.png">
+<meta property="og:image:width" content="1200">
+<meta property="og:image:height" content="630">
+<meta name="twitter:image" content="https://inboxproof.email/og.png">
+</head>
+<body>
+<nav class="nav">
+  <div class="container">
+    <a class="logo" href="/">
+      <span class="mark"><svg viewBox="0 0 24 24" fill="none"><path d="M4 12h11M11 7l5 5-5 5" stroke="#fff" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"/></svg></span>
+      Inboxproof
+    </a>
+    <div class="nav-links"><a href="/blog">All guides</a><a href="/">Run a free audit</a></div>
+  </div>
+</nav>
+
+<div class="container" style="max-width:760px;padding:60px 20px 80px">
+  <div class="kicker">Guide</div>
+  <h1 style="font-size:34px;margin:10px 0 24px">Amazon SES deliverability: why your emails go to spam and how to fix it</h1>
+  <div style="opacity:.85;line-height:1.75;font-size:15.5px">
+    <p>You send through Amazon SES, the API returns a 202, and the event notification says "delivered." But the recipient never sees it. It is in spam, or it is not there at all. This is the most common complaint from teams sending through SES, and it is almost never SES's fault. SES is doing exactly what you told it to do. The problem is upstream: the sending domain, the authentication records, the IP reputation, or the list you are sending to. Here are the five reasons SES deliverability drops, in order of likelihood, and the exact fix for each one.</p>
+
+    <h2 style="font-size:22px;margin:34px 0 12px">1. Your SPF record points to the wrong SES region</h2>
+    <p>SES is regional, and your SPF record must include the SES endpoint for the region you send from. If you send from <code>us-east-1</code>, your SPF record needs <code>include:ses.us-east-1.amazonaws.com</code>. If you include the wrong region, or no region at all, the SPF check fails and mailboxes treat your mail as unauthenticated. Open your SES console, confirm the region your sending identity is in, and update your SPF record to match. If you send from more than one region, include each one, but keep the total number of SPF lookups under ten, because exceeding that limit makes the whole record fail.</p>
+
+    <h2 style="font-size:22px;margin:34px 0 12px">2. Your DKIM CNAME record is missing or mismatched</h2>
+    <p>SES signs your mail with DKIM, but only if you add the CNAME record it generates. In the SES console, open your verified sending domain, go to DKIM signing, and copy the CNAME record it shows. Add it to your DNS exactly as shown. The record points to a <code>ses.&lt;region&gt;.amazonaws.com</code> address, so it must match the region you send from. If the record is missing, expired, or points to the wrong region, SES cannot sign your mail, and every message you send goes out unsigned. Unsigned mail is one of the strongest spam signals a mailbox sees. If you recently switched DNS providers, this record is the first thing to re-add.</p>
+
+    <h2 style="font-size:22px;margin:34px 0 12px">3. You are sending from an identity you have not verified</h2>
+    <p>SES will not send production mail from an unverified identity. While your account is in the sandbox, it can only deliver to verified email addresses. To send to anyone, you request production access and verify the domain or address you send from. If the identity is not verified, SES rejects the send before it ever reaches the recipient, and your application sees a hard error rather than a delivery. Verify the exact domain you send from, not a subdomain, unless you intend to send from that subdomain. A common mistake is verifying <code>mail.example.com</code> and then sending from <code>example.com</code>, which SES treats as a different, unverified identity.</p>
+
+    <h2 style="font-size:22px;margin:34px 0 12px">4. Your shared IP pool has a bad reputation</h2>
+    <p>By default, SES sends your mail from a pool of shared IPs. Other senders on that pool affect your reputation. If a neighbor is sending spam or has a high complaint rate, your mail can suffer even if your own sending is clean. You have two levers. First, request a dedicated IP, which is available at higher sending volume, and warm it up gradually instead of jumping to full volume. Second, keep your own sending behavior clean so the shared pool stays healthy. You can watch your sending statistics in the SES console, but the console only tells you what happened after the fact. <a href="/" style="font-weight:600">Inboxproof</a> monitors your domain around the clock and alerts you the moment a record breaks or an IP gets listed, so a reputation drop never catches you blind.</p>
+
+    <h2 style="font-size:22px;margin:34px 0 12px">5. Your bounce and complaint rates are too high</h2>
+    <p>SES tracks bounces and complaints per sending domain. If your bounce rate climbs above 5 percent or your complaint rate climbs above 0.1 percent, SES degrades your reputation and can suppress your sends. Clean your list before you send, validate addresses, and honor unsubscribes the same day. SES maintains a suppression list of addresses that have bounced or complained. If you keep sending to those addresses, you hurt your reputation and waste sends. Remove hard bounces from your list, stop sending to suppressed addresses, and keep your engagement healthy so the addresses you do send to actually open the mail.</p>
+
+    <div style="margin-top:34px;padding:22px;border:1px solid rgba(99,102,241,.25);border-radius:12px;background:rgba(99,102,241,.06)">
+      <div style="font-weight:700;font-size:16px;margin-bottom:10px">Find out which of these is breaking your SES deliverability</div>
+      <p style="font-size:14.5px;line-height:1.7;margin:0 0 14px">Run a free audit of your domain. It checks SPF, DKIM, DMARC, MX, TLS, PTR and blocklists in one pass, and tells you exactly which record is wrong and how to fix it. No account needed.</p>
+      <a href="/" style="display:inline-block;background:#6366f1;color:#fff;font-weight:600;font-size:14px;padding:10px 18px;border-radius:9px;text-decoration:none">Run the free audit</a>
+      <p style="font-size:13.5px;line-height:1.7;margin:16px 0 0;opacity:.85">Want to know the moment any of these breaks? <a href="/#pricing" style="font-weight:600">Inboxproof Pro</a> monitors your domain around the clock and alerts you the instant a record changes or an IP gets listed. <a href="/#pricing" style="font-weight:600">See pricing &rarr;</a></p>
+    </div>
+
+    <div style="margin-top:24px;padding:20px;border:1px solid rgba(99,102,241,.25);border-radius:12px;background:rgba(99,102,241,.06)">
+      <div style="font-weight:700;font-size:15px;margin-bottom:10px">Related guides</div>
+      <div style="opacity:.8;font-size:14px;line-height:2">
+        <a href="/blog/email-deliverability-for-agencies-developers.html">Deliverability for agencies and developers</a><br>
+        <a href="/blog/transactional-email-api-deliverability">Transactional email API deliverability</a><br>
+        <a href="/blog/why-email-goes-to-spam">Why email goes to spam</a><br>
+        <a href="/blog/email-deliverability-checklist">Email deliverability checklist</a><br>
+        <a href="/blog/amazon-ses-vs-sendgrid">Amazon SES vs SendGrid: which one to pick</a><br>
+        <a href="/blog/dkim-not-signing">DKIM not signing emails? How to fix it</a>
+      </div>
+    </div>
+  </div>
+</div>
+</body>
+</html>
