@@ -254,6 +254,7 @@ async function startCheckout(emailInput, btn, errEl) {
     const r = await fetch('/api/checkout', {method:'POST', headers:{'Content-Type':'application/json'}, body: JSON.stringify({plan:'pro', email, domain: report.domain})});
     const j = await r.json();
     if (!r.ok) throw new Error(j.error || 'Could not start checkout');
+    trackEvent('checkout_started');
     location.href = j.url;
   } catch (ex) {
     btn.disabled = false; btn.textContent = 'Start Pro: $14.50/mo';

@@ -584,12 +584,26 @@ async function handler(req, res) {
         const totalAudits = Object.values(audits).reduce((n, a) => n + a.length, 0);
         const pro = Object.values(leads).filter(l => l.pro);
         const referred = Object.values(leads).filter(l => l.referredBy).map(l => ({ email: l.email, referredBy: l.referredBy, at: l.referredAt || null }));
+        const ev = stats.byEvent || {};
+        // checkout_start was the event name in an earlier deploy; count both.
+        const checkoutStarted = (ev.checkout_started || 0) + (ev.checkout_start || 0);
+        const rate = (num, den) => (den ? Math.round(100 * num / den) : null);
         return sendJson(res, 200, {
           pageViews: stats.pageViews || 0,
           byPage: stats.byPage || {},
           byRef: stats.byRef || {},
           byTeam: stats.byTeam || {},
-          byEvent: stats.byEvent || {},
+          byEvent: ev,
+          funnel: {
+            audit_start: ev.audit_start || 0,
+            audit_complete: ev.audit_complete || 0,
+            report_viewed: ev.report_viewed || 0,
+            lead_captured: ev.lead_captured || 0,
+            checkout_started: checkoutStarted,
+            pro: pro.length,
+            audit_to_checkout_pct: rate(checkoutStarted, ev.audit_complete || 0),
+            checkout_to_pro_pct: rate(pro.length, checkoutStarted),
+          },
           lastView: stats.lastView || null,
           lastEvent: stats.lastEvent || null,
           leads: Object.keys(leads).length,
