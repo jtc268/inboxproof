@@ -411,7 +411,7 @@ async function checkDkim(domain) {
       if (rec) found.push({ sel, rec });
     } catch { /* selector not present */ }
   }));
-  if (!found.length) return { id: 'dkim', name: 'DKIM', status: 'fail', detail: 'No DKIM key found across 50 common selectors. Messages from ' + domain + ' carry no cryptographic signature.', fix: 'Enable DKIM in your ESP (Google Workspace: Admin → Security → DKIM). Example record:\nselector1._domainkey.' + domain + '  TXT  "v=DKIM1; k=rsa; p=<your key>"' };
+  if (!found.length) return { id: 'dkim', name: 'DKIM', status: 'fail', detail: 'No DKIM key found among the common selectors checked for ' + domain + '. A custom selector may exist; this does not establish whether messages are signed.', fix: 'Enable DKIM in your ESP (Google Workspace: Admin → Security → DKIM). Example record:\nselector1._domainkey.' + domain + '  TXT  "v=DKIM1; k=rsa; p=<your key>"' };
   const f = found[0];
   const p = (f.rec.match(/p=([A-Za-z0-9+/=]+)/) || [])[1] || '';
   if (!p) return { id: 'dkim', name: 'DKIM', status: 'warn', detail: 'DKIM record exists at ' + f.sel + '._domainkey but has no public key (p= empty).', fix: 'Publish the full key: v=DKIM1; k=rsa; p=<base64 key>' };
@@ -423,7 +423,7 @@ async function checkDkim(domain) {
 async function checkDmarc(domain) {
   let txts;
   try { txts = await dns.resolveTxt('_dmarc.' + domain); } catch {
-    return { id: 'dmarc', name: 'DMARC', status: 'fail', detail: 'No DMARC record at _dmarc.' + domain + '. In 2026, Gmail and Microsoft treat missing DMARC as a hard filter signal for bulk mail.', fix: 'Start safe (report-only), then escalate:\n_dmarc TXT "v=DMARC1; p=none; rua=mailto:postmaster@' + domain + '; pct=100"' };
+    return { id: 'dmarc', name: 'DMARC', status: 'fail', detail: 'No DMARC record at _dmarc.' + domain + '. Bulk-sender requirements from Gmail and Microsoft include DMARC. Review the requirements that apply to your sending volume.', fix: 'Start safe (report-only), then escalate:\n_dmarc TXT "v=DMARC1; p=none; rua=mailto:postmaster@' + domain + '; pct=100"' };
   }
   const rec = (txts.map(t => t.join('')).find(s => /^v=dmarc1/i.test(s)) || '').trim();
   if (!rec) return { id: 'dmarc', name: 'DMARC', status: 'fail', detail: 'TXT at _dmarc.' + domain + ' is not a valid DMARC record.', fix: 'Publish: _dmarc TXT "v=DMARC1; p=none; rua=mailto:postmaster@' + domain + '"' };
@@ -431,9 +431,9 @@ async function checkDmarc(domain) {
   const rua = /rua=/i.test(rec);
   let status, detail, fix = '';
   if (!p) { status = 'fail'; detail = 'DMARC record has no policy (p=). Record: ' + rec; fix = 'Add p=none to start, then escalate to p=quarantine.'; }
-  else if (p === 'none') { status = 'warn'; detail = 'DMARC present but p=none — monitoring only, no enforcement. Gmail\u2019s 2026 enforcement expects quarantine or reject for bulk senders.'; fix = 'Escalate: v=DMARC1; p=quarantine; rua=mailto:postmaster@' + domain + '; pct=100'; }
-  else if (p === 'quarantine') { status = 'pass'; detail = 'DMARC p=quarantine — spoofed mail is held for review. Good posture for 2026.'; fix = 'Consider p=reject after 30 clean days of reports.'; }
-  else { status = 'pass'; detail = 'DMARC p=reject — full enforcement. Best in class for 2026.'; }
+  else if (p === 'none') { status = 'warn'; detail = 'DMARC p=none monitors without requesting quarantine or rejection. It can meet provider minimum DMARC requirements; review reports before increasing enforcement.'; fix = 'Review DMARC reports and confirm legitimate senders before choosing quarantine or reject. Reporting address: postmaster@' + domain; }
+  else if (p === 'quarantine') { status = 'pass'; detail = 'DMARC p=quarantine requests quarantine for messages that fail DMARC; receiver handling can vary.'; fix = 'Review legitimate sender alignment and reports before choosing p=reject.'; }
+  else { status = 'pass'; detail = 'DMARC p=reject requests rejection of messages that fail DMARC; receiver handling can vary.'; }
   if (!rua && status !== 'fail') { status = 'warn'; detail += ' No rua= reporting address, so you will never receive abuse reports.'; fix = (fix ? fix + '\n' : '') + 'Add rua=mailto:postmaster@' + domain; }
   return { id: 'dmarc', name: 'DMARC', status, detail, fix };
 }
