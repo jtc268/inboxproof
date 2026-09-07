@@ -1,8 +1,5 @@
 {
   "version": 2,
-  "rewrites": [
-    { "source": "/(.*)", "destination": "/server" }
-  ],
   "functions": {
     "server.mjs": { "maxDuration": 300 }
   },
