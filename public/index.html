@@ -295,7 +295,7 @@ window.trackEvent=function(ev){try{var p=location.pathname||'/';var u='/api/trac
       </div>
       <div id="leadCapture" style="display:none;margin-top:18px;padding:18px 20px;border:1px solid #2a2a2a;border-radius:12px;background:#0f0f0f">
         <div style="font-size:15px;font-weight:600;margin-bottom:6px">Save your report</div>
-        <div style="font-size:13px;opacity:.72;margin-bottom:12px;line-height:1.5">We'll email you a copy of your <b id="capDomain"></b> audit now, and re-check it in 48 hours to flag anything still broken. Free, no card. Pro adds daily monitoring alerts.</div>
+        <div style="font-size:13px;opacity:.72;margin-bottom:12px;line-height:1.5">Link your <b id="capDomain"></b> report to an email address for saved history and follow-up emails about your domain. No card required. Pro adds scheduled daily monitoring.</div>
         <form id="captureForm" style="display:flex;gap:8px">
           <input id="capEmail" type="email" placeholder="you@yourdomain.com" autocomplete="email" spellcheck="false" style="flex:1;min-width:0;padding:10px 12px;border-radius:9px;border:1px solid #333;background:#0a0a0a;color:#fff;font-size:14px;outline:none">
           <button class="btn btn-primary" type="submit" id="capBtn">Save my report</button>
@@ -304,11 +304,11 @@ window.trackEvent=function(ev){try{var p=location.pathname||'/';var u='/api/trac
       </div>
       <div class="unlock" id="unlock">
         <h3 id="unlockH">Add daily monitoring</h3>
-        <p>Your audit is saved to <b id="unlockEmail"></b>. <span id="unlockMsg">Pro adds scheduled daily checks and email updates when issues are detected.</span></p>
+        <p><span id="unlockSaved" hidden>Your report is linked to <b id="unlockEmail"></b>. </span><span id="unlockMsg">Pro adds scheduled daily checks and email updates when issues are detected.</span></p>
         <div style="display:flex;gap:16px;justify-content:center;flex-wrap:wrap;margin-bottom:18px;font-size:13.5px;color:var(--muted)">
           <span>✓ Daily re-audit (5 domains)</span>
           <span>✓ Score history &amp; trend</span>
-          <span>✓ Break alerts by email</span>
+          <span>✓ Updates from scheduled checks</span>
           <span>✓ API access</span>
         </div>
         <button class="btn btn-primary" id="proBtn">Get Pro: $14.50/mo</button>
@@ -381,7 +381,8 @@ function render(a){
     const fix = c.fix ? `<div class="fix">${c.fix.replace(/</g,'&lt;')}</div>` : '';
     return `<div class="chk ${c.status}"><div class="st">${ic}</div><div><div class="t">${c.name}</div><div class="d">${c.detail}</div>${fix}</div></div>`;
   }).join('');
-  $('#unlockEmail').textContent = a.email || 'your inbox';
+  $('#unlockEmail').textContent = a.email || '';
+  $('#unlockSaved').hidden = !a.email;
   const failN = a.checks.filter(c => c.status === 'fail').length;
   const warnN = a.checks.filter(c => c.status === 'warn').length;
   const uMsg = 'Pro adds scheduled daily checks and email updates when issues are detected.';
@@ -399,7 +400,7 @@ function render(a){
   if (last.email) { cap.style.display = 'none'; }
   else { cap.style.display = 'block'; }
   $('#results').classList.add('show');
-  $('#results').scrollIntoView({behavior:'smooth'});
+  $('#results').scrollIntoView({behavior:matchMedia('(prefers-reduced-motion: reduce)').matches ? 'instant' : 'smooth'});
 }
 
 $('#captureForm').addEventListener('submit', async e => {
@@ -417,6 +418,7 @@ $('#captureForm').addEventListener('submit', async e => {
     last.email = email;
     try{ sessionStorage.setItem('ip_email', email); }catch(e){}
     $('#unlockEmail').textContent = email;
+    $('#unlockSaved').hidden = false;
     $('#leadCapture').style.display = 'none';
     $('#proState').textContent = 'Saved to ' + email + '. Your report and score history are linked to this address.';
     trackEvent('lead_captured');
