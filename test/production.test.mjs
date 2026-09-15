@@ -200,3 +200,9 @@ test('analytics HTTP flow joins landing source to checkout and verified payment 
 });
 
 test.after(async()=>{globalThis.fetch=originalFetch;await new Promise(r=>server.close(r));fs.rmSync(temp,{recursive:true,force:true});});
+
+test('home and static HTTP routes publish one canonical and complete search previews',async()=>{
+ for(const p of ['/','/index.html','/dmarc-checker','/email-domain-monitor','/blog/spf-lookup-limit']){
+  const r=await fetch(base+p),html=await r.text();assert.equal(r.status,200,p);assert.equal((html.match(/rel="canonical"/g)||[]).length,1,p);const canonical='https://inboxproof.email'+(p==='/index.html'?'/':p);assert.ok(html.includes('rel="canonical" href="'+canonical+'"'),p);assert.ok(html.includes('property="og:url" content="'+canonical+'"'),p);assert.ok(html.includes('name="twitter:card" content="summary_large_image"'),p);
+ }
+});

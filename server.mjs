@@ -618,7 +618,7 @@ async function requestHandler(req, res) {
       const host = req.headers.host || 'localhost:4321';
       const proto = String(req.headers['x-forwarded-proto'] || '').split(',')[0].trim() === 'https' ? 'https' : 'http';
       const base = proto + '://' + host;
-      const html = fs.readFileSync(path.join(PUBLIC, 'index.html'), 'utf8').replace('<head>', '<head>\n' + canonicalTag('/') + ogMetaTags(base, base + '/', ''));
+      const html = publicMetadata(fs.readFileSync(path.join(PUBLIC, 'index.html'), 'utf8'),'/');
       res.writeHead(200, { 'Content-Type': MIME['.html'] });
       return res.end(measuredHtml(html));
     }
