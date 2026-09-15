@@ -131,6 +131,7 @@ async function doLookup(email) {
   msg.style.color = 'var(--muted)'; msg.textContent = 'Looking up your link…';
   try {
     const r = await fetch('/api/referrals?email=' + encodeURIComponent(email));
+    if(r.status===401){location.href='/login';return;}
     const j = await r.json();
     if (!r.ok) throw new Error(j.error || 'Could not find your account');
     $('#reflink').textContent = j.link;

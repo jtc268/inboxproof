@@ -42,7 +42,7 @@ window.trackEvent=function(ev){try{var p=location.pathname||'/';var u='/api/trac
       <a href="#how">How it works</a>
       <a href="#pricing">Pricing</a>
       <a href="#resources">Tools &amp; guides</a>
-      <a href="/pro">Dashboard</a>
+      <a href="/login">Sign in</a>
     </div>
     <a class="btn btn-primary btn-sm" href="#audit">Run a free audit</a>
   </div>
@@ -277,7 +277,7 @@ window.trackEvent=function(ev){try{var p=location.pathname||'/';var u='/api/trac
 <footer>
   <div class="container">
     <span>© 2026 Inboxproof · Email configuration checks.</span>
-    <span><a href="/pro">Dashboard</a> · <a href="/referral">Referrals</a> · <a href="/blog">Guides</a> · <a href="/developers">Developers</a> · <a href="/privacy">Privacy</a> · <a href="/api/health">API status</a> · <a href="https://github.com/jtc268/inboxproof-cli" target="_blank" rel="noopener">CLI</a> · <a href="https://github.com/jtc268/inboxproof" target="_blank" rel="noopener">GitHub</a></span>
+    <span><a href="/login">Sign in</a> · <a href="/referral">Referrals</a> · <a href="/blog">Guides</a> · <a href="/developers">Developers</a> · <a href="/privacy">Privacy</a> · <a href="/api/health">API status</a> · <a href="https://github.com/jtc268/inboxproof-cli" target="_blank" rel="noopener">CLI</a> · <a href="https://github.com/jtc268/inboxproof" target="_blank" rel="noopener">GitHub</a></span>
   </div>
 </footer>
 
@@ -365,6 +365,7 @@ function askEmail(){
   });
 }
 
+function esc(s){return String(s??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));}
 function scoreColor(s){ return s>=90 ? '#34d399' : s>=70 ? '#a3e635' : s>=50 ? '#fbbf24' : '#f87171'; }
 function gradeOf(s){ return s>=90 ? ['A','Few issues found'] : s>=70 ? ['B','Some findings'] : s>=50 ? ['C','Review findings'] : ['D','Several findings']; }
 
@@ -378,8 +379,8 @@ function render(a){
   $('#resDomain').textContent = a.domain + ' · audited ' + new Date(a.at).toLocaleString();
   $('#checks').innerHTML = a.checks.map(c => {
     const ic = c.status==='pass' ? '✓' : c.status==='warn' ? '!' : '✕';
-    const fix = c.fix ? `<div class="fix">${c.fix.replace(/</g,'&lt;')}</div>` : '';
-    return `<div class="chk ${c.status}"><div class="st">${ic}</div><div><div class="t">${c.name}</div><div class="d">${c.detail}</div>${fix}</div></div>`;
+    const fix = c.fix ? `<div class="fix">${esc(c.fix)}</div>` : '';
+    return `<div class="chk ${c.status}"><div class="st">${ic}</div><div><div class="t">${esc(c.name)}</div><div class="d">${esc(c.detail)}</div>${fix}</div></div>`;
   }).join('');
   $('#unlockEmail').textContent = a.email || '';
   $('#unlockSaved').hidden = !a.email;
@@ -453,7 +454,7 @@ form.addEventListener('submit', async e => {
     if(!r.ok) throw new Error(j.error || 'Audit failed');
     last = j.audit;
     last.reportId = j.reportId;
-    last.email = email;
+    last.email = j.savedEmail || '';
     last.refCode = j.refCode || '';
     try{ if(email) sessionStorage.setItem('ip_email', email); if(j.refCode) sessionStorage.setItem('ip_refcode', j.refCode); }catch(e){}
     render(last);
