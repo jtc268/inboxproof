@@ -1,5 +1,5 @@
 <!doctype html>
-<html lang="en">
+<html lang="en" class="account-loading">
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
@@ -8,6 +8,9 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="/styles.css">
+<style>
+.account-loading #topCta,.account-loading #wlProBottom,.account-loading #saveRow,.account-loading #ownCta,.paid-account #topCta,.paid-account #wlProBottom,.paid-account #saveRow,.paid-account #ownCta{display:none!important}
+</style>
 <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' rx='8' fill='%236366f1'/%3E%3Cpath d='M8 16h13M15 10l6 6-6 6' stroke='white' stroke-width='3' fill='none' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E">
 <script>
 (function(){try{var p=location.pathname||'/';var r=(document.referrer||'').split('/')[2]||'direct';var q=new URLSearchParams(location.search);var ref=q.get('ref')||'';if(ref){try{localStorage.setItem('ip_ref',ref);}catch(e){}}var u='/api/track?page='+encodeURIComponent(p)+'&ref='+encodeURIComponent(r)+(ref?'&team='+encodeURIComponent(ref):'');if(navigator.sendBeacon&&navigator.sendBeacon(u))return;var i=new Image();i.src=u;}catch(e){}})();
@@ -22,6 +25,7 @@
       Inboxproof
     </a>
     <div class="nav-links">
+      <a href="/pro">Dashboard</a>
       <a href="/">Run a free audit</a>
       <a href="/#pricing">Pricing</a>
     </div>
@@ -54,7 +58,7 @@
         <button id="shareTeam" style="padding:8px 12px;border-radius:9px;border:1px solid rgba(52,211,153,.4);background:rgba(52,211,153,.12);color:inherit;font-size:13px;cursor:pointer" title="Copy your personal link. When someone you refer upgrades to Pro, you earn a free month of Pro.">Share with team</button>
       </div>
       <div id="saveRow" style="margin-top:14px;padding:14px 16px;border:1px solid rgba(255,255,255,.1);border-radius:10px;background:rgba(255,255,255,.03)">
-        <div style="font-size:13px;opacity:.85;margin-bottom:9px">Keep this report. We'll email you a copy of your <b id="saveDomain"></b> audit now, and re-check it in 48 hours to flag anything still broken.</div>
+        <div style="font-size:13px;opacity:.85;margin-bottom:9px">Keep this report. We'll email you a copy of your <b id="saveDomain"></b> audit. Sign in to find your saved reports anytime.</div>
         <form id="saveForm" style="display:flex;gap:8px;flex-wrap:wrap">
           <input id="saveEmail" type="email" required placeholder="you@yourdomain.com" style="flex:1;min-width:180px;padding:10px 14px;border-radius:10px;border:1px solid rgba(255,255,255,.15);background:rgba(255,255,255,.05);color:inherit;font-size:14px">
           <button class="btn btn-primary" id="saveBtn" type="submit">Email me my report</button>
@@ -62,6 +66,10 @@
         <div id="saveMsg" style="font-size:12px;margin-top:8px;opacity:.7"></div>
       </div>
     </div>
+  </div>
+  <div id="accountReport" hidden style="margin-bottom:24px;padding:18px 22px;border:1px solid rgba(52,211,153,.35);border-radius:14px;display:flex;gap:16px;align-items:center;justify-content:space-between;flex-wrap:wrap">
+    <div><strong>Your monitoring plan is active.</strong><div style="opacity:.75;font-size:14px;margin-top:5px">Review your domains, saved reports, and billing in your dashboard.</div></div>
+    <a href="/pro" class="btn btn-primary">Back to dashboard</a>
   </div>
   <div id="ownCta" style="margin-bottom:24px;padding:18px 22px;border:1px solid rgba(52,211,153,.35);border-radius:14px;background:linear-gradient(180deg,rgba(52,211,153,.12),transparent);display:flex;gap:14px;align-items:center;flex-wrap:wrap">
     <div style="flex:1;min-width:220px">
@@ -103,6 +111,13 @@
 const id = location.pathname.split('/').pop();
 const $ = s => document.querySelector(s);
 let report = null;
+fetch('/api/history').then(async response=>{
+  if(response.status===401){document.documentElement.classList.remove('account-loading');return;}
+  if(!response.ok)return;
+  const account=await response.json();
+  if(account.lead?.pro){document.documentElement.classList.add('paid-account');$('#accountReport').hidden=false;['topCta','wlProBottom','saveRow','ownCta'].forEach(id=>document.getElementById(id).style.display='none');}
+  document.documentElement.classList.remove('account-loading');
+}).catch(()=>{});
 function trackEvent(ev){ try{ var u='/api/track?page='+encodeURIComponent(location.pathname||'/')+'&event='+encodeURIComponent(ev); if(navigator.sendBeacon&&navigator.sendBeacon(u))return; var i=new Image(); i.src=u; }catch(e){} }
 (function(){ try { var e = sessionStorage.getItem('ip_email'); if (!e) return; var a = document.getElementById('pro-email'); var b = document.getElementById('top-pro-email'); var c = document.getElementById('saveEmail'); if (a && !a.value) a.value = e; if (b && !b.value) b.value = e; if (c && !c.value) c.value = e; } catch (err) {} })();
 function scoreColor(s){ return s>=90 ? '#34d399' : s>=70 ? '#a3e635' : s>=50 ? '#fbbf24' : '#f87171'; }
@@ -254,7 +269,7 @@ fetch('/api/report/' + encodeURIComponent(id))
       document.getElementById('topCtaSub').textContent = 'Keep it that way. Pro monitors all 7 checks daily and alerts you the moment anything changes, so a silent break never costs you deliverability.';
       if (bct) bct.textContent = 'Keep it that way. Monitor all 7 checks daily.';
     }
-    tc.style.display = 'block';
+    tc.style.display = document.documentElement.classList.contains('paid-account') ? 'none' : 'block';
   })
   .catch(() => {
     $('#h1').textContent = 'Report not found';
