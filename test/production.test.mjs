@@ -12,8 +12,9 @@ import {createAuth} from '../auth.mjs';
 import {inspectSpf,dkimKeyInfo,isPublicIPv4,smtpTls} from '../checks.mjs';
 
 const temp=fs.mkdtempSync(path.join(os.tmpdir(),'inboxproof-test-'));
-Object.assign(process.env,{NO_LISTEN:'1',DATA_DIR:temp,APP_URL:'http://localhost',STRIPE_SECRET:'test',STRIPE_PRICE_PRO:'price_pro',STRIPE_PRICE_AGENCY:'price_agency',STRIPE_WEBHOOK_SECRET:'test_webhook',RESEND_API_KEY:'test',CRON_SECRET:'test_cron',AUDIT_FOLLOWUP_EMAIL:'0'});
+Object.assign(process.env,{NO_LISTEN:'1',DATA_DIR:temp,APP_URL:'http://localhost',STRIPE_SECRET:'test',STRIPE_PRICE_PRO:'price_pro',STRIPE_PRICE_AGENCY:'price_agency',STRIPE_WEBHOOK_SECRET:'test_webhook',RESEND_API_KEY:'test',STATS_SECRET:'test_stats',CRON_SECRET:'test_cron',AUDIT_FOLLOWUP_EMAIL:'0'});
 delete process.env.SUPABASE_URL;delete process.env.SUPABASE_SERVICE_KEY;delete process.env.VERCEL;
+const checkoutRequests=[];
 const mail=[],subs=new Map(),customers=new Map(),sessions=new Map();
 let mailFails=false,portalCount=0;
 const originalFetch=globalThis.fetch;
@@ -28,7 +29,7 @@ globalThis.fetch=async(input,opts={})=>{
   if(p==='/customers')return Response.json({data:[...customers.values()].filter(c=>c.email===u.searchParams.get('email'))});
   if(p.startsWith('/customers/'))return Response.json(customers.get(p.split('/').pop()));
   if(p.startsWith('/checkout/sessions/'))return Response.json(sessions.get(p.split('/').pop()));
-  if(p==='/checkout/sessions'){const b=Object.fromEntries(new URLSearchParams(opts.body));assert.equal(b.success_url,'http://localhost/pro?session_id={CHECKOUT_SESSION_ID}');assert.ok(b['metadata[checkout_proof]']);return Response.json({id:'cs_qa',url:'https://checkout.stripe.com/qa'});}
+  if(p==='/checkout/sessions'){const b=Object.fromEntries(new URLSearchParams(opts.body));assert.equal(b.success_url,'http://localhost/pro?session_id={CHECKOUT_SESSION_ID}');assert.ok(b['metadata[checkout_proof]']);checkoutRequests.push(b);return Response.json({id:'cs_qa',url:'https://checkout.stripe.com/qa'});}
   if(p==='/billing_portal/sessions'){portalCount++;return Response.json({url:'https://billing.stripe.com/qa'});}
  }
  throw Error('Unmocked external request: '+url);
@@ -174,6 +175,27 @@ test('failed monitoring email is saved for retry and accepted on the next schedu
 
 test('abandoned lock recovery preserves availability after the maximum function lifetime',async()=>{
  await store.create('lock:recovery-test',JSON.stringify({at:Date.now()-700000,owner:'dead'}));let called=false;await store.locked('recovery-test',async()=>called=true);assert.equal(called,true);
+});
+
+
+test('analytics HTTP flow joins landing source to checkout and verified payment while rejecting public access and forged conversions',async()=>{
+ const touch={referrer:'https://www.google.com/search?q=private',landingPage:'/dmarc-checker?email=private',at:new Date().toISOString()};
+ const context={consent:true,current:touch,firstTouch:touch,lastTouch:touch};
+ assert.equal((await call('/api/analytics')).status,403);
+ assert.equal((await call('/api/analytics/events',{method:'POST',body:{id:crypto.randomUUID(),event:'subscription_paid',context}})).status,400);
+ const email='attribution@example.com';customers.set('cus_attr',{id:'cus_attr',email});
+ assert.equal((await call('/api/lead',{method:'POST',body:{email,analytics:context}})).status,200);
+ const later={source:'newsletter',medium:'email',landingPage:'/',at:new Date().toISOString()};
+ assert.equal((await call('/api/checkout',{method:'POST',body:{email,plan:'pro',domain:'example.com',analytics:{...context,current:later,lastTouch:later}}})).status,200);
+ const metadata=checkoutRequests.at(-1);assert.equal(metadata['metadata[acquisition_source]'],'google.com');assert.equal(metadata['metadata[acquisition_landing]'],'/dmarc-checker');assert.equal(metadata['metadata[conversion_source]'],'newsletter');
+ const before=(await call('/api/analytics?days=1',{headers:{Authorization:'Bearer test_stats'}})).body.events.subscription_paid||0;
+ subs.set('sub_attr',{id:'sub_attr',customer:'cus_attr',status:'active',items:{data:[{price:{id:'price_pro'}}]}});
+ const session={id:'cs_attr',mode:'subscription',status:'complete',payment_status:'paid',subscription:'sub_attr',metadata:{domain:'example.com'}};
+ for(let i=0;i<2;i++)await store.run(async()=>{await store.hydrate();await fulfillCheckout(session,{welcome:false});});
+ const report=(await call('/api/analytics?days=1',{headers:{Authorization:'Bearer test_stats'}})).body;assert.equal(report.events.subscription_paid,before+1);assert.equal(report.bySource['google.com'].subscription_paid,1);
+ const row=JSON.parse(await store.get('leads'))[email];assert.equal(row.acquisition.firstTouch.source,'google.com');assert.equal(row.acquisition.lastTouch.source,'newsletter');
+ const source=await originalFetch(base+'/');assert.match(await source.text(),/<script src="\/analytics.js"><\/script>/);
+ const sitemap=await originalFetch(base+'/sitemap.xml').then(r=>r.text());assert.ok(!sitemap.includes('#'));assert.ok(!sitemap.includes('/login'));assert.ok(!sitemap.includes('<lastmod>'));assert.ok(sitemap.includes('https://inboxproof.email/dmarc-checker'));
 });
 
 test.after(async()=>{globalThis.fetch=originalFetch;await new Promise(r=>server.close(r));fs.rmSync(temp,{recursive:true,force:true});});

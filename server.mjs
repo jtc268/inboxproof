@@ -6,6 +6,7 @@ import net from 'node:net';
 import tls from 'node:tls';
 import { createStore } from './storage.mjs';
 import { createAuth } from './auth.mjs';
+import { createAnalytics, CLIENT_EVENTS, ANALYTICS_STARTED_AT, attachAcquisition, stripeAttribution } from './analytics.mjs';
 import dnsModule from 'node:dns/promises';
 import { smtpTls, inspectSpf, dkimKeyInfo } from './checks.mjs';
 const dns = new dnsModule.Resolver({timeout:2000,tries:1});
@@ -97,6 +98,14 @@ const leads=store.proxy('leads'), audits=store.proxy('audits'), stats=store.prox
 let reports=loadJson(REPORTS_F,{});
 const hydrate=store.hydrate, persist=store.persist;
 const auth=createAuth({store,sendEmail:sendAlertEmail,baseUrl:APP_URL,secure:!APP_URL.startsWith('http://localhost')});
+const analytics=createAnalytics({store});
+async function measure(event,details={}){try{return await analytics.record({event,...details});}catch(e){console.error('[analytics]',event,e.message);return false;}}
+async function captureAcquisition(lead,context,page){
+  const first=!lead.acquisition&&Number(lead.createdAt)>=Date.parse(ANALYTICS_STARTED_AT);
+  attachAcquisition(lead,context);await persist('leads');
+  if(first)await measure('lead_captured',{id:'lead:'+lead.id,page,context,test:lead.test||context?.test,at:new Date(lead.createdAt).toISOString()});
+}
+function measuredHtml(html){return html.replace(/<head>/i,'<head>\n<script src="/analytics.js"></script>');}
 async function recordEvent(name, page) {
   stats.byEvent = stats.byEvent || {};
   stats.byEvent[name] = (stats.byEvent[name] || 0) + 1;
@@ -564,6 +573,20 @@ async function requestHandler(req, res) {
       if(requested&&requested.toLowerCase().trim()!==accountEmail)return sendJson(res,403,{error:'This account belongs to a different signed-in user'});
       u.searchParams.set('email',accountEmail);
     }
+    if(req.method==='POST'&&u.pathname==='/api/analytics/events'){
+      if(req.headers['sec-gpc']==='1'||req.headers.dnt==='1')return sendJson(res,200,{ok:true,ignored:true});
+      const body=await readBody(req);
+      if(!CLIENT_EVENTS.has(body.event)||!/^[-a-zA-Z0-9]{16,80}$/.test(body.id||''))return sendJson(res,400,{error:'Invalid analytics event'});
+      if(/bot|crawler|spider|headless|preview/i.test(req.headers['user-agent']||''))return sendJson(res,200,{ok:true,ignored:true});
+      if(!await auth.allow('analytics:'+ip,180,60000))return sendJson(res,429,{error:'Event limit reached'});
+      const accepted=await measure(body.event,{id:body.id,page:body.page,context:body.context,test:body.context?.test,origin:'client'});
+      return sendJson(res,200,{ok:true,accepted});
+    }
+    if(req.method==='GET'&&u.pathname==='/api/analytics'){
+      if(!process.env.STATS_SECRET||req.headers.authorization!=='Bearer '+process.env.STATS_SECRET)return sendJson(res,403,{error:'Forbidden'});
+      return sendJson(res,200,await analytics.report(u.searchParams.get('days'),{includeTest:u.searchParams.get('include_test')==='1'}));
+    }
+    if(u.pathname==='/api/track')return sendJson(res,200,{ok:true,legacy:true});
     await hydrate();
     if((req.method==='GET'||req.method==='POST')&&u.pathname==='/api/monitor'){
       const secret=process.env.CRON_SECRET||process.env.MONITOR_SECRET;
@@ -596,7 +619,7 @@ async function requestHandler(req, res) {
       const base = proto + '://' + host;
       const html = fs.readFileSync(path.join(PUBLIC, 'index.html'), 'utf8').replace('<head>', '<head>\n' + canonicalTag('/') + ogMetaTags(base, base + '/', ''));
       res.writeHead(200, { 'Content-Type': MIME['.html'] });
-      return res.end(html);
+      return res.end(measuredHtml(html));
     }
     if (req.method === 'GET' && u.pathname === '/pro') {
       const sid = u.searchParams.get('session_id');
@@ -609,8 +632,9 @@ async function requestHandler(req, res) {
           res.writeHead(303,{Location:'/pro'});return res.end();
         }catch(e){console.error('[checkout] reconciliation failed',e.message);}
       }
+      res.setHeader('X-Robots-Tag','noindex');
       res.writeHead(200, { 'Content-Type': MIME['.html'] });
-      return res.end(fs.readFileSync(path.join(PUBLIC, 'pro.html'), 'utf8').replace('<head>', '<head>\n' + canonicalTag('/pro')));
+      return res.end(measuredHtml(fs.readFileSync(path.join(PUBLIC, 'pro.html'), 'utf8').replace('<head>', '<head>\n' + canonicalTag('/pro'))));
     }
     if ((req.method === 'GET' || u.pathname === '/api/track') && u.pathname.startsWith('/api/')) {
       if (u.pathname === '/api/v1/audit') {
@@ -862,6 +886,7 @@ async function requestHandler(req, res) {
       lead.source = String(body.source || 'lead-magnet-checklist').slice(0, 60);
       lead.sourceAt = new Date().toISOString();
       await persist('leads');
+      await captureAcquisition(lead,body.analytics,'/lead-magnet');
       return sendJson(res, 200, { ok: true, email: lead.email });
     }
     if (req.method === 'POST' && u.pathname === '/api/audit') {
@@ -879,6 +904,7 @@ async function requestHandler(req, res) {
       if (email) {
         await upsertLead(email, domain);
         const lead = leads[email];
+        await captureAcquisition(lead,body.analytics,body.analytics?.current?.landingPage||'/');
         if (lead && lead.brand && lead.brand.name) audit.brand = lead.brand;
         if (refIn && refIn !== lead.refCode && await findLeadByRefCode(refIn)) {
           lead.referredBy = refIn;
@@ -887,6 +913,7 @@ async function requestHandler(req, res) {
         }
       }
       await saveReport(reportId, audit);
+      await measure('audit_completed',{id:'audit:'+reportId,page:body.analytics?.current?.landingPage||'/',context:body.analytics,test:body.analytics?.test});
       if (email) {
         await pushAudit(email, audit);
         leads[email].lastScore = audit.score;
@@ -909,6 +936,7 @@ async function requestHandler(req, res) {
       if (!rep) return sendJson(res, 404, { error: 'Report not found' });
       if(leads[email] && await auth.identity(req)!==email)return sendJson(res,401,{error:'Sign in to save reports to this account',login:'/login'});
       await upsertLead(email, rep.domain || null);
+      await captureAcquisition(leads[email],body.analytics,'/r/:report');
       await pushAudit(email, rep);
       if (rep.score != null) leads[email].lastScore = rep.score;
       leads[email].reportIds = leads[email].reportIds || [];
@@ -943,21 +971,19 @@ async function requestHandler(req, res) {
     if (req.method === 'GET' && u.pathname === '/sitemap.xml') {
       const host = req.headers.host || 'localhost:4321';
       const proto = String(req.headers['x-forwarded-proto'] || '').split(',')[0].trim() === 'https' ? 'https' : 'http';
-      const base = proto + '://' + host;
-      const skip = new Set(['404.html', 'pro.html', 'report.html']);
+      const base = CANONICAL_BASE;
+      const skip = new Set(['404.html', 'pro.html', 'report.html', 'login.html', 'referral.html']);
       const entries = [];
-      const today = new Date().toISOString().slice(0, 10); // static site: content is current as of this deploy
+      const today = ''; // Omit lastmod until meaningful content modification dates are tracked.
       try {
         const top = fs.readdirSync(PUBLIC).filter(f => f.endsWith('.html') && !skip.has(f));
         const rest = [];
         for (const f of top) { if (f === 'index.html') entries.push({ path: '/', lastmod: today }); else rest.push({ path: '/' + f.replace(/\.html$/, ''), lastmod: today }); }
-        entries.push({ path: '/#pricing', lastmod: '' }, { path: '/#faq', lastmod: '' });
         entries.push(...rest);
         const blogDir = path.join(PUBLIC, 'blog');
         if (fs.existsSync(blogDir)) { for (const f of fs.readdirSync(blogDir).filter(f => f.endsWith('.html'))) entries.push({ path: '/blog/' + f.replace(/\.html$/, ''), lastmod: today }); }
-        entries.push({ path: '/rss.xml', lastmod: today });
       } catch { /* keep anchors only */ }
-      const urls = entries.map(e => '  <url><loc>' + base + e.path + '</loc>' + (e.lastmod ? '<lastmod>' + e.lastmod + '</lastmod>' : '') + '<changefreq>weekly</changefreq></url>').join('\n');
+      const urls = entries.map(e => '  <url><loc>' + base + e.path + '</loc></url>').join('\n');
       res.writeHead(200, { 'Content-Type': 'application/xml; charset=utf-8' });
       return res.end('<?xml version="1.0" encoding="UTF-8"?>\n<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">\n' + urls + '\n</urlset>\n');
     }
@@ -980,7 +1006,7 @@ async function requestHandler(req, res) {
       }
       const html = fs.readFileSync(path.join(PUBLIC, 'report.html'), 'utf8').replace('<head>', '<head>\n' + canonicalTag('/r/' + id) + ogMetaTags(base, base + '/r/' + id, extra));
       res.writeHead(200, { 'Content-Type': MIME['.html'] });
-      return res.end(html);
+      return res.end(measuredHtml(html));
     }
     if (req.method === 'POST' && u.pathname === '/api/checkout') {
       const body = await readBody(req);
@@ -998,6 +1024,8 @@ async function requestHandler(req, res) {
       const subscriptions=await stripe('GET','/subscriptions?customer='+customer.id+'&status=all&limit=100');
       if(subscriptions.data.some(x=>['active','trialing','past_due','unpaid'].includes(x.status)&&x.items.data.some(i=>Object.values(PRICE).includes(i.price.id))))return sendJson(res,409,{error:'You already have a subscription. Sign in to your dashboard to manage it.',login:'/login'});
       const domain=cleanDomain(body.domain||'');if(domain&&!DOMAIN_RE.test(domain))return sendJson(res,400,{error:'Enter a valid domain'});
+      const checkoutLead=await upsertLead(email,domain||null);
+      await captureAcquisition(checkoutLead,body.analytics,body.analytics?.current?.landingPage||'/');
       const proof=crypto.randomBytes(32).toString('hex');
       res.setHeader('Set-Cookie','ip_checkout='+proof+'; Path=/; HttpOnly; SameSite=Lax; Max-Age=3600'+(APP_URL.startsWith('https:')?'; Secure':''));
       const base=APP_URL;
@@ -1012,6 +1040,7 @@ async function requestHandler(req, res) {
         'metadata[domain]': domain,
         'metadata[product]': 'inboxproof',
         'metadata[checkout_proof]': crypto.createHash('sha256').update(proof).digest('hex'),
+        ...stripeAttribution(checkoutLead.acquisition),
         'subscription_data[metadata][product]': 'inboxproof',
         'subscription_data[metadata][email]': email,
         success_url: base + '/pro?session_id={CHECKOUT_SESSION_ID}',
@@ -1019,6 +1048,7 @@ async function requestHandler(req, res) {
       });
       await upsertLead(email, body.domain || null);
       await recordEvent('checkout_start', '/checkout');
+      await measure('checkout_created',{id:'checkout:'+s.id,page:body.analytics?.current?.landingPage||'/',context:body.analytics,test:checkoutLead.test||body.analytics?.test});
       return sendJson(res, 200, { url: s.url, sessionId: s.id });
     }
     if (req.method === 'POST' && u.pathname === '/api/portal') {
@@ -1047,7 +1077,7 @@ async function requestHandler(req, res) {
       const event=JSON.parse(raw);if(!/^evt_[A-Za-z0-9]+$/.test(event.id||''))return sendJson(res,400,{error:'Invalid event'});
       if(await upGet('event:'+event.id))return sendJson(res,200,{received:true,duplicate:true});
       const obj=event.data?.object||{};
-      if(['checkout.session.completed','checkout.session.async_payment_succeeded'].includes(event.type))await fulfillCheckout(obj,{welcome:true});
+      if(['checkout.session.completed','checkout.session.async_payment_succeeded'].includes(event.type))await fulfillCheckout(obj,{welcome:true,paidAt:event.created?new Date(event.created*1000).toISOString():undefined});
       else if(['customer.subscription.created','customer.subscription.updated','customer.subscription.deleted'].includes(event.type))await syncSubscription(obj.id);
       else if(event.type==='invoice.paid'||event.type==='invoice.payment_failed'){
         const sub=obj.subscription||obj.parent?.subscription_details?.subscription;if(sub)await syncSubscription(typeof sub==='string'?sub:sub.id);
@@ -1082,9 +1112,10 @@ async function requestHandler(req, res) {
       if (p.startsWith(PUBLIC) && fs.existsSync(p) && fs.statSync(p).isFile()) {
         const ext = path.extname(p);
         if (ext === '.html') {
+          if(['/login','/login.html','/pro.html','/referral'].includes(u.pathname))res.setHeader('X-Robots-Tag','noindex');
           const html = fs.readFileSync(p, 'utf8').replace('<head>', '<head>\n' + canonicalTag(u.pathname));
           res.writeHead(200, { 'Content-Type': MIME['.html'] });
-          return res.end(html);
+          return res.end(measuredHtml(html));
         }
         res.writeHead(200, { 'Content-Type': MIME[ext] || 'application/octet-stream' });
         return res.end(fs.readFileSync(p));
@@ -1142,6 +1173,7 @@ async function monitorCycle({notify=true,force=false,auditFn=auditDomain}={}){
     }
     const result={at:new Date().toISOString(),checked,pending:tasks.length-checked,errors};
     await upSet('monitor:status',JSON.stringify(result));await upSet('monitor:lastRun',String(Date.now()));
+    try{await analytics.prune();}catch(e){console.error('[analytics] retention',e.message);}
     return result;
   });
 }
@@ -1159,7 +1191,7 @@ async function syncSubscription(id){
   lead.currentPeriodEnd=sub.current_period_end||item.current_period_end;
   await persist('leads');return lead;
 }
-async function fulfillCheckout(session,{welcome=true}={}){
+async function fulfillCheckout(session,{welcome=true,paidAt}={}){
   if(session.mode!=='subscription'||session.status!=='complete'||!['paid','no_payment_required'].includes(session.payment_status)||!session.subscription)return null;
   const lead=await syncSubscription(typeof session.subscription==='string'?session.subscription:session.subscription.id);
   if(!lead?.pro)return null;
@@ -1170,6 +1202,10 @@ async function fulfillCheckout(session,{welcome=true}={}){
     lead.domain=lead.domains?.[0]||lead.domain;
   }
   lead.stripeLastPaidAt=new Date().toISOString();await persist('leads');
+  const acquisition=lead.acquisition;
+  const paidContext=acquisition?.firstTouch?{consent:acquisition.retainedWithConsent,current:acquisition.lastTouch||acquisition.firstTouch,firstTouch:acquisition.firstTouch,lastTouch:acquisition.lastTouch||acquisition.firstTouch}:null;
+  const historical=session.created&&session.created*1000<Date.parse(ANALYTICS_STARTED_AT);
+  await measure('subscription_paid',{id:'subscription:'+lead.stripeSubscriptionId,page:'/checkout',context:paidContext,attributionTouch:acquisition?.firstTouch,test:lead.test,at:paidAt||(historical?new Date(session.created*1000).toISOString():undefined)});
   if(welcome&&!lead.welcomeEmailSentAt){
     const sent=await sendAlertEmail(lead.email,'Your Inboxproof monitoring is ready','<p>Thanks for subscribing to Inboxproof. Your '+(lead.plan==='agency'?'Agency':'Pro')+' plan is active.</p><p><a href="'+APP_URL+'/login">Open your dashboard</a> and enter the email you used at checkout. We will email you a one-time sign-in link. No password is needed.</p><p>Add your domains, review saved reports, and manage billing in your dashboard. Scheduled checks run daily, with email updates when a check finds a regression.</p>', 'welcome:'+session.id);
     if(!sent)throw new Error('Welcome email delivery failed');

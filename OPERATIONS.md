@@ -43,3 +43,19 @@ Vercel functions have a 300-second maximum. Abandoned locks become recoverable a
 ## Scope limits
 
 Configuration checks are not an inbox-placement test. SPF expansion is a bounded static review; actual sender evaluation and macros require message-specific validation. DKIM discovery checks common selectors and parses keys; it does not verify a message signature. SMTP probes can be blocked by the hosting network and report that as unverified. Storage remains an object-store architecture; a transactional database and token-record retention job are appropriate before high-volume or enterprise SLA commitments.
+
+## Acquisition measurement
+
+The September 15 release adds first-party measurement through `/analytics.js`, injected into every served HTML page, and `/api/analytics/events`. The previous `/api/track` endpoint is retained as a no-op for cached pages. Historical `stats` totals are not merged into the new dated report and cannot attribute the September 10 customer visit.
+
+Events: `page_view`, `audit_started`, `audit_completed`, `report_viewed`, `lead_captured`, `checkout_created`, `subscription_paid`, and `consent_granted`. Completed audits, captured leads, created checkouts, and paid subscriptions are recorded by the server. The browser endpoint rejects payment/conversion event names. Payment observations are deduplicated by subscription across webhook and checkout-return retries, including retries on a different day. Anonymous events have event IDs, not persistent visitor IDs.
+
+Each account retains `acquisition.firstTouch`, `firstObservedTouch`, and `lastTouch`; old accounts explicitly retain unknown first-touch history. Checkout metadata includes source and landing-page attribution without email addresses, query strings, or login tokens. Browser-reported source labels are evidence, not proof of causation. Direct visits and missing referrers remain `direct_or_unknown`. Payment-provider returns do not replace an earlier external source.
+
+Cross-page/cross-visit attribution is stored in the browser for 30 days only after the visitor chooses Allow analytics. Without consent, only current-page context is sent with requested forms. GPC/DNT disables browser analytics. Privacy preferences are accessible from `/privacy`. Dated events are sharded by day, retained for 90 days, and pruned by the existing monitor cron. A shard accepts 5,000 events/day (8 shards); measurement failures are logged without preventing customer operations. This is an initial low-volume implementation, not a warehouse for unbounded traffic.
+
+Private reporting: `GET /api/analytics?days=30` requires `Authorization: Bearer $STATS_SECRET`. `node scripts/analytics-report.mjs 30` reads it using environment variables. The report gives UTC dates and event counts by source, original landing page, and day. These are event totals, not unique visitors or a matched-cohort conversion rate. `include_test=1` explicitly includes QA; the default excludes it.
+
+For a browser smoke test, use a controlled `utm_source=inboxproof_qa` plus `ip_qa=1`; the flag marks its telemetry as QA. Choosing analytics also retains the flag across internal navigation. Do not use real customer payment actions to test analytics. Integration tests use mocked Stripe payments. Keep operational QA leads tagged `test: true` and remove disposable audit data after verification.
+
+Search Console: domain property `sc-domain:inboxproof.email`, verified with Namecheap DNS under the operator's Google account. Keep its verification TXT record. Submit `https://inboxproof.email/sitemap.xml` and use Performance queries/pages once Google finishes processing. The sitemap uses canonical public page URLs and excludes account pages, fragments, and fabricated modification dates.
