@@ -8,7 +8,8 @@
   "scripts": {
     "start": "node server.mjs",
     "test": "node --test test/*.test.mjs",
-    "analytics": "node scripts/analytics-report.mjs"
+    "analytics": "node scripts/analytics-report.mjs",
+    "indexnow": "node scripts/submit-indexnow.mjs"
   },
   "devDependencies": {
     "jsdom": "^27.4.0"

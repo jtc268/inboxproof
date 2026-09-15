@@ -6,6 +6,7 @@ import net from 'node:net';
 import tls from 'node:tls';
 import { createStore } from './storage.mjs';
 import { createAuth } from './auth.mjs';
+import { publicMetadata } from './seo.mjs';
 import { createAnalytics, CLIENT_EVENTS, ANALYTICS_STARTED_AT, attachAcquisition, stripeAttribution } from './analytics.mjs';
 import dnsModule from 'node:dns/promises';
 import { smtpTls, inspectSpf, dkimKeyInfo } from './checks.mjs';
@@ -1113,7 +1114,8 @@ async function requestHandler(req, res) {
         const ext = path.extname(p);
         if (ext === '.html') {
           if(['/login','/login.html','/pro','/pro.html','/referral'].includes(u.pathname))res.setHeader('X-Robots-Tag','noindex');
-          const html = fs.readFileSync(p, 'utf8').replace('<head>', '<head>\n' + canonicalTag(u.pathname));
+          const source = fs.readFileSync(p, 'utf8');
+          const html = ['pro.html','login.html','report.html','referral.html','404.html'].includes(path.basename(p)) ? source : publicMetadata(source,u.pathname);
           res.writeHead(200, { 'Content-Type': MIME['.html'] });
           return res.end(measuredHtml(html));
         }

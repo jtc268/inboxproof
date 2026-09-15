@@ -263,3 +263,7 @@ footer .container{display:flex;justify-content:space-between;gap:16px;flex-wrap:
 .analytics-settings button{font:inherit;font-size:13px;padding:9px 14px;border-radius:7px;border:1px solid var(--line2);background:transparent;color:var(--text);cursor:pointer}
 .analytics-settings button[aria-pressed="true"]{border-color:var(--acc);background:#3b82f61a}
 .analytics-settings button:disabled{opacity:.45;cursor:default}
+
+/* Homepage icon polish, scoped away from the application. */
+.home-page .card .ico{width:28px;height:28px;background:transparent;border:0;border-radius:0;color:#93c5fd}
+.home-page .card .ico svg{width:26px;height:26px}

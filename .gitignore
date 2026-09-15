@@ -87,3 +87,5 @@ vercel-add-domain.mjs
 vercel-domain-status.mjs
 vercel-redirect.mjs
 wait-cert.mjs
+
+.cache/
