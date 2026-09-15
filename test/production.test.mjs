@@ -196,6 +196,7 @@ test('analytics HTTP flow joins landing source to checkout and verified payment 
  const row=JSON.parse(await store.get('leads'))[email];assert.equal(row.acquisition.firstTouch.source,'google.com');assert.equal(row.acquisition.lastTouch.source,'newsletter');
  const source=await originalFetch(base+'/');assert.match(await source.text(),/<script src="\/analytics.js"><\/script>/);
  const sitemap=await originalFetch(base+'/sitemap.xml').then(r=>r.text());assert.ok(!sitemap.includes('#'));assert.ok(!sitemap.includes('/login'));assert.ok(!sitemap.includes('<lastmod>'));assert.ok(sitemap.includes('https://inboxproof.email/dmarc-checker'));
+ for(const path of ['/sitemap.xml','/robots.txt','/','/dmarc-checker']){const response=await originalFetch(base+path,{method:'HEAD'});assert.equal(response.status,200,path);assert.equal(await response.text(),'');}
 });
 
 test.after(async()=>{globalThis.fetch=originalFetch;await new Promise(r=>server.close(r));fs.rmSync(temp,{recursive:true,force:true});});

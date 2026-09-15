@@ -587,7 +587,7 @@ async function requestHandler(req, res) {
       return sendJson(res,200,await analytics.report(u.searchParams.get('days'),{includeTest:u.searchParams.get('include_test')==='1'}));
     }
     if(u.pathname==='/api/track')return sendJson(res,200,{ok:true,legacy:true});
-    await hydrate();
+    if(u.pathname.startsWith('/api/')||(u.pathname==='/pro'&&u.searchParams.has('session_id')))await hydrate();
     if((req.method==='GET'||req.method==='POST')&&u.pathname==='/api/monitor'){
       const secret=process.env.CRON_SECRET||process.env.MONITOR_SECRET;
       if(!secret||req.headers.authorization!=='Bearer '+secret)return sendJson(res,401,{error:'Unauthorized'});
@@ -968,7 +968,7 @@ async function requestHandler(req, res) {
       // Dev backdoor removed: Pro access is only granted via Stripe checkout/webhook.
       return sendJson(res, 410, { error: 'Gone. Pro is activated by payment.' });
     }
-    if (req.method === 'GET' && u.pathname === '/sitemap.xml') {
+    if (['GET','HEAD'].includes(req.method) && u.pathname === '/sitemap.xml') {
       const host = req.headers.host || 'localhost:4321';
       const proto = String(req.headers['x-forwarded-proto'] || '').split(',')[0].trim() === 'https' ? 'https' : 'http';
       const base = CANONICAL_BASE;
@@ -984,7 +984,7 @@ async function requestHandler(req, res) {
         if (fs.existsSync(blogDir)) { for (const f of fs.readdirSync(blogDir).filter(f => f.endsWith('.html'))) entries.push({ path: '/blog/' + f.replace(/\.html$/, ''), lastmod: today }); }
       } catch { /* keep anchors only */ }
       const urls = entries.map(e => '  <url><loc>' + base + e.path + '</loc></url>').join('\n');
-      res.writeHead(200, { 'Content-Type': 'application/xml; charset=utf-8' });
+      res.writeHead(200, { 'Content-Type': 'application/xml; charset=utf-8', 'Cache-Control':'public, max-age=300, s-maxage=3600' });
       return res.end('<?xml version="1.0" encoding="UTF-8"?>\n<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">\n' + urls + '\n</urlset>\n');
     }
     if (req.method === 'GET' && /^\/r\/[a-f0-9-]{36}$/.test(u.pathname)) {
@@ -1105,14 +1105,14 @@ async function requestHandler(req, res) {
       return res.end();
     }
     // static
-    if (req.method === 'GET') {
+    if (['GET','HEAD'].includes(req.method)) {
       let rel = u.pathname === '/' ? 'index.html' : u.pathname;
       if (!path.extname(rel)) rel += '.html';
       const p = path.normalize(path.join(PUBLIC, rel));
       if (p.startsWith(PUBLIC) && fs.existsSync(p) && fs.statSync(p).isFile()) {
         const ext = path.extname(p);
         if (ext === '.html') {
-          if(['/login','/login.html','/pro.html','/referral'].includes(u.pathname))res.setHeader('X-Robots-Tag','noindex');
+          if(['/login','/login.html','/pro','/pro.html','/referral'].includes(u.pathname))res.setHeader('X-Robots-Tag','noindex');
           const html = fs.readFileSync(p, 'utf8').replace('<head>', '<head>\n' + canonicalTag(u.pathname));
           res.writeHead(200, { 'Content-Type': MIME['.html'] });
           return res.end(measuredHtml(html));
