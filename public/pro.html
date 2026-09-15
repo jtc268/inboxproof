@@ -23,14 +23,7 @@
       <span class="mark"><svg viewBox="0 0 24 24" fill="none"><path d="M4 12h11M11 7l5 5-5 5" stroke="#fff" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"/></svg></span>
       Inboxproof
     </a>
-    <div class="nav-links">
-      <a href="/#how">How it works</a>
-      <a href="/#pricing">Pricing</a>
-      <a href="/agencies">Agencies</a>
-      <a href="/pro">Dashboard</a>
-    </div>
     <button id="logout" class="btn btn-ghost btn-sm" hidden>Sign out</button>
-    <a class="btn btn-primary btn-sm dashboard-audit" href="/#audit">Run a free audit</a>
   </div>
 </nav>
 
@@ -40,7 +33,7 @@
       <h1 id="title">Your domain monitoring</h1>
       <div id="sub" style="color:var(--muted);font-size:14.5px;margin-top:4px">Loading…</div>
     </div>
-    <span class="pill free" id="plan">FREE</span>
+    <span class="pill" id="plan" hidden></span>
   </div>
   <div id="status" style="display:none;margin-bottom:26px"></div>
   <h2 class="section-heading reports-heading">Recent reports</h2>
@@ -212,6 +205,7 @@ async function load(){
     const p = $('#plan');
     p.textContent = isPro ? (j.lead.plan === 'agency' ? 'AGENCY' : 'PRO') : 'FREE';
     p.className = 'pill ' + (isPro ? 'pro' : 'free');
+    p.hidden = false;
     renderStatus(j.lead, j.history);
     const rids = j.lead.reportIds || [];
     $('#hist').innerHTML = j.history.length ? j.history.slice().reverse().map((h, i) => {
@@ -219,7 +213,7 @@ async function load(){
       const link = rid ? ` · <a href="/r/${rid}" style="color:#6366f1;font-weight:600">View full report →</a>` : '';
       return `
       <div class="hist-row">
-        <div><b>${esc(h.domain)}</b><div class="when">${new Date(h.at).toLocaleString()} · ${esc(h.grade)} grade${link}</div></div>
+        <div><b>${esc(h.domain)}</b><div class="when">${new Date(h.at).toLocaleString(undefined,{month:'short',day:'numeric',hour:'numeric',minute:'2-digit'})} · ${esc(h.grade)} grade${link}</div></div>
         <div class="s" style="color:${color(h.score)}">${h.score}</div>
       </div>`;
     }).join('')
