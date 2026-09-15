@@ -213,7 +213,7 @@ async function maybeSendAuditFollowup(email, domain, audit, reportId) {
     '<table style="width:100%;border-collapse:collapse;margin:0 0 16px"><tr><th style="text-align:left;padding:8px 10px;border-bottom:2px solid #ddd;color:#1a1a2e;font-size:13px">Check</th><th style="text-align:left;padding:8px 10px;border-bottom:2px solid #ddd;color:#1a1a2e;font-size:13px">Status</th><th style="text-align:left;padding:8px 10px;border-bottom:2px solid #ddd;color:#1a1a2e;font-size:13px">Exact fix</th></tr>' +
     rows + '</table>' +
     '<p style="color:#444;line-height:1.6;margin:0 0 14px">Want us to watch ' + domain + ' daily and email you the moment any of these breaks or a new issue appears?</p>' +
-    '<a href="https://inboxproof.email/pro" style="display:inline-block;background:#1a1a2e;color:#fff;padding:12px 26px;border-radius:6px;text-decoration:none;font-weight:600;font-size:15px">Start Pro monitoring</a>' +
+    '<a href="https://inboxproof.email/?utm_source=inboxproof&amp;utm_medium=email&amp;utm_campaign=audit_followup#pricing" style="display:inline-block;background:#1a1a2e;color:#fff;padding:12px 26px;border-radius:6px;text-decoration:none;font-weight:600;font-size:15px">Start Pro monitoring</a>' +
     (lead.refCode ? '<p style="color:#888;font-size:12px;line-height:1.6;margin-top:18px">Know someone else wrestling with deliverability? Send them the free audit with your link: <a href="https://inboxproof.email/?ref=' + lead.refCode + '" style="color:#6366f1;font-weight:600">inboxproof.email/?ref=' + lead.refCode + '</a>. When they upgrade to Pro, you get a free month of Pro.</p>' : '') +
     '<p style="color:#888;font-size:12px;line-height:1.5;margin-top:24px">InboxProof &middot; free email deliverability audit. You are receiving this because you ran a free audit on ' + domain + '. <a href="https://inboxproof.email/r/' + reportId + '" style="color:#888">View your full report</a>.</p>' +
     '</div>';
@@ -276,7 +276,7 @@ async function leadFollowupCycle() {
         '. These are the same issues keeping your email out of the inbox:</p>' +
         followupTable(fails, warns) +
         '<p style="color:#444;line-height:1.6;margin:0 0 14px">The fixes above are free to do yourself. If you would rather just know the moment any of them breaks or a new one appears, Pro re-checks ' + lead.domain + ' daily and emails you only when something changes.</p>' +
-        '<a href="https://inboxproof.email/pro" style="display:inline-block;background:#1a1a2e;color:#fff;padding:12px 26px;border-radius:6px;text-decoration:none;font-weight:600;font-size:15px">Start Pro monitoring</a>' +
+        '<a href="https://inboxproof.email/?utm_source=inboxproof&amp;utm_medium=email&amp;utm_campaign=audit_followup#pricing" style="display:inline-block;background:#1a1a2e;color:#fff;padding:12px 26px;border-radius:6px;text-decoration:none;font-weight:600;font-size:15px">Start Pro monitoring</a>' +
         followupFooter(lead, reportId) +
         '</div>';
     } else {
@@ -286,7 +286,7 @@ async function leadFollowupCycle() {
         '<p style="color:#444;line-height:1.6;margin:0 0 14px">This is the last email we will send about <b>' + lead.domain + '</b>. We re-checked it today and ' + fails.length + ' check' + (fails.length > 1 ? 's' : '') + ' are still failing.</p>' +
         followupTable(fails, warns) +
         '<p style="color:#444;line-height:1.6;margin:0 0 14px">If you have already fixed these, run a fresh free audit to confirm. If not, the steps above are the exact fixes. Pro monitors ' + lead.domain + ' daily so you do not have to keep checking by hand.</p>' +
-        '<a href="https://inboxproof.email/pro" style="display:inline-block;background:#1a1a2e;color:#fff;padding:12px 26px;border-radius:6px;text-decoration:none;font-weight:600;font-size:15px">Start Pro monitoring</a>' +
+        '<a href="https://inboxproof.email/?utm_source=inboxproof&amp;utm_medium=email&amp;utm_campaign=audit_followup#pricing" style="display:inline-block;background:#1a1a2e;color:#fff;padding:12px 26px;border-radius:6px;text-decoration:none;font-weight:600;font-size:15px">Start Pro monitoring</a>' +
         followupFooter(lead, reportId) +
         '</div>';
     }
@@ -317,13 +317,13 @@ async function sendReportEmail(email, domain, audit, reportId) {
     '<div style="font-family:Arial,Helvetica,sans-serif;max-width:580px;margin:0 auto">' +
     '<h2 style="color:#1a1a2e;margin:0 0 10px;font-size:20px">' + domain + ' deliverability report: ' + audit.score + '/100 (' + audit.grade + ')</h2>' +
     '<p style="color:#444;line-height:1.6;margin:0 0 14px">Here is the full audit of <b>' + domain + '</b> you just ran. ' +
-    (fails.length ? 'You have <b>' + fails.length + ' failing check' + (fails.length > 1 ? 's' : '') + '</b> to fix first.' : 'All checks are passing.') + '</p>' +
+    (fails.length ? 'You have <b>' + fails.length + ' failing check' + (fails.length > 1 ? 's' : '') + '</b> to fix first.' : 'No checks are failing. Review any warnings below.') + '</p>' +
     '<table style="width:100%;border-collapse:collapse;margin:0 0 16px"><tr><th style="text-align:left;padding:8px 10px;border-bottom:2px solid #ddd;color:#1a1a2e;font-size:13px">Check</th><th style="text-align:left;padding:8px 10px;border-bottom:2px solid #ddd;color:#1a1a2e;font-size:13px">Status</th><th style="text-align:left;padding:8px 10px;border-bottom:2px solid #ddd;color:#1a1a2e;font-size:13px">Detail / fix</th></tr>' +
     rows + '</table>' +
     '<p style="color:#444;line-height:1.6;margin:0 0 14px">Records change. Want us to watch ' + domain + ' daily and email you the moment one breaks?</p>' +
-    '<a href="https://inboxproof.email/pro" style="display:inline-block;background:#1a1a2e;color:#fff;padding:12px 26px;border-radius:6px;text-decoration:none;font-weight:600;font-size:15px">Start Pro monitoring</a>' +
+    '<a href="https://inboxproof.email/?utm_source=inboxproof&amp;utm_medium=email&amp;utm_campaign=audit_report#pricing" style="display:inline-block;background:#1a1a2e;color:#fff;padding:12px 26px;border-radius:6px;text-decoration:none;font-weight:600;font-size:15px">Start Pro monitoring</a>' +
     ((leads[email] && leads[email].refCode) ? '<p style="color:#888;font-size:12px;line-height:1.6;margin-top:18px">Know someone else wrestling with deliverability? Send them the free audit with your link: <a href="https://inboxproof.email/?ref=' + leads[email].refCode + '" style="color:#6366f1;font-weight:600">inboxproof.email/?ref=' + leads[email].refCode + '</a>. When they upgrade to Pro, you get a free month of Pro.</p>' : '') +
-    '<p style="color:#888;font-size:12px;line-height:1.5;margin-top:24px">InboxProof &middot; free email deliverability audit. <a href="https://inboxproof.email/r/' + reportId + '" style="color:#888">View your full report online</a>.</p>' +
+    '<p style="color:#888;font-size:12px;line-height:1.5;margin-top:24px">InboxProof &middot; free email deliverability audit. <a href="https://inboxproof.email/r/' + reportId + '?utm_source=inboxproof&amp;utm_medium=email&amp;utm_campaign=audit_report" style="color:#888">View your full report online</a>.</p>' +
     '</div>';
   return await sendAlertEmail(email, 'Your ' + domain + ' deliverability report', html);
 }
