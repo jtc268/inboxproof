@@ -1,13 +1,13 @@
 import test from'node:test';import assert from'node:assert/strict';import fs from'node:fs';import{JSDOM}from'jsdom';
 const code=fs.readFileSync(new URL('../public/analytics.js',import.meta.url),'utf8');
-function page({url='https://inboxproof.email/dmarc-checker',referrer='https://www.google.com/search?q=private',stored={},gpc=false}={}){
- const calls=[],dom=new JSDOM('<!doctype html><html><body><button data-analytics-settings>Analytics settings</button></body></html>',{url,referrer,runScripts:'outside-only'}),w=dom.window;
+function page({url='https://inboxproof.email/dmarc-checker',referrer='https://www.google.com/search?q=private',stored={},gpc=false,settings=false}={}){
+ const calls=[],dom=new JSDOM('<!doctype html><html><body>'+(settings?'<div data-analytics-settings><p data-analytics-status></p><button data-choice="deny">Keep off</button><button data-choice="allow">Allow attribution</button></div>':'')+'</body></html>',{url,referrer,runScripts:'outside-only'}),w=dom.window;
  w.fetch=async(u,o)=>{calls.push({url:String(u),...o});return{ok:true,json:async()=>({})};};w.navigator.sendBeacon=()=>true;w.structuredClone=structuredClone;
  Object.defineProperty(w.navigator,'globalPrivacyControl',{value:gpc});Object.entries(stored).forEach(([k,v])=>w.localStorage.setItem(k,JSON.stringify(v)));w.eval(code);w.document.dispatchEvent(new w.Event('DOMContentLoaded'));
  return{dom,w,calls};
 }
 test('no attribution storage before consent; opt-in preserves source across internal pages and checkout; declining removes it',async()=>{
- const a=page();assert.equal(a.w.localStorage.getItem('ip_acquisition_v1'),null);assert.ok(a.w.document.getElementById('analytics-choice'));
+ const a=page({settings:true});assert.equal(a.w.localStorage.getItem('ip_acquisition_v1'),null);assert.equal(a.w.document.getElementById('analytics-choice'),null);
  assert.equal(JSON.parse(a.calls[0].body).context.current.referrer,'https://www.google.com');
  a.w.document.querySelector('[data-choice="allow"]').click();const saved=JSON.parse(a.w.localStorage.getItem('ip_acquisition_v1'));assert.equal(saved.firstTouch.landingPage,'/dmarc-checker');
  const b=page({url:'https://inboxproof.email/',referrer:'https://inboxproof.email/dmarc-checker',stored:{ip_analytics_choice:'allow',ip_acquisition_v1:saved}});
@@ -17,4 +17,11 @@ test('no attribution storage before consent; opt-in preserves source across inte
 test('privacy signals disable browser analytics and legacy beacons cannot forge purchases or double-count views',async()=>{
  const a=page({gpc:true});assert.equal(a.calls.length,0);assert.equal(a.w.document.getElementById('analytics-choice'),null);await a.w.fetch('/api/checkout',{method:'POST',body:'{"plan":"pro"}'});assert.equal(JSON.parse(a.calls[0].body).analytics,undefined);a.dom.window.close();
  const b=page();const before=b.calls.length;b.w.navigator.sendBeacon('/api/track?page=/');b.w.navigator.sendBeacon('/api/track?event=checkout_started');assert.equal(b.calls.length,before);b.w.navigator.sendBeacon('/api/track?event=audit_start');assert.equal(JSON.parse(b.calls.at(-1).body).event,'audit_started');b.dom.window.close();
+});
+
+test('public visits never insert an analytics prompt or write consent storage',()=>{
+ for(const path of ['/','/dmarc-checker','/blog/spf-lookup-limit','/pro']){
+  const a=page({url:'https://inboxproof.email'+path});assert.equal(a.w.document.body.children.length,0);assert.equal(a.w.localStorage.length,0);a.dom.window.close();
+ }
+ const a=page({url:'https://inboxproof.email/privacy',settings:true,gpc:true});assert.equal(a.w.document.querySelector('[data-choice="allow"]').disabled,true);a.dom.window.close();
 });

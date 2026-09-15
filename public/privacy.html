@@ -33,7 +33,10 @@
     <p><b>Email and service providers.</b> We use your email for requested reports, sign-in links, account messages, and monitoring alerts. Stripe handles payments and Resend delivers service emails. We do not sell your data. Public report links (<code>/r/…</code>) contain domain audit results, without your email address.</p>
     <p><b>Site measurement.</b> We count page views and completed actions with the page path, time, referring website, and campaign labels. We do not store full referrer URLs, search terms, IP addresses, or a persistent visitor identifier in analytics. Browser privacy signals such as Do Not Track and Global Privacy Control disable browser analytics. Account and payment records still support the service.</p>
     <p><b>Optional attribution.</b> If you allow analytics, your browser remembers the first and most recent source of your visit for up to 30 days. This lets us connect the pages you used to an audit or subscription you request. Without this permission, we use only the current page context. When you submit a form, that source information may be saved with your account. You can change your choice below.</p>
-    <p style="margin:18px 0"><button type="button" class="btn btn-ghost btn-sm" data-analytics-settings>Analytics settings</button></p>
+    <div class="analytics-settings" data-analytics-settings>
+      <p data-analytics-status aria-live="polite">Optional attribution is off.</p>
+      <div class="analytics-actions"><button type="button" data-choice="deny" aria-pressed="true">Keep off</button><button type="button" data-choice="allow" aria-pressed="false">Allow attribution</button></div>
+    </div>
     <p><b>Analytics retention.</b> Dated analytics events are kept for 90 days and removed during scheduled maintenance. Account acquisition records remain with your account until deletion.</p>
     <p><b>Retention.</b> Your data stays until you ask us to remove it. You can delete everything tied to your email address at any time:</p>
     <p>Sign in before requesting account deletion. An active subscription must be canceled through Manage billing first.</p>

@@ -18,17 +18,16 @@
  const legacy=name=>{if(name==='audit_start')event('audit_started');if(name==='report_viewed')event('report_viewed');};
  if(rawBeacon)navigator.sendBeacon=(url,data)=>{try{const u=new URL(url,location.href);if(u.origin===location.origin&&u.pathname==='/api/track'){legacy(u.searchParams.get('event'));return true;}}catch{}return rawBeacon(url,data);};
  window.fetch=(input,init)=>{try{const u=new URL(typeof input==='string'?input:input.url,location.href);if(u.origin===location.origin&&['/api/audit','/api/attach','/api/lead','/api/checkout'].includes(u.pathname)&&init?.method?.toUpperCase()==='POST'&&typeof init.body==='string'){const body=JSON.parse(init.body);if(!blocked)body.analytics=context;return rawFetch(input,{...init,body:JSON.stringify(body)});}}catch{}return rawFetch(input,init);};
- const choose=value=>{write(key,value);consent=value==='allow'&&!blocked;context.consent=consent;if(consent){write(ctxKey,context);event('consent_granted');}else{remove(ctxKey);context={consent:false,current:touch,firstTouch:touch,lastTouch:touch,test:context.test};}document.getElementById('analytics-choice')?.remove();};
+ const choose=value=>{write(key,value);consent=value==='allow'&&!blocked;context.consent=consent;if(consent){write(ctxKey,context);event('consent_granted');}else{remove(ctxKey);context={consent:false,current:touch,firstTouch:touch,lastTouch:touch,test:context.test};}refreshChoice();};
  window.inboxproofAnalytics={context:()=>structuredClone(context),choose,event};
- function showChoice(){
-  if(blocked||document.getElementById('analytics-choice'))return;
-  const aside=document.createElement('aside');aside.id='analytics-choice';aside.setAttribute('aria-label','Analytics preference');
-  aside.innerHTML='<div><strong>Help us improve Inboxproof</strong><p>Allow us to remember which pages brought you here? <a href="/privacy">Privacy</a></p></div><div class="analytics-actions"><button type="button" data-choice="deny">No thanks</button><button type="button" data-choice="allow">Allow analytics</button></div>';
-  aside.querySelectorAll('button').forEach(button=>button.onclick=()=>choose(button.dataset.choice));document.body.append(aside);
+ function refreshChoice(){
+  const settings=document.querySelector('[data-analytics-settings]');if(!settings)return;
+  settings.querySelectorAll('[data-choice]').forEach(button=>{button.setAttribute('aria-pressed',String(button.dataset.choice===(consent?'allow':'deny')));button.disabled=blocked&&button.dataset.choice==='allow';});
+  settings.querySelector('[data-analytics-status]').textContent=blocked?'Your browser privacy setting keeps optional attribution off.':consent?'Optional attribution is on.':'Optional attribution is off.';
  }
  document.addEventListener('DOMContentLoaded',()=>{
   event('page_view');
-  if(!blocked&&!read(key)&&!['/pro','/login'].includes(location.pathname)&&!location.pathname.startsWith('/r/'))showChoice();
-  const settings=document.querySelector('[data-analytics-settings]');if(settings)settings.onclick=showChoice;
+  document.querySelectorAll('[data-analytics-settings] [data-choice]').forEach(button=>button.onclick=()=>choose(button.dataset.choice));
+  refreshChoice();
  });
 })();
