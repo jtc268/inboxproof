@@ -11,7 +11,9 @@ export function createStore({ url, key, directory, remote, local }) {
   const file = name => path.join(directory, Buffer.from(name).toString('hex') + '.json');
   async function get(name) {
     if (!remote) { try { return fs.readFileSync(file(name), 'utf8'); } catch (e) { if (e.code === 'ENOENT') return null; throw e; } }
-    const r = await fetch(objectUrl(name), { headers, signal: AbortSignal.timeout(10000), cache: 'no-store' });
+    // Supabase's CDN can retain replaced objects for up to a minute. Account,
+    // session and lock reads must reach the origin, including immediately after writes.
+    const r = await fetch(objectUrl(name)+'?cacheNonce='+crypto.randomUUID(), { headers:{...headers,'Cache-Control':'no-cache, no-store',Pragma:'no-cache'}, signal: AbortSignal.timeout(10000), cache: 'no-store' });
     if (r.status === 404) return null;
     if (!r.ok) {
       const b = await r.json().catch(() => ({}));
