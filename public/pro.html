@@ -1,7 +1,7 @@
 <!doctype html>
 <html lang="en">
 <head>
-<script>(function(){try{var p=location.pathname||'/';var r=(document.referrer||'').split('/')[2]||'direct';var q=new URLSearchParams(location.search);var ref=q.get('ref')||'';if(ref){try{localStorage.setItem('ip_ref',ref);}catch(e){}}var u='/api/track?page='+encodeURIComponent(p)+'&ref='+encodeURIComponent(r)+(ref?'&team='+encodeURIComponent(ref):'');if(navigator.sendBeacon&&navigator.sendBeacon(u))return;var i=new Image();i.src=u;}catch(e){}})();</script>
+
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
 <title>Inboxproof | Dashboard</title>
@@ -27,7 +27,7 @@
       <a href="/#how">How it works</a>
       <a href="/#pricing">Pricing</a>
       <a href="/agencies">Agencies</a>
-      <a href="/pro">Dashboard</a>
+      <a href="/pro">Dashboard</a><button id="logout" class="btn btn-ghost btn-sm" hidden>Sign out</button>
     </div>
     <a class="btn btn-primary btn-sm" href="/#audit">Run a free audit</a>
   </div>
@@ -36,7 +36,7 @@
 <div class="container dash">
   <div class="dash-head">
     <div>
-      <h1 id="title">Your deliverability history</h1>
+      <h1 id="title">Your domain monitoring</h1>
       <div id="sub" style="color:var(--muted);font-size:14.5px;margin-top:4px">Loading…</div>
     </div>
     <span class="pill free" id="plan">FREE</span>
@@ -56,19 +56,21 @@
 </div>
 
 <script>
-const email = new URLSearchParams(location.search).get('email') || '';
+let email='';
+const esc=s=>String(s??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
 const $ = s => document.querySelector(s);
 function color(s){ return s>=90 ? '#34d399' : s>=70 ? '#a3e635' : s>=50 ? '#fbbf24' : '#f87171'; }
 function renderStatus(lead, history){
   const box = $('#status');
-  if(!history.length){ box.style.display='none'; return; }
-  const last = history[history.length-1];
+
+  const last = history[history.length-1] || {at:null,domain:'No check yet',score:0};
   const isPro = lead.pro;
   const since = lead.proSince ? new Date(lead.proSince).toLocaleDateString() : '';
-  const delta = history.length>1 ? (last.score - history[history.length-2].score) : 0;
+  const sameDomainHistory=history.filter(h=>h.domain===last.domain);
+  const delta = sameDomainHistory.length>1 ? (last.score - sameDomainHistory[sameDomainHistory.length-2].score) : 0;
   const deltaTxt = delta>0 ? '<span style="color:#34d399">▲ +'+delta+' since last check</span>' : delta<0 ? '<span style="color:#f87171">▼ '+delta+' since last check</span>' : '<span style="opacity:.6">unchanged since last check</span>';
   // trend: last up-to-14 scores as bars
-  const pts = history.slice(-14);
+  const pts = sameDomainHistory.slice(-14);
   const bars = pts.map(h=>{
     const hpx = 8 + Math.round(h.score/100*44);
     return '<div title="'+new Date(h.at).toLocaleString()+' · '+h.score+'" style="width:14px;height:'+hpx+'px;border-radius:3px;background:'+color(h.score)+'"></div>';
@@ -78,11 +80,11 @@ function renderStatus(lead, history){
     '<div style="display:flex;gap:14px;flex-wrap:wrap;margin-bottom:14px">'+
       '<div style="flex:1;min-width:200px;background:var(--panel);border:1px solid var(--line);border-radius:12px;padding:16px 20px">'+
         '<div style="font-size:12px;letter-spacing:.06em;text-transform:uppercase;color:var(--dim);margin-bottom:6px">Monitoring</div>'+
-        '<div style="font-size:16px;font-weight:700">'+(isPro ? ('<span style="color:#34d399">● Active</span> · daily checks · since '+since) : '<span style="color:#fbbf24">○ Not active</span>. Pro adds daily monitoring & alerts')+'</div>'+
+        '<div style="font-size:16px;font-weight:700">'+(isPro ? ('<span style="color:#34d399">● Scheduled</span> · daily checks') : '<span style="color:#fbbf24">○ Not active</span>. Pro adds daily monitoring & alerts')+'</div>'+
       '</div>'+
       '<div style="flex:1;min-width:200px;background:var(--panel);border:1px solid var(--line);border-radius:12px;padding:16px 20px">'+
-        '<div style="font-size:12px;letter-spacing:.06em;text-transform:uppercase;color:var(--dim);margin-bottom:6px">Last check · '+new Date(last.at).toLocaleString()+'</div>'+
-        '<div style="font-size:16px;font-weight:700">'+last.domain+' → <span style="color:'+color(last.score)+'">'+last.score+'/100</span> '+deltaTxt+'</div>'+
+        '<div style="font-size:12px;letter-spacing:.06em;text-transform:uppercase;color:var(--dim);margin-bottom:6px">Last check · '+(last.at?new Date(last.at).toLocaleString():'Awaiting first check')+'</div>'+
+        '<div style="font-size:16px;font-weight:700">'+(last.at?esc(last.domain)+' → <span style="color:'+color(last.score)+'">'+last.score+'/100</span> '+deltaTxt:'Your first check will appear here.')+'</div>'+
       '</div>'+
       '<div style="flex:1;min-width:200px;background:var(--panel);border:1px solid var(--line);border-radius:12px;padding:16px 20px">'+
         '<div style="font-size:12px;letter-spacing:.06em;text-transform:uppercase;color:var(--dim);margin-bottom:6px">Billing</div>'+
@@ -91,7 +93,7 @@ function renderStatus(lead, history){
       '</div>'+
     '</div>'+
     '<div style="background:var(--panel);border:1px solid var(--line);border-radius:12px;padding:16px 20px">'+
-      '<div style="font-size:12px;letter-spacing:.06em;text-transform:uppercase;color:var(--dim);margin-bottom:10px">Score trend</div>'+
+      '<div style="font-size:12px;letter-spacing:.06em;text-transform:uppercase;color:var(--dim);margin-bottom:10px">Score trend · '+esc(last.domain)+'</div>'+
       '<div style="display:flex;align-items:flex-end;gap:5px;height:52px">'+bars+'</div>'+
     '</div>';
   if(isPro){
@@ -102,12 +104,13 @@ function renderStatus(lead, history){
       const s = scores[d];
       const scoreTxt = s ? '<span style="color:'+color(s.score)+'">'+s.score+'/100</span> · checked '+new Date(s.at).toLocaleDateString() : '<span style="opacity:.5">not checked yet</span>';
       return '<div style="display:flex;align-items:center;gap:10px;padding:8px 0;border-bottom:1px solid var(--line)">'+
-        '<div style="flex:1;font-weight:600">'+d+'</div>'+
+        '<div style="flex:1;font-weight:600">'+esc(d)+'</div>'+
         '<div style="font-size:13px">'+scoreTxt+'</div>'+
-        '<button data-rm="'+d+'" class="btn btn-ghost btn-sm" style="padding:4px 10px;color:#f87171">Remove</button>'+
+        '<button data-check="'+esc(d)+'" class="btn btn-ghost btn-sm">Check now</button>'+
+        '<button data-rm="'+esc(d)+'" class="btn btn-ghost btn-sm" style="padding:4px 10px;color:#f87171">Remove</button>'+
       '</div>';
     }).join('');
-    box.innerHTML +=
+    box.insertAdjacentHTML('beforeend',
       '<div style="background:var(--panel);border:1px solid var(--line);border-radius:12px;padding:16px 20px;margin-top:14px">'+
         '<div style="font-size:12px;letter-spacing:.06em;text-transform:uppercase;color:var(--dim);margin-bottom:10px">Monitored domains · '+domains.length+'/'+limit+'</div>'+
         '<div id="domlist">'+(domainRows || '<div style="font-size:13px;color:var(--muted)">No domains yet. Add one below.</div>')+'</div>'+
@@ -116,7 +119,11 @@ function renderStatus(lead, history){
           '<button id="domaddbtn" class="btn btn-primary btn-sm" style="padding:9px 14px">Add domain</button>'+
         '</div>'+
         '<div id="dommsg" style="font-size:12.5px;min-height:16px;margin-top:8px;opacity:.85"></div>'+
-      '</div>';
+      '</div>');
+    box.querySelectorAll('[data-check]').forEach(button=>button.onclick=async()=>{
+      button.disabled=true;button.textContent='Checking…';
+      try{const r=await fetch('/api/recheck',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({domain:button.dataset.check})});const j=await r.json();if(!r.ok)throw Error(j.error);await load();}catch(e){$('#dommsg').textContent=e.message;button.disabled=false;button.textContent='Check now';}
+    });
     const addBtn = $('#domaddbtn');
     if(addBtn) addBtn.onclick = async () => {
       const msg = $('#dommsg');
@@ -134,7 +141,7 @@ function renderStatus(lead, history){
     box.querySelectorAll('[data-rm]').forEach(b => {
       b.onclick = async () => {
         const d = b.getAttribute('data-rm');
-        if(!confirm('Stop monitoring '+d+'?')) return;
+        if(!confirm('Stop monitoring '+esc(d)+'?')) return;
         try {
           const r = await fetch('/api/domains', { method:'POST', headers:{'Content-Type':'application/json'}, body: JSON.stringify({ email, action:'remove', domain:d }) });
           const j = await r.json();
@@ -145,7 +152,7 @@ function renderStatus(lead, history){
     });
   }
   if(isPro && lead.apiKey){
-    box.innerHTML +=
+    box.insertAdjacentHTML('beforeend',
       '<div style="background:var(--panel);border:1px solid var(--line);border-radius:12px;padding:16px 20px;margin-top:14px">'+
         '<div style="font-size:12px;letter-spacing:.06em;text-transform:uppercase;color:var(--dim);margin-bottom:10px">API access · 100 audits/day</div>'+
         '<div style="display:flex;gap:8px;flex-wrap:wrap;align-items:center;margin-bottom:10px">'+
@@ -156,7 +163,7 @@ function renderStatus(lead, history){
         '<pre style="background:#0a0e16;border:1px solid var(--line);border-radius:8px;padding:12px;font-size:12.5px;overflow:auto;margin:0">'+
           'curl -H "Authorization: Bearer '+lead.apiKey+'" \\\n'+
           '  "https://inboxproof.email/api/v1/audit?domain=yourdomain.com"</pre>'+
-      '</div>';
+      '</div>');
     const c = $('#copykey');
     if(c) c.onclick = async () => { try { await navigator.clipboard.writeText(lead.apiKey); c.textContent = 'Copied ✓'; setTimeout(()=>c.textContent='Copy key',1500); } catch { c.textContent = 'Select & copy'; } };
   }
@@ -172,19 +179,19 @@ function renderStatus(lead, history){
   };
   if(isPro && lead.plan === 'agency'){
     const b = lead.brand;
-    box.innerHTML +=
+    box.insertAdjacentHTML('beforeend',
       '<div style="background:var(--panel);border:1px solid rgba(99,102,241,.45);border-radius:12px;padding:16px 20px;margin-top:14px">'+
         '<div style="font-size:12px;letter-spacing:.06em;text-transform:uppercase;color:var(--dim);margin-bottom:10px">White-label reports · Agency</div>'+
         '<div style="font-size:13px;color:var(--muted);margin-bottom:12px">Share client-ready reports under your own brand. Set your brand once; every audit you run after that is branded automatically.</div>'+
         '<div style="display:flex;gap:8px;flex-wrap:wrap;margin-bottom:10px">'+
-          '<input id="wl-name" placeholder="Your company name" value="'+(b?b.name:'')+'" style="padding:9px 12px;border-radius:9px;border:1px solid var(--line);background:#0a0e16;color:inherit;font-size:13px;min-width:180px">'+
-          '<input id="wl-color" placeholder="#6366f1" value="'+(b?b.color:'#6366f1')+'" style="padding:9px 12px;border-radius:9px;border:1px solid var(--line);background:#0a0e16;color:inherit;font-size:13px;width:100px">'+
-          '<input id="wl-logo" placeholder="Logo URL (optional)" value="'+(b?b.logoUrl:'')+'" style="padding:9px 12px;border-radius:9px;border:1px solid var(--line);background:#0a0e16;color:inherit;font-size:13px;min-width:180px">'+
+          '<input id="wl-name" placeholder="Your company name" value="'+esc(b?b.name:'')+'" style="padding:9px 12px;border-radius:9px;border:1px solid var(--line);background:#0a0e16;color:inherit;font-size:13px;min-width:180px">'+
+          '<input id="wl-color" placeholder="#6366f1" value="'+esc(b?b.color:'#6366f1')+'" style="padding:9px 12px;border-radius:9px;border:1px solid var(--line);background:#0a0e16;color:inherit;font-size:13px;width:100px">'+
+          '<input id="wl-logo" placeholder="Logo URL (optional)" value="'+esc(b?b.logoUrl:'')+'" style="padding:9px 12px;border-radius:9px;border:1px solid var(--line);background:#0a0e16;color:inherit;font-size:13px;min-width:180px">'+
           '<button id="wl-save" class="btn btn-primary btn-sm" style="padding:9px 14px">Save brand</button>'+
         '</div>'+
         '<div id="wl-msg" style="font-size:12.5px;min-height:16px;opacity:.85"></div>'+
         '<div style="margin-top:10px;font-size:13px">White-label link for your latest report: <a id="wl-link" href="#" style="color:#6366f1;font-weight:600;word-break:break-all">'+(history.length?'Open latest report':'Run an audit to generate one')+'</a></div>'+
-      '</div>';
+      '</div>');
     const save = $('#wl-save');
     if(save) save.onclick = async () => {
       const msg = $('#wl-msg');
@@ -205,15 +212,13 @@ function renderStatus(lead, history){
   }
 }
 async function load(){
-  if(!email){
-    $('#title').textContent = 'No account selected';
-    $('#sub').textContent = 'Run a free audit on the homepage, your history will appear here.';
-    return;
-  }
   try{
-    const r = await fetch('/api/history?email=' + encodeURIComponent(email));
+    const r = await fetch('/api/history');
+    if(r.status===401){location.replace('/login');return;}
     const j = await r.json();
+    if(r.status===404){$('#title').textContent='Welcome to Inboxproof';$('#sub').textContent='Run a free audit or choose a monitoring plan to get started.';$('#logout').hidden=false;return;}
     if(!r.ok) throw new Error(j.error || 'Not found');
+    email=j.lead.email;$('#logout').hidden=false;
     $('#title').textContent = email;
     const isPro = j.lead.pro;
     const planLabel = isPro ? (j.lead.plan === 'agency' ? 'Agency plan active · ' : 'Pro plan active · ') : 'Free plan · ';
@@ -229,7 +234,7 @@ async function load(){
       const link = rid ? ` · <a href="/r/${rid}" style="color:#6366f1;font-weight:600">View full report →</a>` : '';
       return `
       <div class="hist-row">
-        <div><b>${h.domain}</b><div class="when">${new Date(h.at).toLocaleString()} · ${h.grade} grade${link}</div></div>
+        <div><b>${esc(h.domain)}</b><div class="when">${new Date(h.at).toLocaleString()} · ${esc(h.grade)} grade${link}</div></div>
         <div class="s" style="color:${color(h.score)}">${h.score}</div>
       </div>`;
     }).join('')
@@ -238,6 +243,7 @@ async function load(){
     $('#sub').textContent = e.message;
   }
 }
+$('#logout').onclick=async()=>{await fetch('/api/auth/logout',{method:'POST'});location.replace('/login');};
 load();
 </script>
 </body>

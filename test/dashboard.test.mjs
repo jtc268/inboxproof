@@ -1,0 +1,20 @@
+import test from 'node:test';
+import assert from 'node:assert/strict';
+import fs from 'node:fs';
+import {JSDOM} from 'jsdom';
+const html=fs.readFileSync(new URL('../public/pro.html',import.meta.url),'utf8');
+for(const plan of ['pro','agency'])test(plan+' dashboard preserves working domain, recheck, API and billing controls after rendering',async()=>{
+ const calls=[];
+ const lead={email:'qa@example.com',pro:true,plan,domains:['example.com'],apiKey:'ip_test',brand:plan==='agency'?{name:'QA',color:'#123456',logoUrl:''}:undefined};
+ const dom=new JSDOM(html,{url:'https://inboxproof.email/pro',runScripts:'dangerously',beforeParse(window){window.fetch=async(url,opts)=>{calls.push({url,body:opts?.body&&JSON.parse(opts.body)});return {ok:true,status:200,json:async()=>url.startsWith('/api/history')?{lead,history:[]}:{domains:['example.com','added.com'],ok:true}};};window.confirm=()=>true;window.alert=()=>{};}});
+ await new Promise(r=>setTimeout(r,10));
+ const d=dom.window.document;
+ assert.equal(d.querySelector('#title').textContent,'qa@example.com');
+ for(const selector of ['#domaddbtn','[data-check]','[data-rm]','#managebilling','#copykey',...(plan==='agency'?['#wl-save']:[])])assert.equal(typeof d.querySelector(selector)?.onclick,'function',selector+' lost its event listener');
+ assert.doesNotMatch(d.querySelector('#status').textContent,/0\/100/);
+ d.querySelector('#domadd').value='added.com';d.querySelector('#domaddbtn').click();await new Promise(r=>setTimeout(r,10));
+ assert.ok(calls.some(c=>c.url==='/api/domains'&&c.body.domain==='added.com'&&c.body.action==='add'));
+ d.querySelector('[data-check]').click();await new Promise(r=>setTimeout(r,10));assert.ok(calls.some(c=>c.url==='/api/recheck'));
+ d.querySelector('[data-rm]').click();await new Promise(r=>setTimeout(r,10));assert.ok(calls.some(c=>c.url==='/api/domains'&&c.body.action==='remove'));
+ dom.window.close();
+});

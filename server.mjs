@@ -3,7 +3,12 @@
 // Free-lead follow-up sequence: re-audits captured domains at ~48h / ~96h.
 import http from 'node:http';
 import net from 'node:net';
-import dns from 'node:dns/promises';
+import tls from 'node:tls';
+import { createStore } from './storage.mjs';
+import { createAuth } from './auth.mjs';
+import dnsModule from 'node:dns/promises';
+import { smtpTls, inspectSpf, dkimKeyInfo } from './checks.mjs';
+const dns = new dnsModule.Resolver({timeout:2000,tries:1});
 import fs from 'node:fs';
 import path from 'node:path';
 import crypto from 'node:crypto';
@@ -11,7 +16,7 @@ import { fileURLToPath } from 'node:url';
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 const PUBLIC = path.join(__dirname, 'public');
-const DATA = path.join(__dirname, 'data');
+const DATA = process.env.DATA_DIR || path.join(__dirname, 'data');
 const PORT = Number(process.env.PORT || 4321);
 const HOST = process.env.HOST || '0.0.0.0';
 if (!process.env.UPSTASH_REST_URL && !process.env.VERCEL) fs.mkdirSync(DATA, { recursive: true });
@@ -31,10 +36,12 @@ try {
 /* ---------------- stripe ---------------- */
 const STRIPE_KEY = process.env.STRIPE_SECRET || '';
 const STRIPE_WEBHOOK_SECRET = process.env.STRIPE_WEBHOOK_SECRET || '';
-const PRICE = { pro: 'price_1U6dWBFzAAOxCQiQs2LmWAT9', agency: 'price_1U6dWBFzAAOxCQiQ1rKWK7nU' };
+const PRICE = { pro: process.env.STRIPE_PRICE_PRO || 'price_1U6dWBFzAAOxCQiQs2LmWAT9', agency: process.env.STRIPE_PRICE_AGENCY || 'price_1U6dWBFzAAOxCQiQ1rKWK7nU' };
+const APP_URL = process.env.APP_URL || 'https://inboxproof.email';
 const stripe = async (m, p, body) => {
   const r = await fetch('https://api.stripe.com/v1' + p, {
     method: m,
+    signal: AbortSignal.timeout(15000),
     headers: { Authorization: 'Bearer ' + STRIPE_KEY, 'Content-Type': 'application/x-www-form-urlencoded' },
     body: body ? new URLSearchParams(body).toString() : undefined,
   });
@@ -84,46 +91,12 @@ const SB_BUCKET = 'kv';
 const REMOTE = !!(SB_URL && SB_KEY);
 const LOCAL = !process.env.VERCEL && !REMOTE;
 const SB_HEADERS = () => ({ Authorization: 'Bearer ' + SB_KEY, apikey: SB_KEY, 'Content-Type': 'application/json' });
-async function upGet(key) {
-  if (!REMOTE) return null;
-  try {
-    const r = await fetch(SB_URL + '/storage/v1/object/' + SB_BUCKET + '/' + key, { headers: SB_HEADERS() });
-    if (!r.ok) return null;
-    return await r.text();
-  } catch { return null; }
-}
-async function upSet(key, val) {
-  if (!REMOTE) return;
-  try {
-    // reliable overwrite: delete then post (upsert=true is not honored in this storage version)
-    await fetch(SB_URL + '/storage/v1/object/' + SB_BUCKET, {
-      method: 'DELETE', headers: SB_HEADERS(), body: JSON.stringify({ prefixes: [key] }),
-    });
-    const r = await fetch(SB_URL + '/storage/v1/object/' + SB_BUCKET + '/' + key, {
-      method: 'POST', headers: SB_HEADERS(), body: val,
-    });
-    if (!r.ok) console.error('upSet failed', key, r.status);
-  } catch (e) { console.error('upSet error', key, e.message); }
-}
-let leads = loadJson(LEADS_F, {});  // email -> {id,email,domain,pro,proSince,createdAt,lastScore}
-let audits = loadJson(AUDITS_F, {}); // email -> [{domain,at,score,grade,checks:[{id,name,status}]}]
-let reports = loadJson(REPORTS_F, {}); // id -> {domain,at,score,grade,checks:[{id,name,status,detail,fix}]}
-let stats = loadJson(STATS_F, { pageViews: 0, byPage: {}, byRef: {}, lastView: null }); // funnel counters
-let hydrated = false;
-async function hydrate() {
-  if (!REMOTE || hydrated) return;
-  const [l, a, s] = await Promise.all([upGet('leads'), upGet('audits'), upGet('stats')]);
-  if (l) leads = JSON.parse(l);
-  if (a) audits = JSON.parse(a);
-  if (s) stats = { ...stats, ...JSON.parse(s) };
-  hydrated = true;
-}
-async function persist(kind) {
-  const obj = kind === 'leads' ? leads : kind === 'audits' ? audits : kind === 'stats' ? stats : null;
-  if (obj === null) return;
-  if (REMOTE) await upSet(kind, JSON.stringify(obj));
-  else if (LOCAL) saveJson(kind === 'leads' ? LEADS_F : kind === 'audits' ? AUDITS_F : STATS_F, obj);
-}
+const store = createStore({url:SB_URL,key:SB_KEY,directory:DATA,remote:REMOTE,local:LOCAL});
+const upGet=store.get, upSet=store.set;
+const leads=store.proxy('leads'), audits=store.proxy('audits'), stats=store.proxy('stats');
+let reports=loadJson(REPORTS_F,{});
+const hydrate=store.hydrate, persist=store.persist;
+const auth=createAuth({store,sendEmail:sendAlertEmail,baseUrl:APP_URL,secure:!APP_URL.startsWith('http://localhost')});
 async function recordEvent(name, page) {
   stats.byEvent = stats.byEvent || {};
   stats.byEvent[name] = (stats.byEvent[name] || 0) + 1;
@@ -140,14 +113,7 @@ async function getReport(id) {
   if (REMOTE) { const v = await upGet('report:' + id); return v ? JSON.parse(v) : null; }
   return reports[id] || null;
 }
-async function upDel(key) {
-  if (!REMOTE) return;
-  try {
-    await fetch(SB_URL + '/storage/v1/object/' + SB_BUCKET, {
-      method: 'DELETE', headers: SB_HEADERS(), body: JSON.stringify({ prefixes: [key] }),
-    });
-  } catch {}
-}
+const upDel=store.del;
 async function deleteReport(id) {
   if (REMOTE) { await upDel('report:' + id); }
   delete reports[id];
@@ -180,7 +146,7 @@ async function upsertLead(email, domain) {
   const k = String(email).toLowerCase().trim();
   if (!leads[k]) leads[k] = { id: crypto.randomUUID(), email: k, domain: domain || null, pro: false, proSince: null, createdAt: Date.now(), lastScore: null, refCode: genRefCode() };
   if (!leads[k].refCode) leads[k].refCode = genRefCode();
-  if (domain) { leads[k].domain = domain; leads[k].lastAuditAt = Date.now(); }
+  if (domain) { if(!leads[k].pro)leads[k].domain = domain; leads[k].lastAuditAt = Date.now(); }
   await persist('leads');
   return leads[k];
 }
@@ -196,13 +162,14 @@ async function pushAudit(email, a) {
 // Resend: RESEND_API_KEY + ALERT_FROM come from the environment (set in Vercel production).
 const RESEND_KEY = process.env.RESEND_API_KEY;
 const ALERT_FROM = process.env.ALERT_FROM || 'InboxProof <onboarding@adorellc.pro>';
-async function sendAlertEmail(to, subject, html) {
+async function sendAlertEmail(to, subject, html, idempotencyKey) {
   if (!RESEND_KEY) { console.log('[alert] RESEND_API_KEY not set; skipping email to', to); return false; }
   try {
     const r = await fetch('https://api.resend.com/emails', {
       method: 'POST',
-      headers: { 'Authorization': 'Bearer ' + RESEND_KEY, 'Content-Type': 'application/json' },
-      body: JSON.stringify({ from: ALERT_FROM, to: [to], subject, html }),
+      headers: { 'Authorization': 'Bearer ' + RESEND_KEY, 'Content-Type': 'application/json', ...(idempotencyKey?{'Idempotency-Key':idempotencyKey}:{}) },
+      signal: AbortSignal.timeout(15000),
+      body: JSON.stringify({ from: ALERT_FROM, to: [to], reply_to: 'joec88@gmail.com', subject, html }),
     });
     const j = await r.json();
     if (!r.ok) { console.log('[alert] resend error', r.status, JSON.stringify(j).slice(0, 200)); return false; }
@@ -372,33 +339,7 @@ async function checkMx(domain) {
   return { id: 'mx', name: 'MX & mail routing', status: 'pass', detail: mxs.length + ' MX record(s); top host ' + top + ' resolves to ' + ip + '.', fix: '' };
 }
 
-async function checkSpf(domain) {
-  let txts;
-  try { txts = await dns.resolveTxt(domain); } catch {
-    return { id: 'spf', name: 'SPF', status: 'fail', detail: 'No SPF record found. Receivers cannot verify which servers may send as ' + domain + ' — the top spoofing vector.', fix: 'Add a TXT record at the domain root:\nv=spf1 include:_spf.google.com -all   (use your ESP\u2019s include)' };
-  }
-  let rec = (txts.map(t => t.join('')).find(s => /^v=spf1/i.test(s)) || '').trim();
-  if (!rec) return { id: 'spf', name: 'SPF', status: 'fail', detail: 'No SPF record found on ' + domain + '.', fix: 'Add a TXT record at the domain root:\nv=spf1 include:_spf.google.com -all   (use your ESP\u2019s include)' };
-  let redirectNote = '';
-  const rm = rec.match(/redirect=([^\s]+)/i);
-  if (rm) {
-    try {
-      const t2 = await dns.resolveTxt(rm[1]);
-      const rec2 = (t2.map(t => t.join('')).find(s => /^v=spf1/i.test(s)) || '').trim();
-      if (rec2) { rec = rec2; redirectNote = ' (via redirect to ' + rm[1] + ')'; }
-    } catch { redirectNote = ' (redirect target ' + rm[1] + ' not resolvable)'; }
-  }
-  const tokens = rec.split(/\s+/).slice(1);
-  const lookups = tokens.filter(t => /^(include|a|mx):/i.test(t)).length;
-  const soft = /(^|\s)~all(\s|$)/.test(rec);
-  const hard = /(^|\s)-all(\s|$)/.test(rec);
-  let status = 'pass', detail = 'SPF found: ' + rec + redirectNote;
-  const fixes = [];
-  if (lookups > 10) { status = 'fail'; detail += ' — exceeds the 10 DNS-lookup limit, so receivers must reject it.'; fixes.push('Reduce includes to 10 or fewer (combine via a dedicated _spf subdomain).'); }
-  else if (soft) { status = 'warn'; detail += ' — ends with ~all (softfail); spoofed mail is not firmly rejected.'; fixes.push('Change ~all to -all.'); }
-  else if (!hard) { status = 'warn'; detail += ' — no -all qualifier, so unauthorized senders are not explicitly rejected.'; fixes.push('Append -all to the SPF record.'); }
-  return { id: 'spf', name: 'SPF', status, detail, fix: fixes.join('\n') };
-}
+const checkSpf=domain=>inspectSpf(domain,dns);
 
 const DKIM_SELECTORS = ['google', 'selector1', 'selector2', 's1', 's2', 's3', 's4', 's5', 's6', 's7', 's8', 's9', 's10', 's11', 's12', 's13', 's14', 's15', 's16', 'k1', 'k2', 'mx', 'mail', 'mailo', 'dkim', 'default', 'protonmail', 'mandrill', 'sendgrid', 'amazonses', 'pm', 'dkim1', 'dkim2', 's1024', 's2048', 's3072', 's512', 's768', 'krs', 'mailgun', 'postmark', 'smtp', 's', 's0', 's01', 's02', 's03', 's04', 's05'];
 
@@ -411,13 +352,11 @@ async function checkDkim(domain) {
       if (rec) found.push({ sel, rec });
     } catch { /* selector not present */ }
   }));
-  if (!found.length) return { id: 'dkim', name: 'DKIM', status: 'fail', detail: 'No DKIM key found among the common selectors checked for ' + domain + '. A custom selector may exist; this does not establish whether messages are signed.', fix: 'Enable DKIM in your ESP (Google Workspace: Admin → Security → DKIM). Example record:\nselector1._domainkey.' + domain + '  TXT  "v=DKIM1; k=rsa; p=<your key>"' };
-  const f = found[0];
-  const p = (f.rec.match(/p=([A-Za-z0-9+/=]+)/) || [])[1] || '';
-  if (!p) return { id: 'dkim', name: 'DKIM', status: 'warn', detail: 'DKIM record exists at ' + f.sel + '._domainkey but has no public key (p= empty).', fix: 'Publish the full key: v=DKIM1; k=rsa; p=<base64 key>' };
-  const bits = Math.floor(p.length * 3 / 4) * 8;
-  if (bits < 1024) return { id: 'dkim', name: 'DKIM', status: 'warn', detail: 'DKIM key at ' + f.sel + '._domainkey is ~' + bits + '-bit. 1024-bit minimum is expected; 2048 is recommended.', fix: 'Rotate to a 2048-bit key in your ESP and republish.' };
-  return { id: 'dkim', name: 'DKIM', status: 'pass', detail: 'DKIM key found at ' + f.sel + '._domainkey (' + found.length + ' selector(s), ~' + bits + '-bit).', fix: '' };
+  if(!found.length)return {id:'dkim',name:'DKIM',status:'warn',detail:'No key found among '+DKIM_SELECTORS.length+' common selectors. A custom selector may exist. Message signing is unverified.',fix:'Check the selector in a sent message DKIM-Signature header and confirm it with your email provider.'};
+  const parsed=found.map(f=>({...f,key:dkimKeyInfo(f.rec)}));
+  const valid=parsed.find(f=>f.key.valid&&(f.key.type==='Ed25519'||f.key.bits>=1024));
+  if(!valid)return {id:'dkim',name:'DKIM',status:'warn',detail:'Published keys need review: '+parsed.map(f=>f.sel+': '+(f.key.reason||f.key.bits+' bits')).join('; '),fix:'Confirm the active selector and publish the complete public key from your provider.'};
+  return {id:'dkim',name:'DKIM',status:'pass',detail:'Published '+valid.key.type+' key at '+valid.sel+'._domainkey ('+valid.key.bits+' bits). This verifies the key format, not a sent message signature.',fix:''};
 }
 
 async function checkDmarc(domain) {
@@ -438,49 +377,15 @@ async function checkDmarc(domain) {
   return { id: 'dmarc', name: 'DMARC', status, detail, fix };
 }
 
-function rawTls(host) {
-  return new Promise(resolve => {
-    const out = { starttls: false, cert: null, error: null };
-    let done = false;
-    let socket;
-    const finish = err => { if (done) return; done = true; clearTimeout(timer); try { socket.destroy(); } catch {} out.error = out.error || err || null; resolve(out); };
-    const timer = setTimeout(() => finish('timeout connecting to ' + host + ':25'), 9000);
-    socket = net.connect(25, host, () => {});
-    let buf = '', phase = 'greet';
-    socket.on('data', d => {
-      buf += d.toString('latin1');
-      if (phase === 'greet' && /(^|\r\n)220 /.test(buf)) { phase = 'ehlo'; socket.write('EHLO audit.inboxproof.local\r\n'); }
-      else if (phase === 'ehlo') {
-        const lines = buf.split('\r\n');
-        if (lines[lines.length - 1].startsWith('250 ')) {
-          buf = '';
-          out.starttls = lines.some(l => /(^|\s)STARTTLS/i.test(l));
-          if (out.starttls) {
-            phase = 'tls';
-            socket.setSecure({ servername: host, rejectUnauthorized: false, checkServerIdentity: () => null });
-            socket.on('secureConnect', () => {
-              try {
-                const c = socket.getPeerCertificate();
-                out.cert = { subject: c.subject?.CN || c.subject?.O || '', issuer: c.issuer?.O || c.issuer?.CN || '', valid_to: c.valid_to, valid_from: c.valid_from };
-              } catch (e) { out.error = 'TLS handshake failed: ' + e.message; }
-              finish();
-            });
-          } else finish();
-        }
-      }
-    });
-    socket.on('error', e => finish(e.message));
-    socket.on('close', () => finish());
-  });
-}
+const rawTls=host=>smtpTls(host,{resolver:dns});
 
 async function checkTls(domain) {
   let mxs;
   try { mxs = await dns.resolveMx(domain); } catch { mxs = null; }
   if (!mxs || !mxs.length) return { id: 'tls', name: 'TLS & STARTTLS', status: 'warn', detail: 'No MX host available to test TLS against.', fix: '' };
-  const host = mxs[0].exchange.replace(/\.$/, '');
+  const host = mxs.filter(x=>x.exchange&&x.exchange!=='.').sort((a,b)=>a.priority-b.priority)[0]?.exchange.replace(/\.$/, '');
   const r = await rawTls(host);
-  if (r.error) return { id: 'tls', name: 'TLS & STARTTLS', status: 'warn', detail: 'Could not verify TLS on ' + host + ': ' + r.error, fix: '' };
+  if (r.error) return { id: 'tls', name: 'TLS & STARTTLS', status: r.certificateError?'fail':'warn', detail: 'Could not verify TLS on ' + host + ': ' + r.error, fix: '' };
   if (!r.starttls) return { id: 'tls', name: 'TLS & STARTTLS', status: 'fail', detail: 'Mail server ' + host + ' does not offer STARTTLS. Mail to/from this domain can travel in plaintext.', fix: 'Enable STARTTLS on your mail server (hosting panel: Security → TLS → Force TLS).' };
   const c = r.cert;
   const exp = c ? new Date(c.valid_to) : null;
@@ -503,7 +408,7 @@ async function checkTlsAll(domain) {
   const results = await Promise.all(hosts.map(async host => {
     const r = await rawTls(host);
     let status, detail;
-    if (r.error) { status = 'warn'; detail = 'Could not verify TLS on ' + host + ': ' + r.error; }
+    if (r.error) { status = r.certificateError?'fail':'warn'; detail = 'Could not verify TLS on ' + host + ': ' + r.error; }
     else if (!r.starttls) { status = 'fail'; detail = host + ' does not offer STARTTLS. Mail can travel in plaintext.'; }
     else {
       const c = r.cert; const exp = c ? new Date(c.valid_to) : null;
@@ -524,12 +429,12 @@ async function checkTlsAll(domain) {
 async function checkPtr(domain) {
   let mxs;
   try { mxs = await dns.resolveMx(domain); } catch { return { id: 'ptr', name: 'Reverse DNS (PTR)', status: 'warn', detail: 'No MX to check PTR against.', fix: '' }; }
-  const host = mxs[0].exchange.replace(/\.$/, '');
+  const host = mxs.filter(x=>x.exchange&&x.exchange!=='.').sort((a,b)=>a.priority-b.priority)[0]?.exchange.replace(/\.$/, '');
   let ip;
   try { ip = (await dns.resolve4(host))[0]; } catch { return { id: 'ptr', name: 'Reverse DNS (PTR)', status: 'warn', detail: 'MX host ' + host + ' does not resolve; cannot check PTR.', fix: '' }; }
   let ptr;
   try { ptr = (await dns.reverse(ip))[0]; } catch { ptr = null; }
-  if (!ptr) return { id: 'ptr', name: 'Reverse DNS (PTR)', status: 'warn', detail: 'Sending IP ' + ip + ' has no PTR record. Some receivers reject mail from hosts without reverse DNS.', fix: 'Ask your mail host to set a PTR for ' + ip + ' (automatic on most managed mail).' };
+  if (!ptr) return { id: 'ptr', name: 'Reverse DNS (PTR)', status: 'warn', detail: 'Observed MX IP ' + ip + ' has no PTR record. Some receivers reject mail from hosts without reverse DNS.', fix: 'Ask your mail host to set a PTR for ' + ip + ' (automatic on most managed mail).' };
   const p = ptr.replace(/\.$/, '');
   const match = host === p || host.endsWith('.' + p) || p.endsWith('.' + host);
   if (!match) return { id: 'ptr', name: 'Reverse DNS (PTR)', status: 'warn', detail: 'PTR for ' + ip + ' is ' + p + ', which does not match MX host ' + host + '.', fix: 'Align the PTR record with the MX hostname.' };
@@ -564,33 +469,31 @@ async function checkPtrAll(target) {
 const RBLS = [['zen.spamhaus.org', 'Spamhaus'], ['bl.spamcop.net', 'SpamCop'], ['b.barracudacentral.org', 'Barracuda']];
 async function checkRbl(domain) {
   let mxs;
-  try { mxs = await dns.resolveMx(domain); } catch { return { id: 'rbl', name: 'IP reputation (RBL)', status: 'warn', detail: 'No MX to check sending IPs against blocklists.', fix: '' }; }
-  const host = mxs[0].exchange.replace(/\.$/, '');
+  try { mxs = await dns.resolveMx(domain); } catch { return { id: 'rbl', name: 'IP reputation (RBL)', status: 'warn', detail: 'No MX address available for blocklist checks.', fix: '' }; }
+  const host = mxs.filter(x=>x.exchange&&x.exchange!=='.').sort((a,b)=>a.priority-b.priority)[0]?.exchange.replace(/\.$/, '');
   let ip;
   try { ip = (await dns.resolve4(host))[0]; } catch { return { id: 'rbl', name: 'IP reputation (RBL)', status: 'warn', detail: 'Cannot resolve MX IP to check blocklists.', fix: '' }; }
   const rev = ip.split('.').reverse().join('.');
   const results = [];
   for (const [rbl, label] of RBLS) {
     try {
-      const ans = await dns.resolveTxt(rev + '.' + rbl);
-      results.push({ label, listed: ans.some(t => t.join('').includes('127.')), ok: true });
-    } catch { results.push({ label, listed: false, ok: false }); }
+      const ans = await dns.resolve4(rev + '.' + rbl);
+      const blocked=ans.some(x=>/^127\.255\.255\./.test(x));
+      results.push({ label, listed: !blocked&&ans.some(x=>/^127\./.test(x)), ok: !blocked });
+    } catch(e) { results.push({ label, listed:false, ok:['ENOTFOUND','ENODATA'].includes(e.code) }); }
   }
   const bad = results.filter(r => r.listed);
-  if (bad.length) return { id: 'rbl', name: 'IP reputation (RBL)', status: 'fail', detail: 'Sending IP ' + ip + ' is listed on ' + bad.map(b => b.label).join(', ') + '. Mail from this IP will be blocked or marked spam.', fix: 'Request delisting (e.g. https://check.spamhaus.org) or move sending to a clean IP / ESP.' };
+  if (bad.length) return { id: 'rbl', name: 'IP reputation (RBL)', status: 'fail', detail: 'Observed MX IP ' + ip + ' is listed on ' + bad.map(b => b.label).join(', ') + '. This is an inbound MX address and may differ from your outbound sending IP.', fix: 'Request delisting (e.g. https://check.spamhaus.org) or move sending to a clean IP / ESP.' };
   const checked = results.filter(r => r.ok).length;
   if (!checked) return { id: 'rbl', name: 'IP reputation (RBL)', status: 'warn', detail: 'Blocklist lookups unavailable from this network; reputation unverified.', fix: '' };
-  return { id: 'rbl', name: 'IP reputation (RBL)', status: 'pass', detail: 'Sending IP ' + ip + ' is clean on ' + checked + ' blocklist(s) checked.', fix: '' };
+  return { id: 'rbl', name: 'IP reputation (RBL)', status: 'pass', detail: 'Observed MX IP ' + ip + ' is clean on ' + checked + ' blocklist(s) checked.', fix: '' };
 }
 
 /* ---------------- scoring ---------------- */
 const WEIGHTS = { mx: 20, spf: 15, dkim: 15, dmarc: 25, tls: 10, ptr: 5, rbl: 10 };
 const gradeOf = s => s >= 90 ? 'A' : s >= 70 ? 'B' : s >= 50 ? 'C' : 'D';
 async function auditDomain(domain) {
-  const checks = await Promise.all([
-    checkMx(domain), checkSpf(domain), checkDkim(domain), checkDmarc(domain),
-    checkTls(domain), checkPtr(domain), checkRbl(domain),
-  ]);
+  const checks = await Promise.all([['mx','MX & mail routing',checkMx],['spf','SPF',checkSpf],['dkim','DKIM',checkDkim],['dmarc','DMARC',checkDmarc],['tls','TLS & STARTTLS',checkTls],['ptr','Reverse DNS',checkPtr],['rbl','IP reputation',checkRbl]].map(async([id,name,fn])=>{try{return await fn(domain);}catch{return {id,name,status:'warn',detail:'This check could not be completed. Try again later.',fix:''};}}));
   const score = Math.round(checks.reduce((s, c) => s + WEIGHTS[c.id] * (c.status === 'pass' ? 1 : c.status === 'warn' ? 0.5 : 0), 0));
   return { domain, at: new Date().toISOString(), score, grade: gradeOf(score), checks };
 }
@@ -623,7 +526,7 @@ function apiRateLimited(key) {
   e.n++;
   return e.n > 100;
 }
-function sendJson(res, code, obj) { res.writeHead(code, { 'Content-Type': 'application/json; charset=utf-8' }); res.end(JSON.stringify(obj)); }
+function sendJson(res, code, obj) { res.setHeader('Cache-Control','no-store'); res.writeHead(code, { 'Content-Type': 'application/json; charset=utf-8' }); res.end(JSON.stringify(obj)); }
 function readBody(req) {
   return new Promise((resolve, reject) => {
     let data = '';
@@ -632,11 +535,61 @@ function readBody(req) {
     req.on('error', reject);
   });
 }
-async function handler(req, res) {
+async function requestHandler(req, res) {
   const u = new URL(req.url, 'http://localhost');
-  const ip = req.socket.remoteAddress || 'unknown';
+  const ip = process.env.VERCEL ? String(req.headers['x-vercel-forwarded-for'] || req.headers['x-forwarded-for'] || req.socket.remoteAddress).split(',')[0].trim() : req.socket.remoteAddress || 'unknown';
   try {
+    res.setHeader('X-Content-Type-Options','nosniff');
+    res.setHeader('Referrer-Policy','no-referrer');
+    res.setHeader('X-Frame-Options','DENY');
+    if (u.pathname.startsWith('/api/') || ['/pro','/login'].includes(u.pathname)) res.setHeader('Cache-Control','no-store');
+    const origin=req.headers.origin;
+    if (!['GET','HEAD'].includes(req.method) && u.pathname!='/api/webhook' && origin && origin!==APP_URL && origin!=='http://'+req.headers.host && origin!=='https://'+req.headers.host) return sendJson(res,403,{error:'Request origin is not allowed'});
+    if (req.method === 'POST' && u.pathname === '/api/auth/request') {
+      const body=await readBody(req);const email=String(body.email||'').trim().toLowerCase();
+      if(!EMAIL_RE.test(email)||email.length>254)return sendJson(res,400,{error:'Enter a valid email address'});
+      const result=await auth.request(email,ip);return sendJson(res,result.status,result);
+    }
+    if (req.method === 'POST' && u.pathname === '/api/auth/verify') {
+      const body=await readBody(req);const email=await auth.verify(String(body.token||''),res);
+      return sendJson(res,email?200:400,email?{ok:true}:{error:'This sign-in link has expired or was already used. Request a new link.'});
+    }
+    if(req.method==='POST' && u.pathname==='/api/auth/logout'){await auth.logout(req,res);return sendJson(res,200,{ok:true});}
+    const protectedPaths=new Set(['/api/history','/api/brand','/api/referrals','/api/portal','/api/delete','/api/domains','/api/recheck','/api/account']);
+    let accountEmail=null;
+    if(protectedPaths.has(u.pathname)){
+      accountEmail=await auth.identity(req);
+      if(!accountEmail)return sendJson(res,401,{error:'Sign in to access your account',login:'/login'});
+      const requested=u.searchParams.get('email');
+      if(requested&&requested.toLowerCase().trim()!==accountEmail)return sendJson(res,403,{error:'This account belongs to a different signed-in user'});
+      u.searchParams.set('email',accountEmail);
+    }
     await hydrate();
+    if((req.method==='GET'||req.method==='POST')&&u.pathname==='/api/monitor'){
+      const secret=process.env.CRON_SECRET||process.env.MONITOR_SECRET;
+      if(!secret||req.headers.authorization!=='Bearer '+secret)return sendJson(res,401,{error:'Unauthorized'});
+      const options=req.method==='POST'?await readBody(req):{};
+      const result=await monitorCycle({notify:options.notify!==false,force:options.force===true});return sendJson(res,result.errors.length?503:200,{ok:!result.errors.length,...result});
+    }
+    if(req.method==='GET'&&u.pathname==='/api/account')return sendJson(res,200,{email:accountEmail});
+    if(req.method==='POST'&&u.pathname==='/api/domains'){
+      const body=await readBody(req);return store.locked('domains:'+accountEmail,async()=>{await store.hydrate(true);const lead=leads[accountEmail];
+      if(!lead?.pro)return sendJson(res,403,{error:'An active monitoring subscription is required'});
+      const domain=cleanDomain(body.domain);if(!DOMAIN_RE.test(domain))return sendJson(res,400,{error:'Enter a valid domain'});
+      const domains=lead.domains|| (lead.domain?[lead.domain]:[]);
+      if(body.action==='remove')lead.domains=domains.filter(d=>d!==domain);
+      else if(body.action==='add'){
+        if(!domains.includes(domain)&&domains.length>=(lead.plan==='agency'?25:5))return sendJson(res,409,{error:'Your plan domain limit has been reached'});
+        lead.domains=[...new Set([...domains,domain])];
+      }else return sendJson(res,400,{error:'Choose add or remove'});
+      lead.domain=lead.domains[0]||null;await persist('leads');return sendJson(res,200,{domains:lead.domains});});
+    }
+    if(req.method==='POST'&&u.pathname==='/api/recheck'){
+      const body=await readBody(req);const lead=leads[accountEmail];const domain=cleanDomain(body.domain);
+      if(!lead?.pro||!(lead.domains||(lead.domain?[lead.domain]:[])).includes(domain))return sendJson(res,403,{error:'Add this domain to your active monitoring plan first'});
+      if(!await auth.allow('recheck:'+accountEmail,20,3600e3))return sendJson(res,429,{error:'Check limit reached. Try again later.'});
+      const result=await monitorDomain(lead,domain,{notify:false});return sendJson(res,200,{ok:true,reportId:result.reportId});
+    }
     if (req.method === 'GET' && (u.pathname === '/' || u.pathname === '/index.html')) {
       const host = req.headers.host || 'localhost:4321';
       const proto = String(req.headers['x-forwarded-proto'] || '').split(',')[0].trim() === 'https' ? 'https' : 'http';
@@ -647,17 +600,14 @@ async function handler(req, res) {
     }
     if (req.method === 'GET' && u.pathname === '/pro') {
       const sid = u.searchParams.get('session_id');
-      if (sid && STRIPE_KEY) {
-        try {
-          const s = await stripe('GET', '/checkout/sessions/' + sid);
-          if (s.payment_status === 'paid' && s.client_reference_id) {
-            await activatePro(s.client_reference_id, s.metadata?.plan || 'pro', {
-              stripeCustomerId: s.customer?.id || s.customer,
-              stripeSubscriptionId: s.subscription,
-              stripeLastPaidAt: new Date().toISOString(),
-            });
-          }
-        } catch (e) { console.log('[checkout] session lookup failed:', e.message); }
+      if(sid&&/^cs_[A-Za-z0-9_]+$/.test(sid)&&STRIPE_KEY){
+        try{
+          const session=await stripe('GET','/checkout/sessions/'+sid);
+          const lead=await fulfillCheckout(session,{welcome:true});
+          const proof=String(req.headers.cookie||'').split(';').map(x=>x.trim()).find(x=>x.startsWith('ip_checkout='))?.slice(12)||'';
+          if(lead&&proof&&session.metadata?.checkout_proof===crypto.createHash('sha256').update(proof).digest('hex'))await auth.session(lead.email,res);
+          res.writeHead(303,{Location:'/pro'});return res.end();
+        }catch(e){console.error('[checkout] reconciliation failed',e.message);}
       }
       res.writeHead(200, { 'Content-Type': MIME['.html'] });
       return res.end(fs.readFileSync(path.join(PUBLIC, 'pro.html'), 'utf8').replace('<head>', '<head>\n' + canonicalTag('/pro')));
@@ -693,8 +643,7 @@ async function handler(req, res) {
           if (team) { stats.byTeam = stats.byTeam || {}; stats.byTeam[team] = (stats.byTeam[team] || 0) + 1; }
           stats.lastView = new Date().toISOString();
         }
-        if (REMOTE) await upSet('stats', JSON.stringify(stats));
-        else if (LOCAL) saveJson(STATS_F, stats);
+        await persist('stats');
         return sendJson(res, 200, { ok: true });
       }
       if (u.pathname === '/api/stats') {
@@ -880,7 +829,7 @@ async function handler(req, res) {
     }
     if (req.method === 'POST' && u.pathname === '/api/brand') {
       const body = await readBody(req);
-      const email = String(body.email || '').toLowerCase().trim();
+      const email = accountEmail;
       if (!EMAIL_RE.test(email)) return sendJson(res, 400, { error: 'Valid email required' });
       const lead = leads[email];
       if (!lead) return sendJson(res, 404, { error: 'No account for this email. Run a free audit first.' });
@@ -918,7 +867,8 @@ async function handler(req, res) {
     if (req.method === 'POST' && u.pathname === '/api/audit') {
       const body = await readBody(req);
       const domain = cleanDomain(body.domain);
-      const email = String(body.email || '').toLowerCase().trim();
+      let email = String(body.email || '').toLowerCase().trim();
+      if(email && leads[email] && await auth.identity(req)!==email) email='';
       if (!DOMAIN_RE.test(domain)) return sendJson(res, 400, { error: 'Enter a valid domain, e.g. yourdomain.com' });
       if (email && !EMAIL_RE.test(email)) return sendJson(res, 400, { error: 'Enter a valid email address' });
       if (rateLimited(ip)) return sendJson(res, 429, { error: 'Rate limit: 20 audits/hour from this IP. Start a Pro trial for continuous monitoring.' });
@@ -946,7 +896,7 @@ async function handler(req, res) {
         await persist('leads');
         await maybeSendAuditFollowup(email, domain, audit, reportId);
       }
-      return sendJson(res, 200, { audit, reportId, refCode: email ? leads[email].refCode : null });
+      return sendJson(res, 200, { audit, reportId, savedEmail:email||null, refCode: email ? leads[email].refCode : null });
     }
     if (req.method === 'POST' && u.pathname === '/api/attach') {
       const body = await readBody(req);
@@ -957,14 +907,15 @@ async function handler(req, res) {
       if (!/^[a-f0-9-]{36}$/i.test(reportId)) return sendJson(res, 400, { error: 'Invalid report id' });
       const rep = await getReport(reportId);
       if (!rep) return sendJson(res, 404, { error: 'Report not found' });
-      await upsertLead(email, domain || rep.domain || null);
+      if(leads[email] && await auth.identity(req)!==email)return sendJson(res,401,{error:'Sign in to save reports to this account',login:'/login'});
+      await upsertLead(email, rep.domain || null);
       await pushAudit(email, rep);
       if (rep.score != null) leads[email].lastScore = rep.score;
       leads[email].reportIds = leads[email].reportIds || [];
       if (!leads[email].reportIds.includes(reportId)) leads[email].reportIds.push(reportId);
       if (leads[email].reportIds.length > 50) leads[email].reportIds = leads[email].reportIds.slice(-50);
       await persist('leads');
-      sendReportEmail(email, domain || rep.domain || '', rep, reportId).catch(() => {});
+      await sendReportEmail(email, domain || rep.domain || '', rep, reportId);
       return sendJson(res, 200, { ok: true });
     }
     if (req.method === 'POST' && u.pathname === '/api/tls-check') {
@@ -1043,9 +994,13 @@ async function handler(req, res) {
         customer = found.data[0] || null;
       } catch {}
       if (!customer) customer = await stripe('POST', '/customers', { email });
-      const host = req.headers.host || 'localhost:4321';
-      const proto = String(req.headers['x-forwarded-proto'] || '').split(',')[0].trim() === 'https' ? 'https' : 'http';
-      const base = proto + '://' + host;
+      if(!await auth.allow('checkout:'+ip,10,3600e3))return sendJson(res,429,{error:'Too many checkout requests. Try again later.'});
+      const subscriptions=await stripe('GET','/subscriptions?customer='+customer.id+'&status=all&limit=100');
+      if(subscriptions.data.some(x=>['active','trialing','past_due','unpaid'].includes(x.status)&&x.items.data.some(i=>Object.values(PRICE).includes(i.price.id))))return sendJson(res,409,{error:'You already have a subscription. Sign in to your dashboard to manage it.',login:'/login'});
+      const domain=cleanDomain(body.domain||'');if(domain&&!DOMAIN_RE.test(domain))return sendJson(res,400,{error:'Enter a valid domain'});
+      const proof=crypto.randomBytes(32).toString('hex');
+      res.setHeader('Set-Cookie','ip_checkout='+proof+'; Path=/; HttpOnly; SameSite=Lax; Max-Age=3600'+(APP_URL.startsWith('https:')?'; Secure':''));
+      const base=APP_URL;
       const s = await stripe('POST', '/checkout/sessions', {
         mode: 'subscription',
         allow_promotion_codes: 'true',
@@ -1054,8 +1009,12 @@ async function handler(req, res) {
         customer: customer.id,
         client_reference_id: email,
         'metadata[plan]': plan,
-        'metadata[domain]': String(body.domain || ''),
-        success_url: base + '/pro?session_id={CHECKOUT_SESSION_ID}&email=' + encodeURIComponent(email),
+        'metadata[domain]': domain,
+        'metadata[product]': 'inboxproof',
+        'metadata[checkout_proof]': crypto.createHash('sha256').update(proof).digest('hex'),
+        'subscription_data[metadata][product]': 'inboxproof',
+        'subscription_data[metadata][email]': email,
+        success_url: base + '/pro?session_id={CHECKOUT_SESSION_ID}',
         cancel_url: base + '/?cancelled=1',
       });
       await upsertLead(email, body.domain || null);
@@ -1065,63 +1024,43 @@ async function handler(req, res) {
     if (req.method === 'POST' && u.pathname === '/api/portal') {
       const body = await readBody(req);
       if (!STRIPE_KEY) return sendJson(res, 503, { error: 'Payments not configured' });
-      const email = String(body.email || '').toLowerCase().trim();
+      const email = accountEmail;
       if (!EMAIL_RE.test(email)) return sendJson(res, 400, { error: 'Enter a valid email address' });
       const lead = leads[email];
       if (!lead || !lead.stripeCustomerId) return sendJson(res, 404, { error: 'No subscription found for this email' });
       const host = req.headers.host || 'localhost:4321';
       const proto = String(req.headers['x-forwarded-proto'] || '').split(',')[0].trim() === 'https' ? 'https' : 'http';
-      const base = proto + '://' + host;
+      const base = APP_URL;
       try {
         const s = await stripe('POST', '/billing_portal/sessions', { customer: lead.stripeCustomerId, return_url: base + '/pro' });
         return sendJson(res, 200, { url: s.url });
       } catch (e) { return sendJson(res, 502, { error: 'Could not open billing portal' }); }
     }
     if (req.method === 'POST' && u.pathname === '/api/webhook') {
-      const chunks = [];
-      for await (const c of req) chunks.push(c);
-      const raw = Buffer.concat(chunks).toString('utf8');
-      if (!STRIPE_WEBHOOK_SECRET) return sendJson(res, 501, { error: 'Webhooks not configured' });
-      {
-        const sig = req.headers['stripe-signature'] || '';
-        const t = (sig.match(/t=(\d+)/) || [])[1];
-        const v1 = (sig.match(/v1=([a-f0-9]+)/) || [])[1];
-        if (!t || !v1) return sendJson(res, 400, { error: 'Missing Stripe-Signature' });
-        const expected = crypto.createHmac('sha256', STRIPE_WEBHOOK_SECRET).update('' + t + '.' + raw).digest('hex');
-        if (expected !== v1) return sendJson(res, 400, { error: 'Bad signature' });
+      let raw='';for await(const chunk of req){raw+=chunk;if(Buffer.byteLength(raw)>256000)return sendJson(res,413,{error:'Request too large'});}
+      if(!STRIPE_WEBHOOK_SECRET)return sendJson(res,503,{error:'Webhooks unavailable'});
+      const parts=String(req.headers['stripe-signature']||'').split(',');
+      const timestamp=parts.find(x=>x.startsWith('t='))?.slice(2);
+      const expected=crypto.createHmac('sha256',STRIPE_WEBHOOK_SECRET).update(timestamp+'.'+raw).digest('hex');
+      const valid=timestamp&&Math.abs(Date.now()/1000-Number(timestamp))<=300&&parts.filter(x=>x.startsWith('v1=')).some(x=>{const sig=x.slice(3);return /^[a-f0-9]{64}$/.test(sig)&&crypto.timingSafeEqual(Buffer.from(sig,'hex'),Buffer.from(expected,'hex'));});
+      if(!valid)return sendJson(res,400,{error:'Invalid webhook signature'});
+      const event=JSON.parse(raw);if(!/^evt_[A-Za-z0-9]+$/.test(event.id||''))return sendJson(res,400,{error:'Invalid event'});
+      if(await upGet('event:'+event.id))return sendJson(res,200,{received:true,duplicate:true});
+      const obj=event.data?.object||{};
+      if(['checkout.session.completed','checkout.session.async_payment_succeeded'].includes(event.type))await fulfillCheckout(obj,{welcome:true});
+      else if(['customer.subscription.created','customer.subscription.updated','customer.subscription.deleted'].includes(event.type))await syncSubscription(obj.id);
+      else if(event.type==='invoice.paid'||event.type==='invoice.payment_failed'){
+        const sub=obj.subscription||obj.parent?.subscription_details?.subscription;if(sub)await syncSubscription(typeof sub==='string'?sub:sub.id);
       }
-      const ev = JSON.parse(raw);
-      const obj = ev.data?.object || {};
-      if (ev.type === 'checkout.session.completed' && obj.payment_status === 'paid' && obj.client_reference_id) {
-        await activatePro(obj.client_reference_id, obj.metadata?.plan || 'pro', {
-          stripeCustomerId: obj.customer, stripeSubscriptionId: obj.subscription, stripeLastPaidAt: new Date().toISOString(),
-        });
-        await recordEvent('checkout_success', '/pro');
-        console.log('[webhook] paid:', obj.client_reference_id, obj.metadata?.plan);
-      } else if (ev.type === 'customer.subscription.deleted' && obj.customer) {
-        const c = await stripe('GET', '/customers/' + obj.customer);
-        if (c.email && leads[c.email]) {
-          const l = leads[c.email];
-          if (l.referralProUntil && l.referralProUntil > Date.now()) { console.log('[webhook] cancelled, referral window keeps Pro until', new Date(l.referralProUntil).toISOString(), ':', c.email); }
-          else { l.pro = false; console.log('[webhook] cancelled:', c.email); }
-          await persist('leads');
-        }
-      }
-      return sendJson(res, 200, { received: true });
-    }
-    if (req.method === 'POST' && u.pathname === '/api/monitor') {
-      const isCron = req.headers['vercel-cron'] === '1';
-      const secret = process.env.MONITOR_SECRET || '';
-      const authed = isCron || (secret && (req.headers['x-monitor-secret'] === secret || req.headers.authorization === 'Bearer ' + secret));
-      if (!authed) return sendJson(res, 401, { error: 'Unauthorized' });
-      const n = await monitorCycle();
-      return sendJson(res, 200, { ok: true, checked: n });
+      await upSet('event:'+event.id,JSON.stringify({at:Date.now(),type:event.type}));
+      return sendJson(res,200,{received:true});
     }
     if (req.method === 'POST' && u.pathname === '/api/delete') {
       const body = await readBody(req);
-      const email = String(body.email || '').toLowerCase().trim();
+      const email = accountEmail;
       if (!EMAIL_RE.test(email)) return sendJson(res, 400, { error: 'Valid email required' });
       const lead = leads[email];
+      if(lead?.pro&&lead.stripeSubscriptionId)return sendJson(res,409,{error:'Cancel your subscription in Manage billing before deleting your account.'});
       const ids = lead?.reportIds || [];
       for (const id of ids) await deleteReport(id);
       delete leads[email];
@@ -1153,75 +1092,100 @@ async function handler(req, res) {
     }
     return sendJson(res, 404, { error: 'Not found' });
   } catch (e) {
-    return sendJson(res, e.message === 'Rate limit: 20 audits/hour from this IP. Start a Pro trial for continuous monitoring.' ? 429 : 500, { error: e.message });
+    console.error('[request]',u.pathname,e.message);
+    return sendJson(res, e.message === 'Rate limit: 20 audits/hour from this IP. Start a Pro trial for continuous monitoring.' ? 429 : 503, { error: 'The service is temporarily unavailable. Please try again shortly.' });
   }
 }
 
-/* ---------------- pro monitoring scheduler ---------------- */
-let lastMonitorRun = 0; // in-memory gate (local mode)
-async function monitorCycle() {
+/* ---------------- monitoring: every eligible domain, oldest first ---------------- */
+async function monitorDomain(lead,domain,{notify=true,auditFn=auditDomain}={}){
+  const previous=lead.domainScores?.[domain];
+  const audit=await auditFn(domain);audit.reportId=crypto.randomUUID();
+  if(lead.brand) audit.brand=lead.brand;
+  await saveReport(audit.reportId,audit);await pushAudit(lead.email,audit);
+  const failures=audit.checks.filter(c=>c.status==='fail').map(c=>c.id);
+  lead.domainScores=lead.domainScores||{};lead.domainScores[domain]={score:audit.score,at:audit.at,reportId:audit.reportId,failures};
+  lead.lastScore=audit.score;lead.lastMonitorAt=audit.at;
+  lead.reportIds=[...new Set([...(lead.reportIds||[]),audit.reportId])].slice(-50);
+  await persist('leads');
+  const regressed=previous&&(audit.score<previous.score||failures.some(id=>!previous.failures?.includes(id)));
+  if(notify&&regressed){
+    lead.pendingAlerts=lead.pendingAlerts||{};
+    lead.pendingAlerts[audit.reportId]={domain,score:audit.score,reportId:audit.reportId,createdAt:audit.at};
+    await persist('leads');await deliverPendingAlerts(lead);
+  }
+  return audit;
+}
+async function deliverPendingAlerts(lead){
+  for(const [id,alert] of Object.entries(lead.pendingAlerts||{})){
+    const sent=await sendAlertEmail(lead.email,alert.domain+' configuration changed','<p>Your scheduled check for <b>'+alert.domain+'</b> found a change. The configuration score is '+alert.score+'/100.</p><p><a href="'+APP_URL+'/r/'+id+'">View the findings and suggested next steps</a></p><p><a href="'+APP_URL+'/pro">Open your dashboard</a></p>','monitor:'+id);
+    if(!sent)throw new Error('Monitoring email delivery failed; queued for retry');
+    delete lead.pendingAlerts[id];lead.lastAlertAcceptedAt=new Date().toISOString();await persist('leads');
+  }
+}
+async function monitorCycle({notify=true,force=false,auditFn=auditDomain}={}){
   await hydrate();
-  const now = Date.now();
-  // Expire referral-granted Pro once the 30-day window passes (only if no paid subscription).
-  let expired = false;
-  for (const l of Object.values(leads)) {
-    if (l.pro && l.referralProUntil && l.referralProUntil < now && !l.stripeSubscriptionId) {
-      l.pro = false;
-      expired = true;
-      console.log('[referral] window expired:', l.email);
+  return store.locked('monitor-cycle',async()=>{
+    const started=Date.now(), tasks=[], errors=[];
+    for(const lead of Object.values(leads)){
+      if(!lead.pro||lead.test||/\.test$/.test(lead.email))continue;
+      if(lead.stripeSubscriptionId){try{await syncSubscription(lead.stripeSubscriptionId);}catch(e){errors.push({domain:lead.domain,error:'Subscription status could not be verified'});continue;}}
+      if(notify){try{await deliverPendingAlerts(lead);}catch(e){errors.push({domain:lead.domain,error:e.message});}}
+      if(!lead.pro)continue;
+      const domains=lead.domains||(lead.domain?[lead.domain]:[]);
+      for(const domain of domains){const at=Date.parse(lead.domainScores?.[domain]?.at||0)||0;if(force||Date.now()-at>=20*3600e3)tasks.push({lead,domain,at});}
     }
-  }
-  if (expired) await persist('leads');
-  let last = lastMonitorRun;
-  if (REMOTE) { try { const v = await upGet('monitor:lastRun'); if (v) last = Number(v) || 0; } catch {} }
-  if (now - last < (Number(process.env.MONITOR_GATE_MS) || 5 * 3600e3)) return 0; // gate: max one cycle per 5h (MONITOR_GATE_MS overrides for tests)
-  const pro = Object.values(leads).filter(l => l.pro && l.domain && !l.test).slice(0, 15);
-  for (const lead of pro) {
-    try {
-      const prevScore = lead.lastScore;
-      const prevFails = lead.lastFailIds || [];
-      const a = await auditDomain(lead.domain);
-      await pushAudit(lead.email, a);
-      const newFails = a.checks.filter(c => c.status === 'fail').map(c => c.id);
-      const newFailures = newFails.filter(id => !prevFails.includes(id));
-      const dropped = prevScore != null && a.score < prevScore;
-      const regressed = prevScore != null && (dropped || newFailures.length > 0);
-      lead.lastScore = a.score;
-      lead.lastFailIds = newFails;
-      await persist('leads');
-      console.log('[monitor]', lead.email, lead.domain, '→', a.score, a.grade);
-      if (regressed) {
-        const fails = a.checks.filter(c => c.status === 'fail');
-        const rows = fails.map(c => '<tr><td style="padding:6px 10px;border-bottom:1px solid #eee">' + c.name + '</td><td style="padding:6px 10px;border-bottom:1px solid #eee;color:#c0392b;font-weight:600">' + c.status + '</td></tr>').join('');
-        const html = '<div style="font-family:Arial,sans-serif;max-width:560px">' +
-          '<h2 style="color:#1a1a2e;margin:0 0 8px">⚠️ ' + lead.domain + ' email health dropped</h2>' +
-          '<p style="color:#444;line-height:1.6">Your daily InboxProof re-audit found a regression on <b>' + lead.domain + '</b>. ' +
-          (dropped ? 'Score fell from <b>' + prevScore + '</b> to <b>' + a.score + '</b>.' : '') +
-          (newFailures.length ? ' ' + newFailures.length + ' check(s) now failing.' : '') + '</p>' +
-          (rows ? '<table style="width:100%;border-collapse:collapse;margin:14px 0">' + rows + '</table>' : '') +
-          '<p style="color:#444;line-height:1.6">Open your dashboard to see the full audit and exact fix steps.</p>' +
-          '<p style="color:#888;font-size:12px;margin-top:20px">InboxProof — daily email deliverability monitoring. You are receiving this because ' + lead.email + ' is on a Pro plan.</p>' +
-          '</div>';
-        await sendAlertEmail(lead.email, lead.domain + ' email health dropped to ' + a.score + '/100', html);
-      }
-      await new Promise(r => setTimeout(r, 1500));
-    } catch (e) { console.log('[monitor] error', lead.email, e.message); }
-  }
-  lastMonitorRun = now;
-  if (REMOTE) { try { await upSet('monitor:lastRun', String(now)); } catch {} }
-  let followups = 0;
-  try { followups = await leadFollowupCycle(); } catch (e) { console.log('[followup] cycle error', e.message); }
-  return pro.length + followups;
+    tasks.sort((a,b)=>a.at-b.at);let checked=0;
+    for(const task of tasks){
+      if(Date.now()-started>240000)break;
+      try{await monitorDomain(task.lead,task.domain,{notify,auditFn});checked++;}catch(e){errors.push({domain:task.domain,error:e.message});}
+    }
+    const result={at:new Date().toISOString(),checked,pending:tasks.length-checked,errors};
+    await upSet('monitor:status',JSON.stringify(result));await upSet('monitor:lastRun',String(Date.now()));
+    return result;
+  });
 }
-
+async function syncSubscription(id){
+  const sub=await stripe('GET','/subscriptions/'+id);
+  const item=sub.items?.data?.find(x=>Object.values(PRICE).includes(x.price.id));if(!item)return null;
+  const customer=await stripe('GET','/customers/'+(sub.customer.id||sub.customer));
+  const existing=Object.values(leads).find(l=>l.stripeSubscriptionId===sub.id);
+  const email=String(existing?.email||customer.email||'').toLowerCase().trim();if(!EMAIL_RE.test(email))return null;
+  const plan=Object.keys(PRICE).find(p=>PRICE[p]===item.price.id);
+  const active=['active','trialing'].includes(sub.status);
+  const lead=active?await activatePro(email,plan,{stripeCustomerId:customer.id,stripeSubscriptionId:sub.id}):leads[email];
+  if(!lead)return null;
+  lead.pro=active;lead.subscriptionStatus=sub.status;lead.cancelAtPeriodEnd=sub.cancel_at_period_end;
+  lead.currentPeriodEnd=sub.current_period_end||item.current_period_end;
+  await persist('leads');return lead;
+}
+async function fulfillCheckout(session,{welcome=true}={}){
+  if(session.mode!=='subscription'||session.status!=='complete'||!['paid','no_payment_required'].includes(session.payment_status)||!session.subscription)return null;
+  const lead=await syncSubscription(typeof session.subscription==='string'?session.subscription:session.subscription.id);
+  if(!lead?.pro)return null;
+  const domain=cleanDomain(session.metadata?.domain||'');
+  if(DOMAIN_RE.test(domain)){
+    const domains=lead.domains||(lead.domain?[lead.domain]:[]);
+    if(domains.length<(lead.plan==='agency'?25:5)||domains.includes(domain))lead.domains=[...new Set([...domains,domain])];
+    lead.domain=lead.domains?.[0]||lead.domain;
+  }
+  lead.stripeLastPaidAt=new Date().toISOString();await persist('leads');
+  if(welcome&&!lead.welcomeEmailSentAt){
+    const sent=await sendAlertEmail(lead.email,'Your Inboxproof monitoring is ready','<p>Thanks for subscribing to Inboxproof. Your '+(lead.plan==='agency'?'Agency':'Pro')+' plan is active.</p><p><a href="'+APP_URL+'/login">Open your dashboard</a> and enter the email you used at checkout. We will email you a one-time sign-in link. No password is needed.</p><p>Add your domains, review saved reports, and manage billing in your dashboard. Scheduled checks run daily, with email updates when a check finds a regression.</p>', 'welcome:'+session.id);
+    if(!sent)throw new Error('Welcome email delivery failed');
+    lead.welcomeEmailSentAt=new Date().toISOString();await persist('leads');
+  }
+  return lead;
+}
+function handler(req,res){return store.run(()=>requestHandler(req,res));}
 export default handler;
-export { auditDomain, leadFollowupCycle };
+export { auditDomain, leadFollowupCycle, monitorCycle, monitorDomain, fulfillCheckout, syncSubscription, store, auth };
 
 const IS_VERCEL = !!process.env.VERCEL;
 if (!IS_VERCEL && !process.env.NO_LISTEN) {
   http.createServer(handler).listen(PORT, HOST, () => {
     console.log('Inboxproof listening on http://' + (HOST === '0.0.0.0' ? 'localhost' : HOST) + ':' + PORT + (REMOTE ? ' (remote store)' : ' (local files)'));
-    setTimeout(monitorCycle, 45e3);
+    if(process.env.ENABLE_LOCAL_MONITOR==='1')setTimeout(()=>store.run(()=>monitorCycle()),45e3);
   });
-  setInterval(monitorCycle, 6 * 3600e3);
+  if(process.env.ENABLE_LOCAL_MONITOR==='1')setInterval(()=>store.run(()=>monitorCycle()),6*3600e3);
 }

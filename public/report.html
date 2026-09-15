@@ -107,6 +107,7 @@ function trackEvent(ev){ try{ var u='/api/track?page='+encodeURIComponent(locati
 (function(){ try { var e = sessionStorage.getItem('ip_email'); if (!e) return; var a = document.getElementById('pro-email'); var b = document.getElementById('top-pro-email'); var c = document.getElementById('saveEmail'); if (a && !a.value) a.value = e; if (b && !b.value) b.value = e; if (c && !c.value) c.value = e; } catch (err) {} })();
 function scoreColor(s){ return s>=90 ? '#34d399' : s>=70 ? '#a3e635' : s>=50 ? '#fbbf24' : '#f87171'; }
 function gradeOf(s){ return s>=90 ? ['A','Inbox-ready'] : s>=70 ? ['B','Good'] : s>=50 ? ['C','At risk'] : ['D','Failing']; }
+function esc(s){return String(s??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));}
 function applyWhiteLabel(brand) {
   const nav = document.querySelector('.nav');
   if (nav) {
@@ -128,7 +129,7 @@ function applyWhiteLabel(brand) {
   }
   ['topCta','saveRow','wlProBottom','wlMore','ownCta'].forEach(id => { const el = document.getElementById(id); if (el) el.style.display = 'none'; });
   const footer = document.getElementById('wlFooter');
-  if (footer) footer.innerHTML = 'Audited by <b>' + brand.name + '</b> · live DNS checks';
+  if (footer) footer.innerHTML = 'Audited by <b>' + esc(brand.name) + '</b> · live DNS checks';
 }
 
 fetch('/api/report/' + encodeURIComponent(id))
@@ -230,10 +231,10 @@ fetch('/api/report/' + encodeURIComponent(id))
     const topFailId = topFail ? topFail.id : null;
     $('#checks').innerHTML = a.checks.map(c => {
       const ic = c.status==='pass' ? '✓' : c.status==='warn' ? '!' : '✕';
-      const fix = c.fix ? '<div class="fix">' + c.fix.replace(/</g,'&lt;') + '</div>' : '';
+      const fix = c.fix ? '<div class="fix">' + esc(c.fix) + '</div>' : '';
       const top = c.id === topFailId ? ' top' : '';
       const badge = c.id === topFailId ? '<span class="badge">Fix this first</span>' : '';
-      return '<div class="chk ' + c.status + top + '"><div class="st">' + ic + '</div><div><div class="t">' + c.name + badge + '</div><div class="d">' + c.detail + '</div>' + fix + '</div></div>';
+      return '<div class="chk ' + c.status + top + '"><div class="st">' + ic + '</div><div><div class="t">' + esc(c.name) + badge + '</div><div class="d">' + esc(c.detail) + '</div>' + fix + '</div></div>';
     }).join('');
     const failing = a.checks.filter(c => c.status === 'fail').length;
     const warn = a.checks.filter(c => c.status === 'warn').length;
