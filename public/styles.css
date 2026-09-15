@@ -171,7 +171,7 @@ footer .container{display:flex;justify-content:space-between;gap:16px;flex-wrap:
 .chk.fail .st{background:rgba(248,113,113,.12);color:var(--bad);border:1px solid rgba(248,113,113,.4)}
 .chk .t{font-weight:600;font-size:15px}
 .chk .d{color:var(--muted);font-size:13.5px;margin-top:3px}
-.chk .fix{margin-top:8px;font-size:13px;color:#93c5fd;background:rgba(59,130,246,.1);border:1px solid rgba(59,130,246,.25);border-radius:8px;padding:8px 12px;font-family:ui-monospace,Consolas,monospace;white-space:pre-wrap;word-break:break-all}
+.chk .fix{margin-top:8px;font-size:13px;color:#93c5fd;background:rgba(59,130,246,.1);border:1px solid rgba(59,130,246,.25);border-radius:8px;padding:8px 12px;font-family:ui-monospace,Consolas,monospace;white-space:pre-wrap;word-break:normal;overflow-wrap:anywhere}
 .chk.top{border-color:rgba(248,113,113,.5);background:linear-gradient(180deg,rgba(248,113,113,.08),var(--bg2))}
 .badge{display:inline-block;margin-left:8px;font-size:11px;font-weight:800;letter-spacing:.04em;text-transform:uppercase;color:var(--bad);background:rgba(248,113,113,.12);border:1px solid rgba(248,113,113,.4);border-radius:20px;padding:2px 9px;vertical-align:middle}
 .unlock{margin-top:30px;text-align:center;background:linear-gradient(180deg,rgba(59,130,246,.12),transparent);border:1px solid rgba(59,130,246,.35);border-radius:14px;padding:24px}
@@ -181,7 +181,7 @@ footer .container{display:flex;justify-content:space-between;gap:16px;flex-wrap:
 @keyframes spin{to{transform:rotate(360deg)}}
 
 /* pro dashboard */
-.dash{padding:50px 0 90px}
+.dash{padding:50px 24px 90px}
 .dash-head{display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:16px;margin-bottom:30px}
 .dash-head h1{font-size:30px;letter-spacing:-.03em}
 .hist{display:grid;gap:12px}
@@ -199,3 +199,7 @@ footer .container{display:flex;justify-content:space-between;gap:16px;flex-wrap:
 
 /* Honor semantic visibility across components. */
 [hidden] { display: none !important; }
+
+.dash-head h1{overflow-wrap:anywhere}
+@media(max-width:760px){.dashboard-audit{display:none}}
+@media(max-width:560px){.dash{padding-top:30px}.domain-row{display:grid!important;grid-template-columns:minmax(0,1fr) minmax(0,1fr);gap:8px!important}.domain-row>div{grid-column:1/-1;overflow-wrap:anywhere}.domain-row button{white-space:nowrap}.hist-row{gap:12px}.hist-row>div{min-width:0}.hist-row .when{overflow-wrap:anywhere}}
