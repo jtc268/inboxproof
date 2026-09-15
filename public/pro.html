@@ -43,11 +43,12 @@
     <span class="pill free" id="plan">FREE</span>
   </div>
   <div id="status" style="display:none;margin-bottom:26px"></div>
+  <h2 class="section-heading reports-heading">Recent reports</h2>
   <div class="hist" id="hist"></div>
   <div style="margin-top:34px;text-align:center">
     <a class="btn btn-ghost" href="/#audit">+ Audit another domain</a>
   </div>
-  <div style="margin-top:28px;background:var(--panel);border:1px solid var(--line);border-radius:12px;padding:16px 20px;display:flex;gap:14px;align-items:center;flex-wrap:wrap">
+  <div class="referral-note" style="display:flex;gap:14px;align-items:center;flex-wrap:wrap">
     <div style="flex:1;min-width:220px">
       <div style="font-size:12px;letter-spacing:.06em;text-transform:uppercase;color:var(--dim);margin-bottom:6px">Refer a teammate</div>
       <div style="font-size:14px;line-height:1.5;color:var(--muted)">Send someone the free audit with your link. When they upgrade to Pro, you get a free month of Pro. It stacks with every referral.</div>
@@ -78,49 +79,32 @@ function renderStatus(lead, history){
   }).join('');
   box.style.display='block';
   box.innerHTML =
-    '<div style="display:flex;gap:14px;flex-wrap:wrap;margin-bottom:14px">'+
-      '<div style="flex:1;min-width:200px;background:var(--panel);border:1px solid var(--line);border-radius:12px;padding:16px 20px">'+
-        '<div style="font-size:12px;letter-spacing:.06em;text-transform:uppercase;color:var(--dim);margin-bottom:6px">Monitoring</div>'+
-        '<div style="font-size:16px;font-weight:700">'+(isPro ? ('<span style="color:#34d399">● Scheduled</span> · daily checks') : '<span style="color:#fbbf24">○ Not active</span>. Pro adds daily monitoring & alerts')+'</div>'+
-      '</div>'+
-      '<div style="flex:1;min-width:200px;background:var(--panel);border:1px solid var(--line);border-radius:12px;padding:16px 20px">'+
-        '<div style="font-size:12px;letter-spacing:.06em;text-transform:uppercase;color:var(--dim);margin-bottom:6px">Last check · '+(last.at?new Date(last.at).toLocaleString():'Awaiting first check')+'</div>'+
-        '<div style="font-size:16px;font-weight:700">'+(last.at?esc(last.domain)+' → <span style="color:'+color(last.score)+'">'+last.score+'/100</span> '+deltaTxt:'Your first check will appear here.')+'</div>'+
-      '</div>'+
-      '<div style="flex:1;min-width:200px;background:var(--panel);border:1px solid var(--line);border-radius:12px;padding:16px 20px">'+
-        '<div style="font-size:12px;letter-spacing:.06em;text-transform:uppercase;color:var(--dim);margin-bottom:6px">Billing</div>'+
-        '<div style="font-size:16px;font-weight:700;margin-bottom:10px">'+(isPro ? ('<span style="color:#34d399">'+(lead.plan==='agency'?'Agency':'Pro')+'</span> · cancel anytime') : 'Not active')+'</div>'+
-        (isPro ? '<button id="managebilling" class="btn btn-ghost btn-sm" style="padding:8px 14px">Manage billing</button>' : '')+
-      '</div>'+
+    '<div class="status-metrics">'+
+      '<section class="metric"><div class="metric-label">Monitoring</div><div class="metric-value">'+(isPro ? '<span class="status-dot"></span>Daily checks active' : 'Not active')+'</div></section>'+
+      '<section class="metric"><div class="metric-label">Last check'+(last.at?' · '+new Date(last.at).toLocaleString(undefined,{month:'short',day:'numeric',hour:'numeric',minute:'2-digit'}):'')+'</div><div class="metric-value">'+(last.at?esc(last.domain)+' · <span style="color:'+color(last.score)+'">'+last.score+'/100</span>':'Awaiting first check')+'</div>'+(last.at?'<div class="metric-note">'+deltaTxt+'</div>':'')+'</section>'+
+      '<section class="metric"><div class="metric-label">Subscription</div><div class="metric-value">'+(isPro?(lead.plan==='agency'?'Agency':'Pro')+' plan':'Not active')+'</div>'+(isPro?'<button id="managebilling" class="text-button">Manage billing →</button>':'')+'</section>'+
     '</div>'+
-    '<div style="background:var(--panel);border:1px solid var(--line);border-radius:12px;padding:16px 20px">'+
-      '<div style="font-size:12px;letter-spacing:.06em;text-transform:uppercase;color:var(--dim);margin-bottom:10px">Score trend · '+esc(last.domain)+'</div>'+
-      '<div style="display:flex;align-items:flex-end;gap:5px;height:52px">'+bars+'</div>'+
-    '</div>';
+    (pts.length?'<section class="trend-section"><div><h2 class="section-heading">Score trend</h2><p class="section-note">'+esc(last.domain)+' · '+pts.length+' recent checks</p></div><div class="trend-bars">'+bars+'</div></section>':'');
   if(isPro){
     const domains = (lead.domains && lead.domains.length) ? lead.domains : (lead.domain ? [lead.domain] : []);
     const scores = lead.domainScores || {};
     const limit = (lead.plan === 'agency' ? 25 : 5);
     const domainRows = domains.map(d => {
       const s = scores[d];
-      const scoreTxt = s ? '<span style="color:'+color(s.score)+'">'+s.score+'/100</span> · checked '+new Date(s.at).toLocaleDateString() : '<span style="opacity:.5">not checked yet</span>';
-      return '<div class="domain-row" style="display:flex;align-items:center;gap:10px;padding:8px 0;border-bottom:1px solid var(--line)">'+
-        '<div style="flex:1;font-weight:600">'+esc(d)+'</div>'+
-        '<div style="font-size:13px">'+scoreTxt+'</div>'+
-        '<button data-check="'+esc(d)+'" class="btn btn-ghost btn-sm">Check now</button>'+
-        '<button data-rm="'+esc(d)+'" class="btn btn-ghost btn-sm" style="padding:4px 10px;color:#f87171">Remove</button>'+
+      const scoreTxt = s ? '<span style="color:'+color(s.score)+'">'+s.score+'</span><small>/100</small>' : '<small>Pending</small>';
+      return '<div class="domain-row">'+
+        '<div class="domain-identity"><div class="domain-name">'+esc(d)+'</div><div class="domain-date">'+(s?'Checked '+new Date(s.at).toLocaleDateString(undefined,{month:'short',day:'numeric'}):'Awaiting first check')+'</div></div>'+
+        '<div class="domain-score">'+scoreTxt+'</div>'+
+        '<div class="domain-actions"><button data-check="'+esc(d)+'" class="btn btn-ghost btn-sm">Check now</button><button data-rm="'+esc(d)+'" class="text-button remove-domain">Remove</button></div>'+
       '</div>';
     }).join('');
     box.insertAdjacentHTML('beforeend',
-      '<div style="background:var(--panel);border:1px solid var(--line);border-radius:12px;padding:16px 20px;margin-top:14px">'+
-        '<div style="font-size:12px;letter-spacing:.06em;text-transform:uppercase;color:var(--dim);margin-bottom:10px">Monitored domains · '+domains.length+'/'+limit+'</div>'+
-        '<div id="domlist">'+(domainRows || '<div style="font-size:13px;color:var(--muted)">No domains yet. Add one below.</div>')+'</div>'+
-        '<div style="display:flex;gap:8px;flex-wrap:wrap;margin-top:12px">'+
-          '<input id="domadd" placeholder="Add a domain to monitor, e.g. client.com" style="padding:9px 12px;border-radius:9px;border:1px solid var(--line);background:#0a0e16;color:inherit;font-size:13px;min-width:220px">'+
-          '<button id="domaddbtn" class="btn btn-primary btn-sm" style="padding:9px 14px">Add domain</button>'+
-        '</div>'+
-        '<div id="dommsg" style="font-size:12.5px;min-height:16px;margin-top:8px;opacity:.85"></div>'+
-      '</div>');
+      '<section class="dash-section domains-section">'+
+        '<div class="section-header"><h2 class="section-heading">Monitored domains</h2><span class="section-count">'+domains.length+' of '+limit+'</span></div>'+
+        '<div id="domlist">'+(domainRows || '<p class="section-note">Add your first domain to start monitoring.</p>')+'</div>'+
+        '<div class="domain-add"><input id="domadd" aria-label="Domain to monitor" placeholder="Add a domain"><button id="domaddbtn" class="btn btn-primary btn-sm">Add domain</button></div>'+
+        '<div id="dommsg" class="domain-message" role="status"></div>'+
+      '</section>');
     box.querySelectorAll('[data-check]').forEach(button=>button.onclick=async()=>{
       button.disabled=true;button.textContent='Checking…';
       try{const r=await fetch('/api/recheck',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({domain:button.dataset.check})});const j=await r.json();if(!r.ok)throw Error(j.error);await load();}catch(e){$('#dommsg').textContent=e.message;button.disabled=false;button.textContent='Check now';}
@@ -154,8 +138,8 @@ function renderStatus(lead, history){
   }
   if(isPro && lead.apiKey){
     box.insertAdjacentHTML('beforeend',
-      '<div style="background:var(--panel);border:1px solid var(--line);border-radius:12px;padding:16px 20px;margin-top:14px">'+
-        '<div style="font-size:12px;letter-spacing:.06em;text-transform:uppercase;color:var(--dim);margin-bottom:10px">API access · 100 audits/day</div>'+
+      '<details class="api-section"><summary>API access <span>100 audits/day</span></summary><div class="api-body">'+
+        
         '<div style="display:flex;gap:8px;flex-wrap:wrap;align-items:center;margin-bottom:10px">'+
           '<code id="apikey" style="background:#0a0e16;border:1px solid var(--line);border-radius:8px;padding:8px 12px;font-size:13px;color:#38bdf8">'+lead.apiKey+'</code>'+
           '<button id="copykey" class="btn btn-ghost btn-sm" style="padding:8px 14px">Copy key</button>'+
@@ -164,7 +148,7 @@ function renderStatus(lead, history){
         '<pre style="background:#0a0e16;border:1px solid var(--line);border-radius:8px;padding:12px;font-size:12.5px;overflow:auto;margin:0">'+
           'curl -H "Authorization: Bearer '+lead.apiKey+'" \\\n'+
           '  "https://inboxproof.email/api/v1/audit?domain=yourdomain.com"</pre>'+
-      '</div>');
+      '</div></details>');
     const c = $('#copykey');
     if(c) c.onclick = async () => { try { await navigator.clipboard.writeText(lead.apiKey); c.textContent = 'Copied ✓'; setTimeout(()=>c.textContent='Copy key',1500); } catch { c.textContent = 'Select & copy'; } };
   }
