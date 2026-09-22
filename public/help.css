@@ -1,0 +1,18 @@
+/* Scoped to the reviewed help and checker pages. */
+.help-page::before,.help-page::after,.tool-page::before,.tool-page::after{display:none}
+.help-article{max-width:800px;padding-top:62px;padding-bottom:65px}
+.help-article h1{font-size:clamp(32px,4vw,44px);font-weight:550;line-height:1.15;margin:14px 0 18px;letter-spacing:-.035em}
+.help-article h2,.tool-guidance h2,.help-cta h2{font-size:23px;font-weight:550;line-height:1.35;margin:34px 0 14px;letter-spacing:-.02em}
+.help-article p,.help-article li,.tool-guidance p{font-size:15px;color:#b2bdcf;line-height:1.85}
+.help-article p+p{margin-top:16px}.help-article .article-intro{font-size:18px;color:#d4dae6;margin:28px 0}
+.help-article ul,.help-article ol{padding-left:23px}.help-article li{padding:6px 0 6px 6px}
+.help-article a:not(.btn),.tool-guidance a,.source-note a,.related-guides a{color:#a5c6ff;text-decoration:underline;text-underline-offset:3px}
+.help-article code{font-size:.9em;color:#d6dfee;overflow-wrap:anywhere}
+.help-article .source-note,.source-note{font-size:12px;color:#a1aec2;line-height:1.8;margin-top:20px}
+.help-cta{margin-top:32px;padding:24px 0;border-top:1px solid var(--line)}.help-cta h2{margin-top:0}.help-cta p{font-size:14px;color:var(--muted);margin:0 0 18px}
+.help-page .btn,.tool-page .btn{box-shadow:none;background:#326cd4;border-radius:7px;font-weight:500}.help-page .logo .mark,.tool-page .logo .mark{box-shadow:none}
+.related-guides{font-size:12px!important;line-height:1.9;margin-top:22px}
+.tool-guidance h3{font-size:17px;font-weight:550;margin:27px 0 9px}.tool-guidance h2{margin:0 0 25px}
+.tool-page .card{border:0;box-shadow:none}.tool-page input{max-width:100%;min-width:0!important;color:#eff2f7;background:#111a27;font:inherit}.tool-page #check-form input{min-width:0;flex-basis:240px}.tool-page #lead-form input{flex-basis:220px}
+.tool-page #result{scroll-margin-top:80px}.tool-page #score-note{font-size:13px!important}
+@media(max-width:560px){.help-article{padding-top:35px}.help-article h1{font-size:32px}.help-article h2,.tool-guidance h2{font-size:22px}.help-article p,.help-article li,.tool-guidance p{font-size:14px}.help-article .article-intro{font-size:16px}.tool-page #check-form,.tool-page #lead-form{flex-direction:column}.tool-page #check-form input,.tool-page #lead-form input{flex-basis:auto;width:100%}.tool-page #check-form button,.tool-page #lead-form button{width:100%}}

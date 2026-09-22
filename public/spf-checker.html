@@ -5,7 +5,7 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
 <title>Free SPF Checker | Look Up Your Domain's SPF Record</title>
-<meta name="description" content="Check your domain's SPF record in seconds. See the exact SPF string, whether it exceeds the 10 DNS-lookup limit, and if it's missing a -all hard fail. Free, no signup.">
+<meta name="description" content="Inspect your domain’s SPF record, nested includes and redirects. Review lookup-limit warnings and common DNS issues. Free, no signup.">
 <link rel="canonical" href="https://inboxproof.email/spf-checker">
 <meta property="og:title" content="Free SPF Checker | Inboxproof">
 <meta property="og:description" content="Look up your domain's SPF record and check for common issues. Free, no signup.">
@@ -13,21 +13,14 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="/styles.css">
+<link rel="stylesheet" href="/help.css">
 <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' rx='8' fill='%236366f1'/%3E%3Cpath d='M8 16h13M15 10l6 6-6 6' stroke='white' stroke-width='3' fill='none' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E">
 <script type="application/ld+json">
-{"@context":"https://schema.org","@type":"WebApplication","name":"Inboxproof Free SPF Checker","applicationCategory":"Utilities","operatingSystem":"Web","description":"Looks up a domain's SPF record and reports common problems such as exceeding the 10 DNS-lookup limit or a missing -all hard fail.","offers":{"@type":"Offer","price":"0","priceCurrency":"USD"}}
+{"@context":"https://schema.org","@type":"WebApplication","name":"Inboxproof Free SPF Checker","applicationCategory":"Utilities","operatingSystem":"Web","description":"Inspects published SPF configuration with a bounded static expansion of nested includes and redirects.","offers":{"@type":"Offer","price":"0","priceCurrency":"USD"}}
 </script>
-<script type="application/ld+json">
-{"@context":"https://schema.org","@type":"FAQPage","mainEntity":[
- {"@type":"Question","name":"What does an SPF checker check?","acceptedAnswer":{"@type":"Answer","text":"It looks up your domain's SPF (Sender Policy Framework) TXT record, shows the exact string, and flags common problems: no record, more than 10 DNS lookups, or a missing -all hard fail that lets unauthorized senders pass."}},
- {"@type":"Question","name":"Is this SPF checker free?","acceptedAnswer":{"@type":"Answer","text":"Yes. The SPF lookup is free and does not require a signup. You can optionally add an email to save a full deliverability report."}},
- {"@type":"Question","name":"What is the SPF 10 DNS-lookup limit?","acceptedAnswer":{"@type":"Answer","text":"SPF receivers must not perform more than 10 DNS lookups (a, mx, include, redirect, or ptr mechanisms) when evaluating a record. Exceeding it makes the record permanently fail, so large stacks combine includes under a dedicated _spf subdomain."}},
- {"@type":"Question","name":"What should SPF end with?","acceptedAnswer":{"@type":"Answer","text":"A -all (hard fail) qualifier. It tells receivers to reject mail from any server not listed. ~all (soft fail) is weaker and -all is the recommended default for most senders."}},
- {"@type":"Question","name":"What is SPF and why does it matter?","acceptedAnswer":{"@type":"Answer","text":"SPF is a DNS TXT record listing the servers allowed to send mail for your domain. Without it, receivers cannot verify sender identity, so your mail is easier to spoof and more likely to land in spam."}}
-]}
-</script>
+<script type="application/ld+json">{"@context": "https://schema.org", "@type": "FAQPage", "mainEntity": [{"@type": "Question", "name": "What does this SPF checker inspect?", "acceptedAnswer": {"@type": "Answer", "text": "It reads public DNS, follows nested includes and redirects within a bounded static check, and reports common configuration issues. It does not evaluate a specific message or sending IP."}}, {"@type": "Question", "name": "What counts toward the SPF lookup limit?", "acceptedAnswer": {"@type": "Answer", "text": "The limit covers evaluated include, a, mx, ptr, exists, and redirect terms, including nested terms. An umbrella include still counts its children. A static expansion warning needs a message-specific check."}}, {"@type": "Question", "name": "Should I change ~all to -all?", "acceptedAnswer": {"@type": "Answer", "text": "Both are valid. They produce softfail and fail respectively for unlisted senders. Confirm all legitimate sending services and follow their current setup instructions before changing the policy."}}, {"@type": "Question", "name": "Does passing SPF guarantee delivery?", "acceptedAnswer": {"@type": "Answer", "text": "No. A domain lookup cannot show how a receiver evaluated an individual message. Inspect its authentication results and sending path when troubleshooting delivery."}}]}</script>
 </head>
-<body>
+<body class="tool-page">
 <nav class="nav">
   <div class="container">
     <a class="logo" href="/">
@@ -41,15 +34,16 @@
 <div class="container" style="max-width:760px;padding:60px 20px 80px;text-align:center">
   <div class="kicker">Free tool</div>
   <h1 style="font-size:38px;margin:10px 0 12px">SPF checker</h1>
-  <p style="opacity:.8;font-size:16px;margin-bottom:30px">Enter your domain. We look up its SPF record, show the exact string, and flag the issues that get mail rejected: no record, too many DNS lookups, or a missing -all hard fail. No signup, no email required.</p>
+  <p style="opacity:.8;font-size:16px;margin-bottom:30px">Inspect your published SPF record and nested DNS lookups. Review missing records, duplicate records and lookup-limit warnings. No email or signup required.</p>
 
   <form id="check-form" style="display:flex;gap:10px;max-width:520px;margin:0 auto 10px;flex-wrap:wrap;justify-content:center">
-    <input id="domain" type="text" placeholder="yourdomain.com" style="flex:1;min-width:220px;padding:14px 16px;border-radius:10px;border:1px solid #d4d4d8;font-size:16px;background:#fff" autocomplete="off" spellcheck="false">
+    <input id="domain" aria-label="Domain" type="text" placeholder="yourdomain.com" style="flex:1;min-width:220px;padding:14px 16px;border-radius:10px;border:1px solid #d4d4d8;font-size:16px;background:#111a27;color:#eef0f8" autocomplete="off" spellcheck="false">
     <button class="btn btn-primary btn-lg" type="submit">Check SPF</button>
   </form>
   <p id="err" style="color:#dc2626;font-size:14px;min-height:20px;margin-top:8px"></p>
 
   <div id="result" style="display:none;text-align:left">
+    <p id="checked-at" class="source-note"></p>
     <div class="card" id="spf-card" style="margin-bottom:16px">
       <div style="display:flex;align-items:center;gap:10px;flex-wrap:wrap">
         <span id="spf-dot" style="width:12px;height:12px;border-radius:50%;display:inline-block;background:#d4d4d8"></span>
@@ -58,15 +52,15 @@
       </div>
       <div id="spf-record" style="margin-top:12px;padding:12px 14px;background:#0f172a;color:#e2e8f0;border-radius:8px;font-family:ui-monospace,SFMono-Regular,Menlo,monospace;font-size:13px;white-space:pre-wrap;word-break:break-all">–</div>
       <p id="spf-detail" style="opacity:.8;margin:12px 0 0;font-size:14px"></p>
-      <div id="spf-fix" style="display:none;margin-top:10px;padding:10px 12px;background:#f4f4f5;border-radius:8px;font-size:13px;white-space:pre-wrap;opacity:.85"></div>
+      <div id="spf-fix" style="display:none;margin-top:10px;padding:10px 12px;background:#172337;border-radius:8px;font-size:13px;white-space:pre-wrap;opacity:.85"></div>
     </div>
     <div id="other"></div>
     <div id="lead" style="display:none;margin-top:20px">
-      <div class="card" style="background:#eef2ff;border-color:#c7d2fe">
+      <div class="card" style="background:#141e2c;border-color:transparent">
         <h3 style="margin-top:0">Save the full report</h3>
-        <p style="opacity:.8;margin-bottom:14px">Add your email and we'll run the complete audit (adds DKIM, DMARC, TLS, reverse DNS and blocklist checks), save a shareable report link, and keep your score history. Free, no card.</p>
+        <p style="opacity:.8;margin-bottom:14px">Add your email to save a full configuration report, including TLS, reverse DNS and blocklist checks. Free, no card required.</p>
         <form id="lead-form" style="display:flex;gap:10px;flex-wrap:wrap">
-          <input id="lead-email" type="email" placeholder="you@yourdomain.com" style="flex:1;min-width:220px;padding:12px 14px;border-radius:10px;border:1px solid #c7d2fe;font-size:15px" autocomplete="off" required>
+          <input id="lead-email" aria-label="Email for saved report" type="email" placeholder="you@yourdomain.com" style="flex:1;min-width:220px;padding:12px 14px;border-radius:10px;border:1px solid #c7d2fe;font-size:15px" autocomplete="off" required>
           <button class="btn btn-primary" type="submit">Run full audit &amp; save</button>
         </form>
         <p id="lead-err" style="color:#dc2626;font-size:13px;min-height:18px;margin-top:8px"></p>
@@ -75,18 +69,11 @@
   </div>
 </div>
 
-<div class="container" style="max-width:760px;padding:0 20px 80px">
-  <div class="card" style="text-align:center">
-    <h3 style="margin-top:0">SPF is one of four records</h3>
-    <p style="opacity:.8">SPF lists your senders, but DKIM signs each message and DMARC tells receivers what to do when they fail. The full audit checks all four plus TLS, reverse DNS and blocklists.</p>
-    <a class="btn btn-primary btn-lg" href="/#audit">Run the full free audit</a>
-    <p style="opacity:.6;font-size:13px;margin-bottom:0">Not sure what to write? <a href="/spf-generator">Generate an SPF record →</a> · Prefer to read first? <a href="/blog/spf-dkim-dmarc">SPF vs DKIM vs DMARC</a> · <a href="/blog/dmarc-record">How to create a DMARC record</a> · <a href="/dkim-checker">DKIM checker</a> · <a href="/dmarc-checker">Check all four records</a> · <a href="/mx-checker">MX checker</a> · <a href="/blocklist-checker">IP blocklist checker</a> · <a href="/header-analyzer">Email header analyzer</a> · <a href="/cold-email-checker">Cold email deliverability checker</a></p>
-  </div>
-</div>
+<div class="container" style="max-width:760px;padding:0 20px 70px"><section class="tool-guidance"><h2>Reading your results</h2><h3>What does this SPF checker inspect?</h3><p>It reads public DNS, follows nested includes and redirects within a bounded static check, and reports common configuration issues. It does not evaluate a specific message or sending IP.</p><h3>What counts toward the SPF lookup limit?</h3><p>The limit covers evaluated include, a, mx, ptr, exists, and redirect terms, including nested terms. An umbrella include still counts its children. A static expansion warning needs a message-specific check.</p><h3>Should I change ~all to -all?</h3><p>Both are valid. They produce softfail and fail respectively for unlisted senders. Confirm all legitimate sending services and follow their current setup instructions before changing the policy.</p><h3>Does passing SPF guarantee delivery?</h3><p>No. A domain lookup cannot show how a receiver evaluated an individual message. Inspect its authentication results and sending path when troubleshooting delivery.</p></section><p class="source-note">Reviewed 22 September 2026. Sources: <a href="https://www.rfc-editor.org/rfc/rfc7208.html#section-4.6.4">RFC 7208: SPF evaluation and limits</a></p><p class="related-guides"><a href="/blog/spf-lookup-limit">SPF lookup limits</a> · <a href="/blog/gmail-smtp-error-550-5-7-26">Gmail 550-5.7.26</a> · <a href="/header-analyzer">Email header analyzer</a></p><div class="help-cta"><h2>Check the rest of your email setup</h2><p>The full audit adds TLS, reverse DNS and IP blocklist checks.</p><a class="btn btn-primary" href="/#audit">Run the full free audit</a></div></div>
 
 <footer>
   <div class="container">
-    <span>© 2026 Inboxproof, Inc.</span>
+    <span>© 2026 Inboxproof</span>
     <span><a href="/">Home</a> · <a href="/blog">Guides</a> · <a href="/privacy">Privacy</a> · <a href="https://github.com/jtc268/inboxproof" target="_blank" rel="noopener">GitHub</a></span>
   </div>
 </footer>
@@ -132,14 +119,15 @@ form.addEventListener('submit', async e => {
     const j = await r.json();
     if (!r.ok) { err.textContent = j.error || 'Check failed.'; return; }
     lastDomain = j.domain;
+    document.getElementById('checked-at').textContent = 'Checked ' + new Date(j.at).toLocaleString();
     leadEl.style.display = 'block';
-    const spf = j.checks.find(c => c.id === 'spf') || { name: 'SPF', status: 'fail', detail: 'No SPF record found.', fix: 'Add a TXT record at the domain root: v=spf1 include:_spf.google.com -all' };
+    const spf = j.checks.find(c => c.id === 'spf') || { name: 'SPF', status: 'fail', detail: 'No SPF record found.', fix: 'Ask your sending provider for the correct SPF policy. Do not publish a second SPF record.' };
     const s = STATUS[spf.status] || STATUS.fail;
     document.getElementById('spf-dot').style.background = s.color;
     document.getElementById('spf-status').textContent = s.label;
     document.getElementById('spf-status').style.color = s.color;
-    const rec = spf.detail.match(/SPF found:\s*(v=spf1[^\n]*)/i);
-    document.getElementById('spf-record').textContent = rec ? rec[1].trim() : (spf.status === 'fail' ? '(no SPF record found on ' + j.domain + ')' : spf.detail);
+    const rec = spf.detail.match(/SPF found:\s*(v=spf1[\s\S]*?)\. Static expansion/i);
+    document.getElementById('spf-record').textContent = rec ? rec[1].trim() : spf.detail;
     document.getElementById('spf-detail').textContent = spf.detail.replace(/SPF found:\s*/i, '');
     const fix = document.getElementById('spf-fix');
     if (spf.fix && spf.status !== 'pass') { fix.style.display = 'block'; fix.innerHTML = '<strong>How to fix:</strong> ' + spf.fix.replace(/</g, '&lt;'); }

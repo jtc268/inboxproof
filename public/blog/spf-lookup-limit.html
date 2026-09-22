@@ -4,24 +4,25 @@
 <script>(function(){try{var p=location.pathname||'/';var r=(document.referrer||'').split('/')[2]||'direct';var q=new URLSearchParams(location.search);var ref=q.get('ref')||'';if(ref){try{localStorage.setItem('ip_ref',ref);}catch(e){}}var u='/api/track?page='+encodeURIComponent(p)+'&ref='+encodeURIComponent(r)+(ref?'&team='+encodeURIComponent(ref):'');if(navigator.sendBeacon&&navigator.sendBeacon(u))return;var i=new Image();i.src=u;}catch(e){}})();</script>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
-<title>SPF 10-Lookup Limit: Why Your SPF Record Is Failing | InboxProof</title>
-<meta name="description" content="Why SPF records are limited to 10 DNS lookups, how to count them, and how to fix a 'too many DNS lookups' permerror by flattening and consolidating your includes.">
+<title>SPF lookup limit: count nested terms and fix warnings | Inboxproof</title>
+<meta name="description" content="Understand the SPF 10-term DNS lookup limit, nested includes and redirects. Review a static warning before changing your sending configuration.">
 <link rel="canonical" href="https://inboxproof.email/blog/spf-lookup-limit">
-<meta property="og:title" content="SPF 10-Lookup Limit: Why Your SPF Record Is Failing">
-<meta property="og:description" content="How to count SPF DNS lookups and fix the 'too many DNS lookups' permerror.">
+<meta property="og:title" content="SPF lookup limit: count nested terms and fix warnings">
+<meta property="og:description" content="Understand the SPF 10-term DNS lookup limit, nested includes and redirects. Review a static warning before changing your sending configuration.">
 <meta property="og:type" content="article">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="/styles.css">
+<link rel="stylesheet" href="/help.css">
 <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' rx='8' fill='%236366f1'/%3E%3Cpath d='M8 16h13M15 10l6 6-6 6' stroke='white' stroke-width='3' fill='none' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E">
-<script type="application/ld+json">{"@context":"https://schema.org","@type":"Article","headline":"SPF 10-Lookup Limit: Why Your SPF Record Is Failing","description":"Why SPF records are limited to 10 DNS lookups, how to count them, and how to fix a 'too many DNS lookups' permerror by flattening and consolidating your includes.","author":{"@type":"Organization","name":"InboxProof"},"publisher":{"@type":"Organization","name":"InboxProof"},"datePublished":"2026-08-22","dateModified":"2026-08-22"}</script>
+<script type="application/ld+json">{"@context": "https://schema.org", "@type": "Article", "headline": "SPF lookup limit: count nested terms and fix warnings", "description": "Understand the SPF 10-term DNS lookup limit, nested includes and redirects. Review a static warning before changing your sending configuration.", "author": {"@type": "Organization", "name": "InboxProof"}, "publisher": {"@type": "Organization", "name": "InboxProof"}, "datePublished": "2026-08-22", "dateModified": "2026-09-22"}</script>
 <meta property="og:url" content="https://inboxproof.email/blog/spf-lookup-limit">
 <meta property="og:image" content="https://inboxproof.email/og.png">
 <meta property="og:image:width" content="1200">
 <meta property="og:image:height" content="630">
 <meta name="twitter:image" content="https://inboxproof.email/og.png">
 </head>
-<body>
+<body class="help-page">
 <nav class="nav">
   <div class="container">
     <a class="logo" href="/">
@@ -32,69 +33,21 @@
   </div>
 </nav>
 
-<div class="container" style="max-width:760px;padding:60px 20px 80px">
-  <div class="kicker">SPF</div>
-  <h1 style="font-size:34px;margin:10px 0 12px">The SPF 10-lookup limit: why your SPF record is failing and how to fix it</h1>
-  <p style="opacity:.8;font-size:16px;margin-bottom:36px">SPF has a hard rule: a record may require at most <strong>10 DNS lookups</strong> to evaluate. Cross that line and the record becomes a <code>permerror</code>, and Gmail, Microsoft and others treat a permerror as a failed SPF check, which quietly pushes your mail toward the spam folder. Here is how to count your lookups and fix the problem.</p>
-
-  <div class="card" style="margin-bottom:28px;background:#eef2ff;border-color:#c7d2fe">
-    <h3 style="margin-top:0">Count your SPF lookups in seconds</h3>
-    <p style="opacity:.8;margin-bottom:14px">The <a href="/spf-checker">free SPF checker</a> evaluates your record, counts the lookups, and flags a permerror before your recipients' mail servers do. No signup.</p>
-    <a class="btn btn-primary" href="/spf-checker">Check my SPF record</a>
-  </div>
-
-  <h2 style="font-size:24px;margin:36px 0 12px">What counts as a lookup</h2>
-  <p>Not every part of an SPF record costs a lookup. Only mechanisms that require the mail server to query DNS count. Per RFC 7208, these cost one lookup each:</p>
-  <ul style="font-size:16px;line-height:1.8">
-    <li><strong>include:</strong> pulls in another domain's SPF record (and every lookup <em>inside</em> that record counts too).</li>
-    <li><strong>a</strong> / <strong>a:</strong> resolves an A record.</li>
-    <li><strong>mx</strong> / <strong>mx:</strong> resolves MX records.</li>
-    <li><strong>ptr</strong> / <strong>ptr:</strong> resolves a PTR record (deprecated. Avoid it).</li>
-    <li><strong>exists:</strong> runs an existence DNS query.</li>
-  </ul>
-  <p>These cost <strong>nothing</strong>: <code>ip4:</code>, <code>ip6:</code>, <code>all</code>, <code>redirect</code> (when it short-circuits), <code>exp</code>, and the <code>-</code>/<code>~</code>/<code>?</code> qualifiers. The classic mistake is stacking five or six <code>include:</code> directives for every ESP you have ever used, each of which drags in its own lookups.</p>
-
-  <h2 style="font-size:24px;margin:36px 0 12px">Why the limit exists</h2>
-  <p>The 10-lookup cap is a DNS abuse and DoS protection. Without it, a malicious or careless SPF record could force every receiving mail server on the internet to perform unbounded DNS queries for a single message. The limit keeps SPF evaluation fast and bounded. It is not optional. Receiving servers enforce it.</p>
-
-  <h2 style="font-size:24px;margin:36px 0 12px">How to count your lookups</h2>
-  <p>Start at your domain's SPF record and walk it left to right:</p>
-  <ol style="font-size:16px;line-height:1.8">
-    <li>Count each <code>include:</code>, <code>a</code>, <code>mx</code>, <code>ptr</code> and <code>exists:</code> in your record.</li>
-    <li>For each <code>include:</code>, open the included record and count <em>its</em> lookups too. Includes are nested, so a single include can hide 5+ lookups.</li>
-    <li>Add them up. If the total exceeds 10, your record is a permerror.</li>
-  </ol>
-  <p>A typical failing record looks like this:</p>
-  <pre style="background:#0a0a0a;border:1px solid #2a2a2a;border-radius:8px;padding:14px;font-size:13px;overflow-x:auto;line-height:1.6">v=spf1 include:esp-one.com include:esp-two.com
-include:esp-three.com include:esp-four.com
-include:marketing.com include:crm.com
-a mx -all</pre>
-  <p>That is 6 top-level includes plus every lookup nested inside each of them, almost certainly over 10.</p>
-
-  <h2 style="font-size:24px;margin:36px 0 12px">How to fix it</h2>
-  <p>The goal is to get your total under 10 while keeping every legitimate sender authorized.</p>
-  <ul style="font-size:16px;line-height:1.8">
-    <li><strong>Remove dead includes.</strong> Any ESP you no longer use is a lookup you do not need. This alone often fixes the problem.</li>
-    <li><strong>Flatten where you can.</strong> Replace an <code>include:</code> of a record that only contains a few <code>ip4:</code> entries with those <code>ip4:</code> entries directly. <code>ip4:</code> costs zero lookups.</li>
-    <li><strong>Consolidate to one umbrella include.</strong> Many providers (and your own domain) can expose a single SPF record that covers all your sending. Point one <code>include:</code> at it instead of several.</li>
-    <li><strong>Drop <code>ptr</code> and <code>mx</code> if you do not need them.</strong> <code>ptr</code> is deprecated and <code>mx</code> is rarely required for modern sending. Each is a lookup you can often delete.</li>
-    <li><strong>Keep exactly one <code>all</code> at the end.</strong> Two <code>all</code> mechanisms is a separate syntax error that also breaks the record.</li>
-  </ul>
-  <p>After you change the record, re-check it. SPF changes propagate over DNS (often 5–30 minutes, sometimes up to 48h at the TTL), so verify with a fresh lookup, not a cached one.</p>
-
-  <div style="background:#0f172a;color:#fff;border-radius:12px;padding:32px;text-align:center;margin:40px 0">
-    <h2 style="color:#fff;margin-bottom:8px">Stop guessing, check the record</h2>
-    <p style="opacity:.8;margin-bottom:20px">Run your SPF record through the free checker and see the exact lookup count and any permerror.</p>
-    <a class="btn btn-primary btn-lg" href="/spf-checker">Open the SPF checker</a>
-  </div>
-
-  <p style="margin-top:24px;padding:16px;background:#f4f4ff;border-radius:12px">Want this checked automatically every day? <a href="/#pricing" style="font-weight:600">Inboxproof Pro</a> monitors your domain around the clock and alerts you the moment a record breaks or an IP gets listed. <a href="/#pricing" style="font-weight:600">See pricing →</a></p>
-  <p style="opacity:.6;font-size:13px;margin-top:28px">Related: <a href="/blog/spf-not-working">SPF not working</a> · <a href="/blog/spf-dkim-dmarc">SPF vs DKIM vs DMARC</a> · <a href="/blog/smtp-error-codes">SMTP error codes</a> · <a href="/blog/email-bounce-codes">Email bounce codes</a></p>
-</div>
+<main class="help-article container">
+<p class="kicker">SPF troubleshooting</p><h1>SPF lookup limit: count nested terms and fix warnings</h1><p class="source-note">Reviewed 22 September 2026</p>
+<p class="article-intro">A long SPF record needs inspection. Start with the record at the domain your sending service uses for the envelope sender, then review its nested dependencies.</p>
+<h2>What the limit counts</h2><p>During evaluation, SPF allows at most 10 DNS-triggering terms: <code>include</code>, <code>a</code>, <code>mx</code>, <code>ptr</code>, <code>exists</code> and <code>redirect</code>. Nested terms count too. Exceeding that limit returns <code>permerror</code>. <code>ip4</code>, <code>ip6</code> and <code>all</code> do not consume this budget. <code>exp</code> is outside the evaluation budget. Separate limits also apply to MX address lookups and empty DNS answers. <a href="https://www.rfc-editor.org/rfc/rfc7208.html#section-4.6.4">RFC 7208, section 4.6.4</a>.</p>
+<h2>A warning needs context</h2><p>SPF evaluates mechanisms in order and stops on a match. A message’s sending IP can therefore change how far evaluation proceeds. Moving existing includes into another include does not remove their lookup cost. <a href="https://www.rfc-editor.org/rfc/rfc7208.html#section-4.6.2">SPF evaluation rules</a>.</p>
+<p>Inboxproof performs a bounded static expansion. Its warning identifies a policy to investigate; it does not reproduce a receiving server’s decision for a particular message. Sender-dependent macros and DNS failures can also limit this check.</p>
+<h2>Review the services that still send mail</h2><ol><li>List the systems sending mail for this domain, including billing, support, forms and newsletters.</li><li>Match each provider to its current SPF instructions. Record who owns each service before removing anything.</li><li>Remove an obsolete include only after confirming the service no longer sends mail.</li><li>Ask providers about a supported configuration with fewer dependencies. Copying today’s IP addresses creates a maintenance obligation if their infrastructure changes.</li><li>Recheck DNS after the cache TTL, then send a test through each service. Inspect the receiver’s authentication results.</li></ol>
+<p>Microsoft’s setup guide explains how to maintain one SPF record and account for multiple sending sources. Use your actual provider’s values. <a href="https://learn.microsoft.com/en-us/defender-office-365/email-authentication-spf-configure">Microsoft SPF configuration guidance</a>.</p>
+<div class="help-cta"><h2>Inspect your published policy</h2><p>The free SPF check reports common configuration issues and nested lookup warnings.</p><a class="btn btn-primary" href="/spf-checker">Check SPF</a></div>
+<p class="related-guides">Related: <a href="/blog/gmail-smtp-error-550-5-7-26">Gmail authentication errors</a> · <a href="/header-analyzer">Inspect message headers</a> · <a href="/email-domain-monitor">Daily domain monitoring</a></p>
+</main>
 
 <footer>
   <div class="container">
-    <span>© 2026 Inboxproof, Inc.</span>
+    <span>© 2026 Inboxproof</span>
     <span><a href="/">Home</a> · <a href="/privacy">Privacy</a> · <a href="https://github.com/jtc268/inboxproof" target="_blank" rel="noopener">GitHub</a></span>
   </div>
 </footer>

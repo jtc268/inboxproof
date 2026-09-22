@@ -12,7 +12,7 @@ if(!urls.length||urls.length>10000)throw Error('Unexpected sitemap size');
 let previous={};try{previous=JSON.parse(fs.readFileSync(stateFile,'utf8')).hashes||{};}catch(e){if(e.code!=='ENOENT')throw e;}
 const shared=['seo.mjs','public/styles.css','public/analytics.js','public/monitor-page.css'].map(p=>fs.readFileSync(path.join(root,p))).map(sha).join(':');
 const hashes={},changed=[];
-for(const url of urls){const u=new URL(url);if(u.origin!==base||u.search||u.hash||/^\/(?:api|r|pro|login|referral)(?:\/|$)/.test(u.pathname))throw Error('Unexpected non-public URL in sitemap');const file=path.join(root,'public',u.pathname==='/'?'index.html':u.pathname+'.html');if(!fs.existsSync(file))throw Error('Local source and production sitemap differ');hashes[url]=sha(fs.readFileSync(file,'utf8')+shared);if(previous[url]!==hashes[url])changed.push(url);}
+for(const url of urls){const u=new URL(url);if(u.origin!==base||u.search||u.hash||/^\/(?:api|r|pro|login|referral)(?:\/|$)/.test(u.pathname))throw Error('Unexpected non-public URL in sitemap');const file=path.join(root,'public',u.pathname==='/'?'index.html':u.pathname+'.html');if(!fs.existsSync(file))throw Error('Local source and production sitemap differ');const source=fs.readFileSync(file,'utf8');const pageCss=[...source.matchAll(/<link[^>]+href="\/(home|help)\.css"/g)].map(m=>sha(fs.readFileSync(path.join(root,'public',m[1]+'.css')))).join(':');hashes[url]=sha(source+shared+pageCss);if(previous[url]!==hashes[url])changed.push(url);}
 const report={at:new Date().toISOString(),publicPages:urls.length,changedPages:changed.length,submitted:false};
 if(process.argv.includes('--submit')&&changed.length){
  // Confirm the latest local HTML is actually live, using the visible body verbatim.
