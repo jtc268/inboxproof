@@ -7,6 +7,7 @@
   },
   "scripts": {
     "start": "node server.mjs",
+    "build:comparison": "node tools/build-comparison.mjs",
     "test": "node --test test/*.test.mjs",
     "analytics": "node scripts/analytics-report.mjs",
     "indexnow": "node scripts/submit-indexnow.mjs"

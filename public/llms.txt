@@ -1,16 +1,66 @@
 # Inboxproof
 
-> Free email deliverability audit. Run a real check on any domain in 30 seconds: MX, SPF, DKIM, DMARC, TLS, PTR, and IP reputation. Get a 0-100 score, the exact records to fix, and optional daily monitoring. No account, no DNS changes, nothing to install.
+> Free seven-check email configuration audit: MX, SPF, DKIM, DMARC, TLS, PTR and observed mail-server IP blocklists. No account required for the free audit. Pro adds daily monitoring. Scores do not guarantee inbox placement.
 
 ## Key pages
 
 - https://inboxproof.email/ - Home. Run the free audit (domain in, score + fixes out).
-- https://inboxproof.email/pricing - Pro ($29/mo, daily monitoring + alerts) and Agency ($99/mo, white-label reports).
+- https://inboxproof.email/pricing - Redirects to /#pricing. Pro is $14.50 USD/month for 5 domains; Agency is $49.50 USD/month for 25 domains and white-label reports.
 - https://inboxproof.email/agencies - For agencies managing deliverability across many client domains.
 - https://inboxproof.email/developers - API docs, CLI, and a live playground to try the free endpoints.
 - https://inboxproof.email/lead-magnet - Free 12-point email deliverability checklist.
 - https://inboxproof.email/deliverability-tools - Best email deliverability tools, compared.
 - https://inboxproof.email/mail-tester-alternatives - Mail-Tester alternatives.
+
+## Comparison and machine-readable pricing
+
+- https://inboxproof.email/compare - 11 products, 15 comparison fields, dated public sources; unknown means not established by the cited pages.
+- https://inboxproof.email/best-dmarc-monitoring - Choose by daily DNS checks, DMARC report ingestion or message placement testing.
+- https://inboxproof.email/pricing.json - Plan prices, domain limits, features, checkout contract and limitations. Updated and verified 2026-10-08 against active production Stripe prices.
+- https://github.com/jtc268/inboxproof-cli - Open-source local CLI. Run: npx github:jtc268/inboxproof-cli example.com
+
+## Plans and limitations (verified 2026-10-08)
+
+- Free: on-demand seven-check audit, no signup or card. No scheduled monitoring.
+- Pro: $14.50 USD per month, billed monthly, up to 5 domains. Daily scheduled checks, saved reports, history and email alerts for a lower score or new failure. Paid audit API.
+- Agency: $49.50 USD per month, billed monthly, up to 25 domains. Pro features and white-label reports.
+- Paid API currently enforces 100 audits/day per key on both plans. Agency currently has the same API allowance as Pro.
+- No Pro or Agency trial is configured in checkout. Prices may be affected by taxes or a promotion code entered at Stripe.
+- No continuous DMARC aggregate (rua) or forensic (ruf) mailbox ingestion. The free report parser is manual.
+- Daily monitoring is not realtime. It does not alert on every DNS edit.
+- DKIM discovery uses common selectors and does not verify individual message signatures. Blocklist checks cover observed mail-server IPs, which may differ from outbound sending IPs. SMTP checks can be inconclusive.
+
+## Agent checkout: create a payment URL
+
+POST https://inboxproof.email/api/checkout
+Content-Type: application/json
+No API key is required. Required JSON fields: plan (pro or agency), email. Recommended optional field: domain.
+
+Example only; creates an unpaid session if run:
+
+```sh
+curl --request POST 'https://inboxproof.email/api/checkout' \
+  --header 'Content-Type: application/json' \
+  --cookie-jar checkout-cookies.txt \
+  --data '{"plan":"pro","email":"buyer@example.com","domain":"example.com"}'
+```
+
+HTTP 200 response shape (placeholders, not a live session):
+```json
+{"url":"https://checkout.stripe.com/<session>","sessionId":"cs_<session>"}
+```
+
+Open the returned URL and complete Stripe payment with the buyer's authorization. Session creation alone does not activate monitoring. It creates an unpaid checkout and an account record. There is no public idempotency guarantee; do not blindly retry. Errors: 400 invalid email/domain; 409 existing subscription (sign in); 429 too many requests; 503 unavailable.
+
+The response sets an HttpOnly checkout cookie. Automatic sign-in after payment requires the same browser to retain that cookie. A curl cookie jar is not automatically shared with a browser. Otherwise, after payment, sign in at https://inboxproof.email/login with the checkout email. Retrieve the API key from the authenticated dashboard at https://inboxproof.email/pro. Email access is required for sign-in. There is no public purchase-to-key endpoint and no verified project Stripe Payment Link is published here.
+
+Paid audit example after key retrieval:
+```sh
+curl --header 'Authorization: Bearer <api-key>' \
+  'https://inboxproof.email/api/v1/audit?domain=example.com'
+```
+
+Use the Authorization header rather than putting keys in URLs. Full contract: https://inboxproof.email/developers#checkout
 
 ## Free checkers (no email needed)
 

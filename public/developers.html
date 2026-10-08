@@ -11,7 +11,7 @@
 <meta property="og:type" content="website">
 <meta property="og:url" content="https://inboxproof.email/developers">
 <link rel="canonical" href="https://inboxproof.email/developers">
-<script type="application/ld+json">{"@context":"https://schema.org","@type":"WebApplication","name":"Inboxproof API","applicationCategory":"DeveloperApplication","operatingSystem":"Web","description":"Run a full 7-check email deliverability audit (MX, SPF, DKIM, DMARC, TLS, PTR, blocklists) from your code. One REST endpoint, Bearer auth, 100 audits/day on Pro.","url":"https://inboxproof.email/developers","offers":{"@type":"Offer","price":"0","priceCurrency":"USD"}}</script>
+<script type="application/ld+json">{"@context":"https://schema.org","@type":"WebApplication","name":"Inboxproof API","applicationCategory":"DeveloperApplication","operatingSystem":"Web","description":"Run a full 7-check email deliverability audit (MX, SPF, DKIM, DMARC, TLS, PTR, blocklists) from your code. One REST endpoint, Bearer auth, 100 audits/day on Pro.","url":"https://inboxproof.email/developers","offers":{"@type":"Offer","price":"14.50","priceCurrency":"USD","url":"https://inboxproof.email/#pricing"}}</script>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="/styles.css">
@@ -48,7 +48,7 @@
     <div class="kicker">Developers</div>
     <h1 style="font-size:40px;line-height:1.1;margin-bottom:14px">The deliverability API</h1>
     <p style="font-size:18px;color:var(--muted);margin-bottom:8px">One REST call returns a full 7-check email deliverability audit for any domain: MX, SPF, DKIM, DMARC, TLS, reverse-DNS, and blocklists, scored the same way the free audit and Pro monitoring are.</p>
-    <p style="font-size:14.5px;color:var(--dim);margin-bottom:26px">No SDK to install. Bearer auth, JSON in, JSON out. 100 audits/day on Pro, 500/day on Agency.</p>
+    <p style="font-size:14.5px;color:var(--dim);margin-bottom:26px">No SDK to install. Bearer auth, JSON in, JSON out. 100 audits/day per key on Pro and Agency.</p>
 
     <div style="background:var(--panel);border:1px solid var(--line);border-radius:12px;padding:18px 20px;margin-bottom:26px">
       <div style="font-size:12px;letter-spacing:.06em;text-transform:uppercase;color:var(--dim);margin-bottom:10px">Try it live</div>
@@ -86,7 +86,22 @@
       <div style="font-size:13px;color:var(--muted);margin-top:10px">Open source, zero dependencies. <a href="https://github.com/jtc268/inboxproof-cli" target="_blank" rel="noopener" style="color:#6366f1;font-weight:600">View on GitHub</a>.</div>
     </div>
 
-    <div class="sec-head" style="margin-bottom:18px">
+    <section id="checkout" style="margin:30px 0;padding:22px;border:1px solid var(--line);border-radius:12px">
+<h2 style="font-size:24px;margin-bottom:14px">Create a Pro or Agency checkout</h2>
+<p style="margin-bottom:14px">Pro is $14.50 USD/month for 5 domains. Agency is $49.50 USD/month for 25 domains. Both are billed monthly. Read <a href="/pricing.json">pricing.json</a> for features and limitations.</p>
+<p style="margin-bottom:14px"><code>POST /api/checkout</code> accepts JSON. Required: <code>plan</code> (pro or agency), <code>email</code>. Optional: <code>domain</code>. No API key is required to create a payment URL. There is no Pro trial in the current checkout.</p>
+<pre class="pg-pre">curl --request POST 'https://inboxproof.email/api/checkout' \
+  --header 'Content-Type: application/json' \
+  --cookie-jar checkout-cookies.txt \
+  --data '{"plan":"pro","email":"buyer@example.com","domain":"example.com"}'</pre>
+<p style="margin:14px 0">Example only. Running it creates an unpaid Stripe Checkout Session and an account record. It does not activate monitoring. With the buyer's authorization, open the returned URL and complete payment in Stripe.</p>
+<pre class="pg-pre">{"url":"https://checkout.stripe.com/&lt;session&gt;","sessionId":"cs_&lt;session&gt;"}</pre>
+<p style="margin:14px 0">HTTP 200 returns <code>url</code> and <code>sessionId</code>. Errors: 400 invalid email/domain, 409 existing subscription, 429 too many requests, 503 unavailable. There is no public idempotency guarantee; do not blindly retry checkout creation.</p>
+<h3 style="margin:20px 0 10px">Get the paid API key after payment</h3>
+<p style="margin-bottom:14px">The response sets an HttpOnly checkout cookie. Automatic browser sign-in on return requires the same browser to retain that cookie. A curl cookie jar is not shared with your browser. Otherwise, <a href="/login">sign in with the checkout email</a> after payment, then copy the key from <a href="/pro">your dashboard</a>. Email access is required. There is no public endpoint that returns a paid key before payment or skips sign-in.</p>
+<p style="margin:0">No verified project Stripe Payment Link is published here. Use this API or the <a href="/#pricing">pricing page</a>. See <a href="/llms.txt">llms.txt</a> for agent instructions, the <a href="/compare">comparison matrix</a> and <a href="/best-dmarc-monitoring">buying guide</a>.</p>
+</section>
+<div class="sec-head" style="margin-bottom:18px">
       <h2 style="font-size:24px">Endpoint</h2>
     </div>
     <div style="background:var(--panel);border:1px solid var(--line);border-radius:12px;padding:18px 20px;margin-bottom:26px">
@@ -97,7 +112,7 @@
       <table style="width:100%;border-collapse:collapse;font-size:14px">
         <tr><td style="padding:6px 0;color:var(--dim);width:130px">Auth</td><td><code>Authorization: Bearer &lt;key&gt;</code> (or <code>?key=&lt;key&gt;</code>)</td></tr>
         <tr><td style="padding:6px 0;color:var(--dim)">domain</td><td>Required. The domain to audit, e.g. <code>yourdomain.com</code></td></tr>
-        <tr><td style="padding:6px 0;color:var(--dim)">Rate limit</td><td>100 audits/day on Pro · 500/day on Agency</td></tr>
+        <tr><td style="padding:6px 0;color:var(--dim)">Rate limit</td><td>100 audits/day per key on Pro and Agency</td></tr>
       </table>
     </div>
 

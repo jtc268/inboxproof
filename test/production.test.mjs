@@ -42,6 +42,20 @@ async function cookieFor(email){let cookie;await auth.session(email,{setHeader:(
 const lead=(email,extra={})=>({id:crypto.randomUUID(),email,domain:'example.com',pro:true,plan:'pro',reportIds:[],...extra});
 const audit=async domain=>({domain,at:new Date().toISOString(),score:95,grade:'A',checks:[{id:'spf',name:'SPF',status:'pass'}]});
 
+test('public comparison, pricing JSON and sitemap routes are crawlable without account actions',async()=>{
+ for(const route of ['/compare','/best-dmarc-monitoring','/llms.txt','/pricing.json']){
+  const response=await fetch(base+route);assert.equal(response.status,200,route);
+  if(route==='/pricing.json'){
+   assert.match(response.headers.get('content-type'),/application\/json/);
+   const pricing=await response.json();assert.equal(pricing.plans.find(p=>p.id==='pro').price,14.5);
+  }else if(route.endsWith('monitoring')||route==='/compare'){
+   const html=await response.text();assert.match(html,/application\/ld\+json/);assert.ok(html.includes('href="https://inboxproof.email'+route+'"'));
+  }
+ }
+ const sitemap=await fetch(base+'/sitemap.xml').then(r=>r.text());
+ for(const route of ['/compare','/best-dmarc-monitoring'])assert.ok(sitemap.includes('<loc>https://inboxproof.email'+route+'</loc>'));
+});
+
 test('account, billing, domain changes and deletion require a session; URL email cannot impersonate',async()=>{
  await store.set('leads',JSON.stringify({'alice@example.com':lead('alice@example.com',{stripeCustomerId:'cus_alice'}),'bob@example.com':lead('bob@example.com')}));
  for(const p of ['/api/history?email=alice@example.com','/api/brand?email=alice@example.com','/api/referrals?email=alice@example.com'])assert.equal((await call(p)).status,401);

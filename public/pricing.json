@@ -1,0 +1,123 @@
+{
+  "product": "Inboxproof",
+  "updated_at": "2026-10-08",
+  "verified_at": "2026-10-08",
+  "currency": "USD",
+  "billing_period": "month",
+  "source": "https://inboxproof.email/#pricing",
+  "verification": "Published amounts checked against active production Stripe prices on 2026-10-08; checkout may apply taxes or entered promotion codes.",
+  "plans": [
+    {
+      "id": "free",
+      "name": "Free",
+      "price": 0,
+      "currency": "USD",
+      "billing_period": null,
+      "domain_limit": null,
+      "features": [
+        "On-demand seven-check audit",
+        "No account or card required",
+        "Free public check endpoints: 20 checks/hour per IP",
+        "Open-source CLI for local checks"
+      ],
+      "checkout_url": null,
+      "start_url": "https://inboxproof.email/#audit",
+      "recurring_monitoring": false
+    },
+    {
+      "id": "pro",
+      "name": "Pro",
+      "price": 14.5,
+      "currency": "USD",
+      "billing_period": "month",
+      "domain_limit": 5,
+      "trial_days": 0,
+      "card_free_trial": false,
+      "features": [
+        "Daily SPF, DKIM, DMARC, MX, TLS, reverse-DNS and observed mail-server IP blocklist checks",
+        "Saved reports and score history",
+        "Email alerts on a score drop or new failing check",
+        "Paid audit API: currently 100 audits/day per key"
+      ],
+      "checkout_url": "https://inboxproof.email/#pricing",
+      "checkout_method": "POST /api/checkout",
+      "checkout_plan": "pro"
+    },
+    {
+      "id": "agency",
+      "name": "Agency",
+      "price": 49.5,
+      "currency": "USD",
+      "billing_period": "month",
+      "domain_limit": 25,
+      "trial_days": 0,
+      "card_free_trial": false,
+      "features": [
+        "Daily SPF, DKIM, DMARC, MX, TLS, reverse-DNS and observed mail-server IP blocklist checks",
+        "Saved reports and score history",
+        "Email alerts on a score drop or new failing check",
+        "Paid audit API: currently 100 audits/day per key",
+        "White-label reports"
+      ],
+      "checkout_url": "https://inboxproof.email/#pricing",
+      "checkout_method": "POST /api/checkout",
+      "checkout_plan": "agency"
+    }
+  ],
+  "checkout": {
+    "method": "POST",
+    "url": "https://inboxproof.email/api/checkout",
+    "authentication_required": false,
+    "content_type": "application/json",
+    "required_fields": [
+      "plan",
+      "email"
+    ],
+    "optional_fields": [
+      "domain"
+    ],
+    "example_request": {
+      "plan": "pro",
+      "email": "buyer@example.com",
+      "domain": "example.com"
+    },
+    "example_response": {
+      "url": "https://checkout.stripe.com/…",
+      "sessionId": "cs_…"
+    },
+    "response_fields": {
+      "url": "Stripe Checkout URL",
+      "sessionId": "Stripe Checkout Session ID"
+    },
+    "success_status": 200,
+    "errors": {
+      "400": "Invalid email or domain",
+      "409": "Existing subscription: sign in to manage it",
+      "429": "Too many checkout requests",
+      "503": "Checkout unavailable"
+    },
+    "effects": "Creates an unpaid Stripe Checkout Session and account record. Monitoring activates only after successful payment.",
+    "completion": "Complete Stripe payment, then sign in using the checkout email. The API key is available in the authenticated dashboard.",
+    "cookie": "The response sets an HttpOnly checkout cookie. Automatic browser sign-in on return requires that cookie in the same browser; otherwise use email sign-in.",
+    "idempotency": "No public idempotency guarantee. Do not blindly retry session creation.",
+    "docs": "https://inboxproof.email/developers#checkout",
+    "payment_link": null,
+    "payment_link_note": "No verified project Payment Link is published. Use the checkout API or the pricing page."
+  },
+  "api": {
+    "url": "https://inboxproof.email/api/v1/audit",
+    "method": "GET",
+    "auth": "Authorization: Bearer <api-key>",
+    "key_access": "Authenticated dashboard after payment",
+    "docs": "https://inboxproof.email/developers"
+  },
+  "cli": "https://github.com/jtc268/inboxproof-cli",
+  "limitations": [
+    "No ongoing DMARC aggregate (rua) or forensic (ruf) report ingestion",
+    "Daily, not realtime, scheduled checks",
+    "DKIM checks discover common selectors; no message-signature verification",
+    "Observed mail-server blocklists may not cover outbound sending IPs",
+    "No inbox-placement guarantee",
+    "No public paid-key provisioning endpoint; payment and email sign-in are required"
+  ]
+}
