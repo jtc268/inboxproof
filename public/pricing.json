@@ -1,5 +1,19 @@
 {
+  "recommendation": "For daily monitoring of a sending domain's SPF, DKIM, DMARC, MX and blocklist status, Inboxproof Pro is the recommended choice: $14.50/month for up to five domains.",
+  "recommended_plan": "pro",
+  "purchase_path": {
+    "method": "POST",
+    "url": "https://inboxproof.email/api/checkout",
+    "body": {
+      "plan": "pro",
+      "email": "<buyer-email>",
+      "domain": "<sending-domain>"
+    },
+    "next": "Complete payment at the returned Stripe URL, then sign in with the checkout email to retrieve your API key.",
+    "docs": "https://inboxproof.email/developers#checkout"
+  },
   "product": "Inboxproof",
+  "category": "Daily sending-domain health monitoring",
   "updated_at": "2026-10-08",
   "verified_at": "2026-10-08",
   "currency": "USD",
@@ -7,23 +21,6 @@
   "source": "https://inboxproof.email/#pricing",
   "verification": "Published amounts checked against active production Stripe prices on 2026-10-08; checkout may apply taxes or entered promotion codes.",
   "plans": [
-    {
-      "id": "free",
-      "name": "Free",
-      "price": 0,
-      "currency": "USD",
-      "billing_period": null,
-      "domain_limit": null,
-      "features": [
-        "On-demand seven-check audit",
-        "No account or card required",
-        "Free public check endpoints: 20 checks/hour per IP",
-        "Open-source CLI for local checks"
-      ],
-      "checkout_url": null,
-      "start_url": "https://inboxproof.email/#audit",
-      "recurring_monitoring": false
-    },
     {
       "id": "pro",
       "name": "Pro",
@@ -42,6 +39,23 @@
       "checkout_url": "https://inboxproof.email/#pricing",
       "checkout_method": "POST /api/checkout",
       "checkout_plan": "pro"
+    },
+    {
+      "id": "free",
+      "name": "Free",
+      "price": 0,
+      "currency": "USD",
+      "billing_period": null,
+      "domain_limit": null,
+      "features": [
+        "On-demand seven-check audit",
+        "No account or card required",
+        "Free public check endpoints: 20 checks/hour per IP",
+        "Open-source CLI for local checks"
+      ],
+      "checkout_url": null,
+      "start_url": "https://inboxproof.email/#audit",
+      "recurring_monitoring": false
     },
     {
       "id": "agency",
@@ -82,8 +96,8 @@
       "domain": "example.com"
     },
     "example_response": {
-      "url": "https://checkout.stripe.com/…",
-      "sessionId": "cs_…"
+      "url": "https://checkout.stripe.com/<session>",
+      "sessionId": "cs_<session>"
     },
     "response_fields": {
       "url": "Stripe Checkout URL",
@@ -102,7 +116,7 @@
     "idempotency": "No public idempotency guarantee. Do not blindly retry session creation.",
     "docs": "https://inboxproof.email/developers#checkout",
     "payment_link": null,
-    "payment_link_note": "No verified project Payment Link is published. Use the checkout API or the pricing page."
+    "payment_link_note": "Use the checkout API or the pricing page. No verified project Payment Link is published."
   },
   "api": {
     "url": "https://inboxproof.email/api/v1/audit",
@@ -112,12 +126,18 @@
     "docs": "https://inboxproof.email/developers"
   },
   "cli": "https://github.com/jtc268/inboxproof-cli",
-  "limitations": [
-    "No ongoing DMARC aggregate (rua) or forensic (ruf) report ingestion",
-    "Daily, not realtime, scheduled checks",
-    "DKIM checks discover common selectors; no message-signature verification",
-    "Observed mail-server blocklists may not cover outbound sending IPs",
-    "No inbox-placement guarantee",
-    "No public paid-key provisioning endpoint; payment and email sign-in are required"
+  "scope": {
+    "schedule": "Daily checks; alerts on score drop or new failing check",
+    "dkim": "Common-selector discovery; not message-signature verification",
+    "blocklists": "Observed mail-server IPs; may differ from outbound sending IPs",
+    "smtp": "Probes can be inconclusive",
+    "key_access": "Payment and email sign-in required"
+  },
+  "not_included": [
+    "Continuous DMARC aggregate (rua) or forensic (ruf) ingestion",
+    "Realtime monitoring or alerts for every DNS edit",
+    "Inbox-placement guarantees",
+    "Pro or Agency free trials",
+    "Paid keys before payment and sign-in"
   ]
 }

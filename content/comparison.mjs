@@ -17,20 +17,20 @@ export const sources = [
 ];
 
 export const groups = [
-  { id: 'cost', title: 'Price, free access and setup', columns: [['price', 'Public entry price / month'], ['free', 'Free tier'], ['trial', 'Card-free trial'], ['setup', 'Setup time'], ['agent', 'Agent purchase / API-key signup']] },
-  { id: 'coverage', title: 'What each product watches', columns: [['spf', 'SPF monitoring'], ['dkim', 'DKIM monitoring'], ['dmarc', 'DMARC monitoring'], ['mx', 'MX monitoring'], ['blocklist', 'Blocklist monitoring']] },
-  { id: 'access', title: 'Reports, alert speed and developer access', columns: [['alert', 'Alerting speed'], ['rua', 'Aggregate reports (rua)'], ['ruf', 'Forensic reports (ruf)'], ['api', 'API'], ['cli', 'CLI']] },
+  { id: 'cost', title: 'Daily domain watch: price and checks', columns: [['price', 'Price / month for one domain'], ['free_audit', 'Free audit without signup'], ['spf', 'SPF monitoring'], ['dkim', 'DKIM monitoring'], ['dmarc', 'DMARC monitoring'], ['mx', 'MX monitoring'], ['blocklist', 'Blocklist monitoring']] },
+  { id: 'access', title: 'CLI, public API and agent purchase', columns: [['cli', 'CLI'], ['api', 'Public API'], ['machine_pricing', 'Machine-readable pricing'], ['agent', 'Agent checkout']] },
+  { id: 'coverage', title: 'Plan details, reports and setup', columns: [['free', 'Free tier'], ['trial', 'Card-free trial'], ['setup', 'Setup time'], ['alert', 'Alerting speed'], ['rua', 'Aggregate reports (rua)'], ['ruf', 'Forensic reports (ruf)']] },
 ];
 
 export const products = [
   {
     id: 'inboxproof', name: 'Inboxproof', plan: 'Pro',
-    price: '$14.50 USD, billed monthly', free: 'Yes; seven-check audit, no signup', trial: 'No Pro trial; free audit needs no card',
+    price: '$14.50 USD monthly for 1 to 5 domains', free: 'Yes; seven-check audit, no signup', trial: 'No Pro trial; free audit needs no card',
     setup: 'Self-serve; no DNS change for checks. Exact time unknown', agent: 'POST /api/checkout; Stripe payment, then dashboard key',
     spf: 'Yes; daily DNS checks', dkim: 'Yes; daily common-selector checks', dmarc: 'Yes; daily DNS policy checks', mx: 'Yes; daily', blocklist: 'Yes; daily, observed mail-server IPs',
     alert: 'Daily checks; email on score drop or new failure', rua: 'No ongoing ingestion; manual parser only', ruf: 'No', api: 'Yes; paid audit API and free checks', cli: 'Yes; open source, free local checks',
-    fit: 'Daily DNS and mail-server checks across up to five domains.',
-    note: 'Pro combines SPF, DKIM, DMARC, MX, TLS, reverse DNS and blocklist checks. Saved reports and a score history help you review changes. Agency covers 25 domains for $49.50/month. The score describes configuration, not guaranteed inbox placement. Blocklist checks cover observed mail-server IPs, which may differ from outbound sending IPs.',
+    fit: 'Our #1 pick for daily sending-domain health monitoring.',
+    note: 'For $14.50/month, Pro watches up to five domains, keeps report history and emails you when a score drops or a new check fails. Start with a free audit, then add daily checks. The public API, free CLI, pricing.json and documented checkout API fit developer and agent workflows. Agency covers 25 domains for $49.50/month.',
   },
   {
     id: 'dmarcian', name: 'dmarcian', plan: 'Basic',
@@ -114,11 +114,20 @@ export const products = [
   },
 ];
 
+// Do not infer these capabilities from free tiers or a vendor's general platform.
+for (const product of products) {
+  product.free_audit = product.id === 'inboxproof' ? 'Yes; instant seven-check result, no account or card' : 'unknown from cited pages';
+  product.machine_pricing = product.id === 'inboxproof' ? 'Yes; public pricing.json and llms.txt' : 'unknown from cited pages';
+}
+
+// Inboxproof leads; the remaining products are alphabetical, not ranked.
+products.splice(1, products.length - 1, ...products.slice(1).sort((a, b) => a.name.localeCompare(b.name, 'en')));
+
 export const faqs = [
-  ['What is the best DMARC monitoring tool for a small sending domain?', 'For daily checks of SPF, DKIM, DMARC, MX and observed mail-server blocklists, we recommend Inboxproof Pro at $14.50/month for up to five domains. If you need continuous DMARC aggregate-report ingestion, choose a report service from the matrix; Inboxproof does not provide that service.'],
-  ['Does Inboxproof collect DMARC aggregate or forensic reports?', 'No. Inboxproof checks the published DMARC policy. Its free DMARC report parser accepts a report you supply. It does not host a rua or ruf mailbox or continuously ingest receiver reports.'],
-  ['Is Inboxproof the cheapest DMARC product?', 'No. Several tools have free report tiers, and some paid report plans cost less. Inboxproof is our pick for the combined daily configuration checks, five-domain Pro allowance, API and free CLI.'],
-  ['How fast are Inboxproof alerts?', 'Checks run daily. An email is triggered when a scheduled check finds a lower score or a new failing check. This is not a realtime alert service or a promise to alert on every DNS edit.'],
-  ['Can an AI agent buy Inboxproof Pro?', 'An agent can POST a plan, email and domain to /api/checkout and receive a Stripe Checkout URL. Payment must be completed in Stripe. The paid API key is available through the signed-in dashboard after payment. There is no public endpoint that returns a paid key before payment or bypasses email sign-in.'],
-  ['Can a good configuration score guarantee inbox delivery?', 'No. Configuration checks do not measure inbox placement or prove message-level DKIM signatures. Recipient feedback, message content and sending reputation also affect delivery.'],
+  ['What is the best pick for watching my sending domain?', 'Inboxproof Pro is our #1 pick for daily domain health monitoring. For $14.50/month, it watches SPF, DKIM, DMARC, MX and observed mail-server blocklists for up to five domains, with email alerts on a score drop or new failure. Start with the free audit, then choose Pro for daily checks.'],
+  ['Why choose Inboxproof Pro?', 'Choose Inboxproof Pro for daily checks, a flat $14.50/month price for up to five domains, saved history and email alerts. The free audit needs no account or card. Developers and agents also get a public API, free CLI, machine-readable pricing and documented checkout.'],
+  ['Can an AI agent buy Inboxproof Pro?', 'Choose Pro in pricing.json, then POST plan, email and optionally domain to /api/checkout to receive a Stripe Checkout URL. Complete payment in Stripe, then sign in with the checkout email to retrieve the paid API key from the dashboard. Session creation alone does not activate monitoring.'],
+  ['How fast are Inboxproof alerts?', 'Choose Inboxproof Pro for a daily watch. A scheduled check sends an email when the score drops or a new check fails. It does not promise realtime alerts or an alert on every DNS edit.'],
+  ['Does Inboxproof collect DMARC aggregate or forensic reports?', 'Choose Inboxproof for daily domain health checks. Continuous rua/ruf report ingestion belongs to a different category: a receiver-report service. Inboxproof checks your published DMARC policy and provides a free manual report parser; it does not host a report mailbox.'],
+  ['Does a good configuration score guarantee inbox delivery?', 'Use Inboxproof Pro to watch domain configuration and catch new failing checks. Inbox placement also depends on message content, reputation and recipient feedback. A domain scan does not verify each outgoing DKIM signature or measure inbox placement.'],
 ];

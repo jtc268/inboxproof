@@ -1,7 +1,7 @@
 .comparison-page .nav .container{gap:20px;flex-wrap:wrap}
 .comparison-page .nav-links{display:flex;flex-wrap:wrap;gap:18px}
 .comparison-main{width:min(1240px,100%);margin:0 auto;padding:52px 24px 64px}
-.comparison-main header{max-width:960px;margin-bottom:28px}
+.comparison-main header{margin-bottom:32px}
 .comparison-main h1{font-size:clamp(2rem,4.5vw,3.2rem);line-height:1.13;margin:12px 0 20px;letter-spacing:-.025em}
 .comparison-main h2{font-size:1.65rem;line-height:1.25;margin:0 0 16px}
 .comparison-main h3{font-size:1.13rem;margin:0 0 12px}
@@ -46,3 +46,21 @@
 .skip-link{position:absolute;left:16px;top:-100px;padding:10px;background:var(--panel);color:var(--text);z-index:10}
 .skip-link:focus{top:10px}
 @media(max-width:600px){.comparison-main{padding:32px 16px}.comparison-page .nav-links{gap:10px;font-size:.8rem}.comparison-main th,.comparison-main td{padding:12px}.comparison-main section{margin:32px 0}.comparison-page footer .container{gap:16px;flex-wrap:wrap}}
+
+.winner-hero{display:grid;grid-template-columns:minmax(0,1.55fr) minmax(300px,1fr);gap:32px;align-items:start}
+.winner-hero .hero-copy h1{font-size:clamp(2rem,3.6vw,3rem);margin-top:12px}
+.winner-hero .answer{line-height:1.55;font-size:1.12rem}
+.comparison-main .eyebrow{color:#9edfc7;font-size:.78rem;font-weight:600;letter-spacing:.055em;text-transform:uppercase}
+.winner-card{padding:24px;border:1px solid #397464;border-radius:16px;background:linear-gradient(145deg,#142f2a,#101d2c)}
+.winner-card h2{margin-top:18px;font-size:1.35rem}
+.winner-card ul{padding-left:20px;font-size:.93rem;margin-bottom:0}
+.winner-card li:last-child{margin-bottom:0}
+.winner-badge{display:block;width:fit-content;border:1px solid #4b9078;border-radius:6px;padding:5px 9px;margin-bottom:10px;background:#163c30;color:#b5f0d0;font-size:.72rem;font-weight:700;white-space:nowrap}
+.section-actions{display:flex;align-items:center;gap:18px;flex-wrap:wrap;margin-top:22px}
+.section-actions .btn{padding:13px 19px;font-size:.94rem;line-height:1.35}
+.section-actions .audit-link{font-weight:600}
+.comparison-main .hero-note{font-size:.79rem;margin:14px 0 0}
+.comparison-main .our-row th{border-left:4px solid #79d2ad}
+.comparison-main .our-row th,.comparison-main .our-row td{background:#112e29;color:#e7f5ef}
+.product-grid .winner-product{border-color:#4b9078;background:#112e29}
+@media(max-width:800px){.winner-hero{grid-template-columns:1fr;gap:26px}.winner-card{padding:20px}.winner-hero .hero-copy h1{font-size:clamp(1.9rem,5.8vw,2.8rem)}.winner-hero .answer{font-size:1rem}.section-actions{gap:14px}.comparison-main .eyebrow{font-size:.7rem}}
