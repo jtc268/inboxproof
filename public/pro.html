@@ -14,6 +14,7 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="/styles.css">
+<style>.subscription-notice{padding:16px 20px;margin-bottom:20px;border-left:3px solid #e4bc76;background:var(--panel);font-size:14px;line-height:1.7}.monitoring-explainer{padding:18px 0;color:var(--muted);font-size:14px;line-height:1.7;max-width:760px}.monitoring-explainer a{display:inline-block;margin-top:8px;color:var(--acc2,#a5b4fc)}</style>
 <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' rx='8' fill='%236366f1'/%3E%3Cpath d='M8 16h13M15 10l6 6-6 6' stroke='white' stroke-width='3' fill='none' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E">
 </head>
 <body>
@@ -60,7 +61,11 @@ function renderStatus(lead, history){
 
   const last = history[history.length-1] || {at:null,domain:'No check yet',score:0};
   const isPro = lead.pro;
-  const since = lead.proSince ? new Date(lead.proSince).toLocaleDateString() : '';
+  const end = new Date(Number(lead.currentPeriodEnd) * 1000);
+  const endText = Number(lead.currentPeriodEnd) > 0 && Number.isFinite(end.getTime())
+    ? end.toLocaleString(undefined,{year:'numeric',month:'long',day:'numeric',hour:'numeric',minute:'2-digit',timeZoneName:'short'}) : '';
+  const cancellation = isPro && lead.cancelAtPeriodEnd
+    ? '<div class="subscription-notice" role="status"><strong>Renewal is canceled.</strong> '+(endText ? 'Your plan is scheduled to end on '+esc(endText)+'. ' : '')+'You can review or change your cancellation in Manage billing.</div>' : '';
   const sameDomainHistory=history.filter(h=>h.domain===last.domain);
   const delta = sameDomainHistory.length>1 ? (last.score - sameDomainHistory[sameDomainHistory.length-2].score) : 0;
   const deltaTxt = delta>0 ? '<span style="color:#34d399">▲ +'+delta+' since last check</span>' : delta<0 ? '<span style="color:#f87171">▼ '+delta+' since last check</span>' : '<span style="opacity:.6">unchanged since last check</span>';
@@ -71,12 +76,13 @@ function renderStatus(lead, history){
     return '<div title="'+new Date(h.at).toLocaleString()+' · '+h.score+'" style="width:14px;height:'+hpx+'px;border-radius:3px;background:'+color(h.score)+'"></div>';
   }).join('');
   box.style.display='block';
-  box.innerHTML =
+  box.innerHTML = cancellation +
     '<div class="status-metrics">'+
       '<section class="metric"><div class="metric-label">Monitoring</div><div class="metric-value">'+(isPro ? '<span class="status-dot"></span>Daily checks active' : 'Not active')+'</div></section>'+
       '<section class="metric"><div class="metric-label">Last check'+(last.at?' · '+new Date(last.at).toLocaleString(undefined,{month:'short',day:'numeric',hour:'numeric',minute:'2-digit'}):'')+'</div><div class="metric-value">'+(last.at?esc(last.domain)+' · <span style="color:'+color(last.score)+'">'+last.score+'/100</span>':'Awaiting first check')+'</div>'+(last.at?'<div class="metric-note">'+deltaTxt+'</div>':'')+'</section>'+
       '<section class="metric"><div class="metric-label">Subscription</div><div class="metric-value">'+(isPro?(lead.plan==='agency'?'Agency':'Pro')+' plan':'Not active')+'</div>'+(isPro?'<button id="managebilling" class="text-button">Manage billing →</button>':'')+'</section>'+
     '</div>'+
+    (isPro && last.at ? '<div class="monitoring-explainer"><p>Daily checks are saved here. Email updates are sent when a scheduled check finds a lower score or a new failed check, so an unchanged result may arrive without an email.</p>'+(last.reportId?'<a href="/r/'+encodeURIComponent(last.reportId)+'">Review the latest findings →</a>':'')+'</div>':'')+
     (pts.length?'<section class="trend-section"><div><h2 class="section-heading">Score trend</h2><p class="section-note">'+esc(last.domain)+' · '+pts.length+' recent checks</p></div><div class="trend-bars">'+bars+'</div></section>':'');
   if(isPro){
     const domains = (lead.domains && lead.domains.length) ? lead.domains : (lead.domain ? [lead.domain] : []);

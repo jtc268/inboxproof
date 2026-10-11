@@ -18,3 +18,25 @@ for(const plan of ['pro','agency'])test(plan+' dashboard preserves working domai
  d.querySelector('[data-rm]').click();await new Promise(r=>setTimeout(r,10));assert.ok(calls.some(c=>c.url==='/api/domains'&&c.body.action==='remove'));
  dom.window.close();
 });
+
+test('scheduled cancellation shows its end date without hiding active monitoring controls',async()=>{
+ const lead={email:'qa@example.com',pro:true,plan:'pro',domains:['example.com'],cancelAtPeriodEnd:true,currentPeriodEnd:1792069899};
+ const history=[{domain:'example.com',at:'2026-10-10T22:00:00Z',score:75,reportId:'latest'}];
+ const dom=new JSDOM(html,{url:'https://inboxproof.email/pro',runScripts:'dangerously',beforeParse(w){w.fetch=async()=>({ok:true,status:200,json:async()=>({lead,history})});}});
+ await new Promise(r=>setTimeout(r,10));const d=dom.window.document;
+ assert.match(d.querySelector('.subscription-notice').textContent,/Renewal is canceled/);
+ assert.match(d.querySelector('.subscription-notice').textContent,/2026/);
+ assert.match(d.querySelector('#status').textContent,/Daily checks active/);
+ assert.equal(typeof d.querySelector('#managebilling').onclick,'function');
+ assert.equal(typeof d.querySelector('[data-check]').onclick,'function');
+ assert.equal(d.querySelector('.monitoring-explainer a').getAttribute('href'),'/r/latest');
+ assert.match(d.querySelector('.monitoring-explainer').textContent,/new failed check/);
+ dom.window.close();
+});
+
+test('active renewal and inactive plans do not display a scheduled cancellation notice',async()=>{
+ for(const lead of [{pro:true,cancelAtPeriodEnd:false},{pro:false,cancelAtPeriodEnd:true}]){
+  const dom=new JSDOM(html,{url:'https://inboxproof.email/pro',runScripts:'dangerously',beforeParse(w){w.fetch=async()=>({ok:true,status:200,json:async()=>({lead:{email:'qa@example.com',...lead,currentPeriodEnd:1792069899},history:[]})});}});
+  await new Promise(r=>setTimeout(r,10));assert.equal(dom.window.document.querySelector('.subscription-notice'),null);dom.window.close();
+ }
+});
